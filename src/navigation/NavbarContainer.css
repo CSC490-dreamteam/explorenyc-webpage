@@ -4,6 +4,8 @@
     padding: 2rem;
     text-align: center;
     -webkit-tap-highlight-color: transparent;
+    color: inherit;
+    text-decoration: none;
 }
 
 .content {
@@ -25,6 +27,5 @@
     width: 100%;
     height: 100%;
     border: 1px solid black;
-
 }
 
