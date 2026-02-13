@@ -3,15 +3,12 @@
     margin: 0 auto;
     padding: 2rem;
     text-align: center;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .content {
     padding: 16px;
     padding-bottom: 70px;
-}
-
-.button {
-    -webkit-tap-highlight-color: transparent;
 }
 
 .navbarContainer__nav {
@@ -28,5 +25,6 @@
     width: 100%;
     height: 100%;
     border: 1px solid black;
+
 }
 
