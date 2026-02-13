@@ -7,6 +7,8 @@ import Welcome from "./Welcome";
 
 
 
+//This can be the login screen later. -ak
+
 function App() {
   const [count, setCount] = useState(0)
 
