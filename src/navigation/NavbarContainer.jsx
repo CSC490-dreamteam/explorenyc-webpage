@@ -18,6 +18,10 @@ function NavbarContainer() {
 
     return (
         <div className="navbarContainer">
+            <div className="navbarContainer__top">
+                Welcome back, User!
+            </div>
+
             <main className="navbarContainer__main">
                 {renderContent()}
             </main>
