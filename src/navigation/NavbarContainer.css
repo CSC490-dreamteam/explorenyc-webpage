@@ -10,6 +10,10 @@
     padding-bottom: 70px;
 }
 
+.button {
+    -webkit-tap-highlight-color: transparent;
+}
+
 .navbarContainer__nav {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -25,3 +29,4 @@
     height: 100%;
     border: 1px solid black;
 }
+
