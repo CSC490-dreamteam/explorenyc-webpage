@@ -1,7 +1,7 @@
 import './NavbarContainer.css'
 import HomeScreen from './screens/HomeScreen'
-import MapScreen from './screens/MapScreen'
-import SettingScreen from './screens/SettingsScreen'
+import NewTripScreen from './screens/NewTripScreen.jsx'
+import SettingScreen from './screens/HistoryScreen.jsx'
 import {useState} from "react";
 
 function NavbarContainer() {
@@ -10,7 +10,7 @@ function NavbarContainer() {
     const renderContent = () => {
         switch (currentScreen) {
             case 'HomeState': return <HomeScreen />
-            case 'MapState': return <MapScreen />
+            case 'MapState': return <NewTripScreen />
             case 'SettingsState': return <SettingScreen />
             default: return <HomeScreen />
         }
