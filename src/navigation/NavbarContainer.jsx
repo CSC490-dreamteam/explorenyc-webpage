@@ -27,12 +27,18 @@ function NavbarContainer() {
             </main>
 
             <nav className="navbarContainer__nav">
-                <button className="navbarContainer__homebutton"
-                        onClick={()=>setCurrentScreen('HomeState')}>Home</button>
-                <button className="navbarContainer__mapbutton"
-                        onClick={()=>setCurrentScreen('MapState')}>Map</button>
-                <button className="navbarContainer__settingsbutton"
-                        onClick={()=>setCurrentScreen('SettingsState')}>Settings</button>
+                <button className="navbarContainer__homebutton" onClick={()=>setCurrentScreen('HomeState')}>
+                        <div className="icon homeIcon"/>
+                        Home
+                </button>
+                <button className="navbarContainer__mapbutton" onClick={()=>setCurrentScreen('MapState')}>
+                    <div className="icon newIcon"/>
+                    New Trip
+                </button>
+                <button className="navbarContainer__settingsbutton" onClick={()=>setCurrentScreen('SettingsState')}>
+                    <div className="icon mapIcon"/>
+                    History
+                </button>
             </nav>
         </div>
     )
