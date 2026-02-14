@@ -8,18 +8,18 @@ function HomeScreen() {
             <header className="welcome-header">
 
                 <button className="btn-primary">
-                        <div className="statistic">0<br />trips</div>
-                        <div className="statistic">0 <br />places visited</div>
-                        <div className="statistic">0 <br />steps</div>
+                        <div className="statistic">0<br />Trips</div>
+                        <div className="statistic">0 <br />Places</div>
+                        <div className="statistic">0 <br />Steps</div>
                 </button>
 
             </header>
-            <section className="for-you">
+            <div className="for-you">
                 <h3 align='left'>Recommended for you</h3>
                 <div className="card">Place info</div>
                 <div className="card">Place info</div>
                 <div className="card">Place info</div>
-            </section>
+            </div>
         </div>
     )
 }
