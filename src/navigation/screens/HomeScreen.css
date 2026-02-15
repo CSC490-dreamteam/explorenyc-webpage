@@ -1,5 +1,8 @@
+
+
 .welcome-container {
     display: flex;
+    place-items: center;
     flex-direction: column;
     height: 100vh;
 }
