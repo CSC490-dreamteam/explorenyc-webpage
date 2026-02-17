@@ -1,4 +1,5 @@
 import React from "react";
+import './HistoryScreen.css';
 import '../../App.css'
 
 export default function History() {
@@ -33,33 +34,21 @@ export default function History() {
             </div>
 
 
-                <div className="trip-content">
-                    <div className="trip-header">
-                        <h3>NYC Adventure</h3>
-                        <span className="rating">⭐ 5.0</span>
-                    </div>
-                    <span className="badge">Completed</span>
+            <div className="trip-box">
+                <h3>NYC Adventure</h3>
+                <p>⭐ 5.0</p>
+                <p>Completed</p>
+                <p>🕒 1 day 📍 5 stops 💰 250</p>
+            </div>
 
-                    <div className="trip-details">
-                        <span>🕒 1 day</span>
-                        <span>📍 5 stops</span>
-                        <span>💰 250</span>
-                    </div>
-                </div>
 
-                <div className="trip-content">
-                    <div className="trip-header">
-                        <h3>Weekend Getaway</h3>
-                        <span className="rating">⭐ 5.0</span>
-                    </div>
-                    <span className="badge">Completed</span>
 
-                    <div className="trip-details">
-                        <span>🕒 2 days</span>
-                        <span>📍 10 stops</span>
-                        <span>💰 500</span>
-                    </div>
-                </div>
+            <div className="trip-box">
+                <h3>Weekend Getaway</h3>
+                <p>⭐ 5.0</p>
+                <p>Completed</p>
+                <p>🕒 2 days 📍 10 stops 💰 500</p>
+            </div>
             </div>
 
 
