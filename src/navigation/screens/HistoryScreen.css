@@ -1,0 +1,40 @@
+.trip-info-container {
+    background: white;
+    margin: -30px auto 25px;  /* center container */
+    padding: 25px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;   /* vertical layout */
+    gap: 18px;
+    width: 90%;               /* slightly longer */
+    max-width: 700px;         /* controls width on large screens */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.trip-info-container input {
+    width: 100%;
+    padding: 16px;            /* slightly taller */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.settings-icon {
+    position: fixed;       /* attach to viewport */
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    background: white;     /* makes it visible on blue header */
+    padding: 8px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    cursor: pointer;
+    z-index: 9999;
+}
+
+
+.history-page {
+    min-height: 100vh;
+    background-color: #f5f7fb;
+    padding-bottom: 140px;  /* increased space */
+}
