@@ -16,13 +16,19 @@
 .navbarContainer__top {
     border-bottom: black 1px solid;
     top: 0; left: 0; right: 0;
-    padding-left: 15px;
-    padding-top: 15px;
+    padding: 10px 15px;
     height: 40px;
     width: 100%;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     position: fixed;
     background-color: #1a1a1a;
+    box-sizing: border-box;
+}
+
+.navbarContainer__greeting {
+    margin: 0;
 }
 
 .navbarContainer__main {
@@ -46,6 +52,10 @@
     color: inherit;
     justify-content: center;
 }
+.navbarContainer__settingsButton {
+    width: 60px;
+    margin-left: auto;
+}
 
 .icon {
     width: 100%;
@@ -65,6 +75,10 @@
 
 .mapIcon {
     mask-image: url(../assets/map.svg);
+}
+
+.settingsIcon {
+    mask-image: url(../assets/settings.svg);
 }
 
 @media (prefers-color-scheme: light) {
