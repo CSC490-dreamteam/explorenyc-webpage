@@ -16,8 +16,8 @@
 .navbarContainer__top {
     border-bottom: black 1px solid;
     top: 0; left: 0; right: 0;
-    padding: 10px 15px;
-    height: 40px;
+    padding: 6px 15px;
+    min-height: 56px;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -53,8 +53,18 @@
     justify-content: center;
 }
 .navbarContainer__settingsButton {
-    width: 60px;
+    width: 52px;
+    height: 48px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-left: auto;
+}
+
+.navbarContainer__settingsButton .settingsIcon {
+    width: 22px;
+    height: 22px;
 }
 
 .icon {
