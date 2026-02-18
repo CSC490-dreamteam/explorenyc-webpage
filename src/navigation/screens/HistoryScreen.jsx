@@ -5,7 +5,7 @@ import '../../App.css'
 export default function History() {
     return (
         <div className="history-page">
-            <div className="settings-icon">⚙️</div>
+
 
 
             {/* HEADER */}

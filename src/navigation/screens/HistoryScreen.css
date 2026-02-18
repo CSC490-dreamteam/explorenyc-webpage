@@ -1,25 +1,18 @@
-.settings-icon {
-    position: fixed;       /* attach to viewport */
-    top: 15px;
-    right: 15px;
-    font-size: 24px;
-    background: white;     /* makes it visible on blue header */
-    padding: 8px;
-    border-radius: 50%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    cursor: pointer;
-    z-index: 9999;
-}
-
-
 .history-page {
     min-height: 100vh;
-    background-color: #f5f7fb;
     padding-bottom: 140px;  /* increased space */
 }
 
 .trip-box {
-    border: 5px solid red !important;
-    background: yellow !important;
+    background: #535353;
     border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+}
+
+@media (prefers-color-scheme: light) {
+    .trip-box {
+        background: #f6f6f6;
+        /*border: 1px solid #d3d3d3;*/
+    }
 }
