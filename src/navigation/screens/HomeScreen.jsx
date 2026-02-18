@@ -16,9 +16,9 @@ function HomeScreen() {
             </header>
             <div className="for-you">
                 <h3 align='left'>Recommended for you</h3>
-                <div className="card">Place info</div>
-                <div className="card">Place info</div>
-                <div className="card">Place info</div>
+                <div className="forYouCard">Place info</div>
+                <div className="forYouCard">Place info</div>
+                <div className="forYouCard">Place info</div>
             </div>
         </div>
     )

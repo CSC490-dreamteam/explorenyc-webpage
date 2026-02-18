@@ -1,0 +1,48 @@
+.settingsCard {
+    width: 94%;
+    text-align: left;
+    display: flex;
+    border-radius: 10px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #3c3c3c;
+    box-shadow: 0 10px 10px #191919;
+}
+.profileCard {
+    height: 90px;
+    align-items: center;
+}
+.categoriesCard {
+    height: 120px;
+    align-items: start;
+    margin-top: 20px;
+    flex-direction: column;
+}
+.settingsOption{
+    display: flex;
+    padding: 10px;
+}
+.settingsCardsContainer {
+    align-items: center;
+    width: 100%;
+}
+.profileCardName {
+    margin: 0
+}
+.categoryHeader {
+    padding-left: 5px;
+    padding-bottom: 10px;
+}
+.userpicIcon {
+    mask-image: url(../../assets/user_pic.svg);
+    width: 80px;
+    height: 20px;
+    margin-left: 0;
+}
+
+@media (prefers-color-scheme: light) {
+    .settingsCard {
+        background-color: #f9f9f9;
+        box-shadow: 0 10px 10px #cdcdcd;
+    }
+}
