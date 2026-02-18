@@ -26,13 +26,6 @@ export default function History() {
             {/* ALL TRIPS */}
             <h2 className="section-title">All Trips</h2>
 
-            {/* TRIP INFO TEXTBOXES */}
-            <div className="trip-info-container">
-                <input type="text" placeholder="Trip Info" />
-                <input type="text" placeholder="Trip Info" />
-                <input type="text" placeholder="Trip Info" />
-            </div>
-
 
             <div className="trip-box">
                 <h3>NYC Adventure</h3>
