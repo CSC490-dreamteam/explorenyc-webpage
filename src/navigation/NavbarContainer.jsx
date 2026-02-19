@@ -13,7 +13,7 @@ function NavbarContainer() {
             case 'HomeState': return <HomeScreen />
             case 'MapState': return <NewTripScreen />
             case 'HistoryState': return <HistoryScreen />
-            case 'SettingsState': return <SettingScreen />
+            case 'SettingsState': return <SettingScreen setCurrentScreen={setCurrentScreen}/>
             default: return <HomeScreen />
         }
     }
