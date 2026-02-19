@@ -19,7 +19,7 @@ function App() {
                     <div className="settingsOption">
                         <br/>
                         <div className="icon userpicIcon"/>
-                        Account info
+                        Edit Profile
                     </div>
                     <div className="dividerLine"><br/></div>
                     <div className="settingsOption">

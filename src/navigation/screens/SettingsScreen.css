@@ -39,9 +39,10 @@
 }
 .userpicIcon {
     mask-image: url(../../assets/user_pic.svg);
-    width: 80px;
+    width: 20px;
     height: 20px;
     margin-left: 0;
+    margin-right: 10px;
 }
 
 .dividerLine {
