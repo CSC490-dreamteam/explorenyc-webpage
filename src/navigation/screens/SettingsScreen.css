@@ -1,3 +1,7 @@
+.settingsRoot {
+    padding-bottom: 60px;
+}
+
 .settingsCard {
     width: 94%;
     text-align: left;
@@ -13,7 +17,7 @@
     align-items: center;
 }
 .categoriesCard {
-    height: 120px;
+    height: auto;
     align-items: start;
     margin-top: 20px;
     flex-direction: column;
@@ -38,6 +42,13 @@
     width: 80px;
     height: 20px;
     margin-left: 0;
+}
+
+.dividerLine {
+    height: 1px;
+    width: 100%;
+    background-color: #e4e4e4;
+    padding:0;
 }
 
 @media (prefers-color-scheme: light) {
