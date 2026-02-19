@@ -2,7 +2,7 @@ import React from "react";
 import './HistoryScreen.css';
 import '../../App.css'
 
-export default function History() {
+export default function History({ setCurrentScreen }) {
     return (
         <div className="history-page">
 
@@ -19,7 +19,12 @@ export default function History() {
             {/* START NEW TRIP SECTION */}
             <div className="start-trip-section">
 
-                <p>Start a New Trip. Plan your perfect NYC journey.   +</p>
+                <p>Start a New Trip. Plan your perfect NYC journey.</p>
+                <button onClick={() => setCurrentScreen('MapState')}>
+                <div className="newTripCircle">
+                    +
+                </div>
+                </button>
             </div>
 
 
