@@ -1,0 +1,101 @@
+.history-page {
+    min-height: 100vh;
+    padding-bottom: 140px;  /* increased space */
+}
+
+.history-header {
+    display: flex;
+    text-align: left;
+}
+.history-header h2 {
+    margin-bottom: 0px;
+}
+.history-header p {
+    margin-top: 0px;
+}
+
+.start-trip-section {
+    margin: 16px 10px 20px;
+}
+
+.start-trip-card {
+    width: 100%;
+    border: 0;
+    border-radius: 18px;
+    background: #535353;
+    color: #cdcdcd;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.09);
+}
+
+.trip-box {
+    background: #535353;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.09);
+}
+
+.newTripCircle {
+    background: #0835c8;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    color: white;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    padding: 0;
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 0;
+}
+
+.start-trip-copy {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.start-trip-copy b {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.start-trip-copy p {
+    margin: 0;
+    line-height: 2;
+    font-size: 12px;
+}
+
+.start-trip-copy p + p {
+    margin-top: 6px;
+}
+
+.start-trip-arrow {
+    color: #2f5bf2;
+    font-size: 2.6rem;
+    font-weight: 300;
+    line-height: 1;
+}
+
+
+
+@media (prefers-color-scheme: light) {
+    .trip-box {
+        background: #f6f6f6;
+        /*border: 1px solid #d3d3d3;*/
+    }
+    .start-trip-card {
+        background: #ffffff;
+        color: inherit;
+    }
+}
