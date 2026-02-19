@@ -12,8 +12,8 @@ function NavbarContainer() {
         switch (currentScreen) {
             case 'HomeState': return <HomeScreen />
             case 'MapState': return <NewTripScreen />
-            case 'HistoryState': return <HistoryScreen />
-            case 'SettingsState': return <SettingScreen setCurrentScreen={setCurrentScreen}/>
+            case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
+            case 'SettingsState': return <SettingScreen/>
             default: return <HomeScreen />
         }
     }
@@ -33,15 +33,15 @@ function NavbarContainer() {
             </main>
 
             <nav className="navbarContainer__nav">
-                <button className="navbarContainer__homebutton" onClick={()=>setCurrentScreen('HomeState')}>
+                <button onClick={()=>setCurrentScreen('HomeState')}>
                         <div className="icon homeIcon"/>
                         Home
                 </button>
-                <button className="navbarContainer__mapbutton" onClick={()=>setCurrentScreen('MapState')}>
+                <button onClick={()=>setCurrentScreen('MapState')}>
                     <div className="icon newIcon"/>
                     New Trip
                 </button>
-                <button className="navbarContainer__settingsbutton" onClick={()=>setCurrentScreen('HistoryState')}>
+                <button onClick={()=>setCurrentScreen('HistoryState')}>
                     <div className="icon mapIcon"/>
                     History
                 </button>
