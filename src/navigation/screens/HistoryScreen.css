@@ -1,4 +1,5 @@
 .history-page {
+    min-height: 100vh;
     padding-bottom: 140px;  /* increased space */
 }
 

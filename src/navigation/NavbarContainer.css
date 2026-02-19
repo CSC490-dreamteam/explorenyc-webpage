@@ -17,7 +17,7 @@
     border-bottom: black 1px solid;
     top: 0; left: 0; right: 0;
     padding: 6px 15px;
-    min-height: 56px;
+    min-height: 40px;
     width: 100%;
     display: flex;
     justify-content: space-between;
