@@ -17,15 +17,14 @@ function App() {
                 <div className="settingsCard categoriesCard">
                     <label className="categoryHeader"><b>Account</b></label>
                     <div className="settingsOption">
-                        <br/>
                         <div className="icon userpicIcon"/>
                         Edit Profile
                     </div>
-                    <div className="dividerLine"><br/></div>
+                    <div className="dividerLine"/>
                     <div className="settingsOption">
                         Change Password
                     </div>
-                    <div className="dividerLine"><br/></div>
+                    <div className="dividerLine"/>
                     <div className="settingsOption">
                         Friends
                     </div>
@@ -36,7 +35,7 @@ function App() {
                     <div className="settingsOption">
                         Notifications
                     </div>
-                    <div className="dividerLine"><br/></div>
+                    <div className="dividerLine"/>
                     <div className="settingsOption">
                         Dark Mode
                     </div>
