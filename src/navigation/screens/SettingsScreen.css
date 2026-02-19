@@ -25,6 +25,7 @@
 .settingsOption{
     display: flex;
     padding: 10px;
+    align-items: center;
 }
 .settingsCardsContainer {
     align-items: center;
