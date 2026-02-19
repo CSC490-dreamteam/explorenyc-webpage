@@ -11,8 +11,8 @@ export default function History({ setCurrentScreen }) {
             {/* HEADER */}
             <div className="history-header">
                 <div>
-                    <h1>Trip History</h1>
-                    <h3>Your past and upcoming trips</h3>
+                    <h2>Trip History</h2>
+                    <p>Your past and upcoming trips</p>
                 </div>
             </div>
 
@@ -23,7 +23,7 @@ export default function History({ setCurrentScreen }) {
                         +
                     </div>
                     <div className="start-trip-copy">
-                        <h3>Start a New Trip</h3>
+                        <b>Start a New Trip</b>
                         <p>Plan your perfect NYC journey</p>
                     </div>
                     <span className="start-trip-arrow" aria-hidden="true">→</span>

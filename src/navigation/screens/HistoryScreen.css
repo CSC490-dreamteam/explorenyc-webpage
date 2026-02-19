@@ -3,6 +3,17 @@
     padding-bottom: 140px;  /* increased space */
 }
 
+.history-header {
+    display: flex;
+    text-align: left;
+}
+.history-header h2 {
+    margin-bottom: 0px;
+}
+.history-header p {
+    margin-top: 0px;
+}
+
 .start-trip-section {
     margin: 16px 10px 20px;
 }
@@ -11,8 +22,8 @@
     width: 100%;
     border: 0;
     border-radius: 18px;
-    background: #ffffff;
-    color: #1d2433;
+    background: #535353;
+    color: #cdcdcd;
     padding: 18px 22px;
     display: flex;
     align-items: center;
@@ -26,41 +37,47 @@
     background: #535353;
     border-radius: 10px;
     padding: 10px;
-    margin: 10px;
+    margin: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.09);
 }
 
 .newTripCircle {
     background: #0835c8;
-    width: 54px;
-    height: 54px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    place-items: center;
     flex-shrink: 0;
     padding: 0;
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 300;
-    line-height: 1;
+    line-height: 0;
 }
 
 .start-trip-copy {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.start-trip-copy h3 {
+.start-trip-copy b {
     margin: 0;
-    font-size: 2rem;
+    font-size: 18px;
     font-weight: 700;
     line-height: 1.15;
 }
 
 .start-trip-copy p {
-    margin: 6px 0 0;
-    color: #51607a;
-    font-size: 1.5rem;
-    line-height: 1.2;
+    margin: 0;
+    line-height: 2;
+    font-size: 12px;
+}
+
+.start-trip-copy p + p {
+    margin-top: 6px;
 }
 
 .start-trip-arrow {
@@ -70,35 +87,15 @@
     line-height: 1;
 }
 
-@media (max-width: 720px) {
-    .start-trip-card {
-        padding: 14px 16px;
-        border-radius: 16px;
-        gap: 12px;
-    }
 
-    .newTripCircle {
-        width: 50px;
-        height: 50px;
-        font-size: 30px;
-    }
-
-    .start-trip-copy h3 {
-        font-size: 1.9rem;
-    }
-
-    .start-trip-copy p {
-        font-size: 1.35rem;
-    }
-
-    .start-trip-arrow {
-        font-size: 2.3rem;
-    }
-}
 
 @media (prefers-color-scheme: light) {
     .trip-box {
         background: #f6f6f6;
         /*border: 1px solid #d3d3d3;*/
+    }
+    .start-trip-card {
+        background: #ffffff;
+        color: inherit;
     }
 }
