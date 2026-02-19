@@ -3,6 +3,25 @@
     padding-bottom: 140px;  /* increased space */
 }
 
+.start-trip-section {
+    margin: 16px 10px 20px;
+}
+
+.start-trip-card {
+    width: 100%;
+    border: 0;
+    border-radius: 18px;
+    background: #ffffff;
+    color: #1d2433;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.09);
+}
+
 .trip-box {
     background: #535353;
     border-radius: 10px;
@@ -12,15 +31,69 @@
 
 .newTripCircle {
     background: #0835c8;
-    width: 50px;
-    height: 50px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
     padding: 0;
-    font-size: 25px;
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.start-trip-copy {
+    flex: 1;
+}
+
+.start-trip-copy h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.start-trip-copy p {
+    margin: 6px 0 0;
+    color: #51607a;
+    font-size: 1.5rem;
+    line-height: 1.2;
+}
+
+.start-trip-arrow {
+    color: #2f5bf2;
+    font-size: 2.6rem;
+    font-weight: 300;
+    line-height: 1;
+}
+
+@media (max-width: 720px) {
+    .start-trip-card {
+        padding: 14px 16px;
+        border-radius: 16px;
+        gap: 12px;
+    }
+
+    .newTripCircle {
+        width: 50px;
+        height: 50px;
+        font-size: 30px;
+    }
+
+    .start-trip-copy h3 {
+        font-size: 1.9rem;
+    }
+
+    .start-trip-copy p {
+        font-size: 1.35rem;
+    }
+
+    .start-trip-arrow {
+        font-size: 2.3rem;
+    }
 }
 
 @media (prefers-color-scheme: light) {

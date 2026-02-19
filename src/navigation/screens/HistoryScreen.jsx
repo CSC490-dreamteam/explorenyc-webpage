@@ -18,12 +18,15 @@ export default function History({ setCurrentScreen }) {
 
             {/* START NEW TRIP SECTION */}
             <div className="start-trip-section">
-
-                <p>Start a New Trip. Plan your perfect NYC journey.</p>
-                <button onClick={() => setCurrentScreen('MapState')}>
-                <div className="newTripCircle">
-                    +
-                </div>
+                <button className="start-trip-card" onClick={() => setCurrentScreen('MapState')}>
+                    <div className="newTripCircle" aria-hidden="true">
+                        +
+                    </div>
+                    <div className="start-trip-copy">
+                        <h3>Start a New Trip</h3>
+                        <p>Plan your perfect NYC journey</p>
+                    </div>
+                    <span className="start-trip-arrow" aria-hidden="true">→</span>
                 </button>
             </div>
 
