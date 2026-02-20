@@ -59,7 +59,7 @@ function HomeScreen() {
                 <div className="card">Place info</div>
             </div> */}
             
-            <div className="for-you">
+            {/* <div className="for-you">
                 <h3 align="left">Recommended for you</h3>
 
                 {places.map((place, idx) => (
@@ -77,7 +77,44 @@ function HomeScreen() {
                     <p><strong>Grade:</strong> {place.GRADE}</p>
                     </div>
                 ))}
-            </div>
+            </div> */}
+
+            <div className="for-you">
+  <h3 align="left">Recommended for you</h3>
+
+  {places.map((place, idx) => (
+    <div key={idx} className="card">
+
+      {/* Icon */}
+      <img
+        src="src/assets/restaurant.svg"
+        alt={place.DBA}
+        className="card-image"
+      />
+
+
+      {/* Title */}
+      <h2 className="card-title">{place.DBA}</h2>
+
+      {/* Category Label */}
+      <div className="card-category">
+        {place["CUISINE DESCRIPTION"]}
+      </div>
+
+      {/* Rating (using GRADE) */}
+      <div className="card-rating">
+        <span className="stars">⭐</span> {place.GRADE}
+      </div>
+
+      {/* Address (in the “distance” position) */}
+      <div className="card-distance">
+        {place.BUILDING} {place.STREET}, {place.ZIPCODE}
+      </div>
+
+    </div>
+  ))}
+</div>
+
 
 
 
