@@ -1,0 +1,125 @@
+.card {
+  display: flex;
+  flex-direction: row;
+  background: white;
+  color: black;
+  padding: 12px 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
+}
+
+.card-category {
+  background: #e0f0ff;
+  color: blue;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  width: fit-content;
+  margin-top: 0px;
+  margin-bottom: 8px;
+}
+
+.card-rating {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.card-distance {
+  font-size: 10px;
+  color: #678;
+}
+
+/* Left icon */
+.card-icon {
+  width: 40px;
+  height: 40px;
+  background: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.icon-image {
+  width: 30px;
+  height: 30px;
+}
+
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+  margin-left: 10px;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-bottom {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+
+
+
+/* Skeleton loading styles */
+.skeleton-card {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.skeleton-icon {
+  width: 40px;
+  height: 40px;
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+.skeleton-line {
+  background: #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line.title {
+  width: 60%;
+  height: 12px;
+}
+
+.skeleton-line.category {
+  width: 40%;
+  height: 10px;
+}
+
+.skeleton-line.distance {
+  width: 50%;
+  height: 10px;
+}
+
+/* Error card */
+.error-card {
+  background: #ffe6e6;
+  border: 1px solid #ffb3b3;
+}
+
+.error-text {
+  color: #cc0000;
+  font-size: 12px;
+  padding: 8px 0;
+}

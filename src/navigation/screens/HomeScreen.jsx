@@ -1,6 +1,7 @@
 import '../../App.css'
 import './HomeScreen.css'
 import React, { useState, useEffect } from "react";
+import RecommendationCard from '../components/RecommendationCard';
 
 function HomeScreen() {
 
@@ -14,13 +15,11 @@ function HomeScreen() {
         async function fetchDiscover() {
             try {
                 const res = await fetch(
-                    "http://127.0.0.1:8000/discover"
+                    "https://explorenyc-recommendation-service.onrender.com/discover"
                 );
-
                 if (!res.ok) {
                     throw new Error("Failed to fetch /discover");
                 }
-
                 const json = await res.json();
                 setPlaces(json.data); //the API returns {count, data: []} therefore we want the 'data' array
 
@@ -31,11 +30,7 @@ function HomeScreen() {
             }
         }
         fetchDiscover();
-    }, []);
-
-    if (loading) return <div>Loading recommendations...</div>;
-    if (error) return <div>Error: {error}</div>;
-
+    }, []); //end useEffect
 
 
     return (
@@ -49,79 +44,24 @@ function HomeScreen() {
                 </button>
 
             </header>
-            
-
-
-            {/* <div className="for-you">
-                <h3 align='left'>Recommended for you</h3>
-                <div className="card">Place info</div>
-                <div className="card">Place info</div>
-                <div className="card">Place info</div>
-            </div> */}
-            
-            {/* <div className="for-you">
-                <h3 align="left">Recommended for you</h3>
-
-                {places.map((place, idx) => (
-                    <div key={idx} className="card">
-                    <h4>{place.DBA}</h4>
-
-                    <p><strong>Cuisine:</strong> {place["CUISINE DESCRIPTION"]}</p>
-                    <p><strong>Borough:</strong> {place.BORO}</p>
-
-                    <p>
-                        <strong>Address:</strong>{" "}
-                        {place.BUILDING} {place.STREET}, {place.ZIPCODE}
-                    </p>
-
-                    <p><strong>Grade:</strong> {place.GRADE}</p>
-                    </div>
-                ))}
-            </div> */}
 
             <div className="for-you">
                 <h3 align="left">Recommended for you</h3>
 
-                {places.map((place, idx) => (
-                    <div className="card">
-  {/* Left-side vertical icon */}
-  <div className="card-icon">
-    <img
-      src="src/assets/restaurant.svg"
-      alt={place.DBA}
-      className="icon-image"
-    />
-  </div>
-
-  {/* Right-side content */}
-  <div className="card-content">
-    {/* Top row: title + grade */}
-    <div className="card-top">
-      <h2 className="card-title">{place.DBA}</h2>
-      <div className="card-rating">⭐ {place.GRADE}</div>
-    </div>
-
-    {/* Category label */}
-    <div className="card-category">
-      {place["CUISINE DESCRIPTION"]}
-    </div>
-
-    {/* Bottom row: address */}
-    <div className="card-bottom">
-      <div className="card-distance">
-        {place.BUILDING} {place.STREET}, {place.ZIPCODE}
-      </div>
-    </div>
-  </div>
-</div>
-
-                ))}
+                {loading
+                    ? [1, 2, 3].map((n) => (
+                        <RecommendationCard key={n} loading={true} />
+                    ))
+                    : places.map((place, idx) => (
+                        <RecommendationCard
+                        key={idx}
+                        place={place}
+                        loading={false}
+                        error={error}
+                        />
+                    ))
+                }
             </div>
-
-
-
-
-
 
 
         </div>
