@@ -80,40 +80,43 @@ function HomeScreen() {
             </div> */}
 
             <div className="for-you">
-  <h3 align="left">Recommended for you</h3>
+                <h3 align="left">Recommended for you</h3>
 
-  {places.map((place, idx) => (
-    <div key={idx} className="card">
+                {places.map((place, idx) => (
+                    <div className="card">
+  {/* Left-side vertical icon */}
+  <div className="card-icon">
+    <img
+      src="src/assets/restaurant.svg"
+      alt={place.DBA}
+      className="icon-image"
+    />
+  </div>
 
-      {/* Icon */}
-      <img
-        src="src/assets/restaurant.svg"
-        alt={place.DBA}
-        className="card-image"
-      />
-
-
-      {/* Title */}
+  {/* Right-side content */}
+  <div className="card-content">
+    {/* Top row: title + grade */}
+    <div className="card-top">
       <h2 className="card-title">{place.DBA}</h2>
+      <div className="card-rating">⭐ {place.GRADE}</div>
+    </div>
 
-      {/* Category Label */}
-      <div className="card-category">
-        {place["CUISINE DESCRIPTION"]}
-      </div>
+    {/* Category label */}
+    <div className="card-category">
+      {place["CUISINE DESCRIPTION"]}
+    </div>
 
-      {/* Rating (using GRADE) */}
-      <div className="card-rating">
-        <span className="stars">⭐</span> {place.GRADE}
-      </div>
-
-      {/* Address (in the “distance” position) */}
+    {/* Bottom row: address */}
+    <div className="card-bottom">
       <div className="card-distance">
         {place.BUILDING} {place.STREET}, {place.ZIPCODE}
       </div>
-
     </div>
-  ))}
+  </div>
 </div>
+
+                ))}
+            </div>
 
 
 
