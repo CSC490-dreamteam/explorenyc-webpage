@@ -5,31 +5,35 @@ import RecommendationCard from '../components/RecommendationCard';
 
 function HomeScreen() {
 
-    //create a "area" to store the places
-    const [places, setPlaces] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [places, setPlaces] = useState([]); //Stores the list of recommended places returned from the API
+    const [loading, setLoading] = useState(true); //Tracks whether the API request is still in progress
+    const [error, setError] = useState(null); //Holds any error message if the API request fails
 
     //The API call
     useEffect(() => {
+        //we define an async function so we can use await inside useEffect
         async function fetchDiscover() {
+            //make request to fastapi backend
             try {
                 const res = await fetch(
                     "https://explorenyc-recommendation-service.onrender.com/discover"
                 );
+                //if the response is not OK status, throw an error
                 if (!res.ok) {
                     throw new Error("Failed to fetch /discover");
                 }
+                //parse the JSON body of the response
                 const json = await res.json();
+                //the api returns { count, data: [...] }, so we store only the data array
                 setPlaces(json.data); //the API returns {count, data: []} therefore we want the 'data' array
 
             } catch (err) {
                 setError(err.message);
             } finally {
-                setLoading(false);
+                setLoading(false); //whether we get success or failure, the loading is now complete
             }
         }
-        fetchDiscover();
+        fetchDiscover(); //start fetching the data
     }, []); //end useEffect
 
 
@@ -48,19 +52,23 @@ function HomeScreen() {
             <div className="for-you">
                 <h3 align="left">Recommended for you</h3>
 
-                {loading
-                    ? [1, 2, 3].map((n) => (
-                        <RecommendationCard key={n} loading={true} />
-                    ))
-                    : places.map((place, idx) => (
-                        <RecommendationCard
-                        key={idx}
-                        place={place}
-                        loading={false}
-                        error={error}
-                        />
-                    ))
+                {
+                    // If data is still loading, render 3 skeleton cards
+                    loading
+                        ? [1, 2, 3].map((n) => (
+                            <RecommendationCard key={n} loading={true} />
+                        ))
+                        // Else, render the real recommendation cards
+                        : places.map((place, idx) => (
+                            <RecommendationCard
+                            key={idx}
+                            place={place}
+                            loading={false}
+                            error={error}
+                            />
+                        ))
                 }
+
             </div>
 
 
