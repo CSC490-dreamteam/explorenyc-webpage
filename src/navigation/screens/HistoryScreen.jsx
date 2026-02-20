@@ -40,6 +40,9 @@ export default function History({ setCurrentScreen }) {
                 <p>⭐ 5.0</p>
                 <p>Completed</p>
                 <p>🕒 1 day 📍 5 stops 💰 250</p>
+                <button className="trip-action-btn" type="button">
+                    View Trip
+                </button>
             </div>
 
 
@@ -49,6 +52,9 @@ export default function History({ setCurrentScreen }) {
                 <p>⭐ 5.0</p>
                 <p>Completed</p>
                 <p>🕒 2 days 📍 10 stops 💰 500</p>
+                <button className="trip-action-btn" type="button">
+                    View Trip
+                </button>
             </div>
             </div>
 
