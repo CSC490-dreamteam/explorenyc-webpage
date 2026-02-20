@@ -1,8 +1,9 @@
 import './NavbarContainer.css'
 import HomeScreen from './screens/HomeScreen'
 import NewTripScreen from './screens/NewTripScreen.jsx'
-import SettingScreen from './screens/HistoryScreen.jsx'
+import SettingScreen from './screens/SettingsScreen.jsx'
 import {useState} from "react";
+import HistoryScreen from "./screens/HistoryScreen.jsx";
 
 function NavbarContainer() {
     const [currentScreen, setCurrentScreen] = useState('HomeState')
@@ -11,7 +12,8 @@ function NavbarContainer() {
         switch (currentScreen) {
             case 'HomeState': return <HomeScreen />
             case 'MapState': return <NewTripScreen />
-            case 'SettingsState': return <SettingScreen setCurrentScreen={setCurrentScreen} />
+            case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
+            case 'SettingsState': return <SettingScreen/>
             default: return <HomeScreen />
         }
     }
@@ -19,7 +21,11 @@ function NavbarContainer() {
     return (
         <div className="navbarContainer">
             <div className="navbarContainer__top">
-                Welcome back, User!
+                <span className="navbarContainer__greeting">Welcome back, User!</span>
+                <button className="navbarContainer__settingsButton" onClick={()=>setCurrentScreen('SettingsState')}>
+                    <div className="icon settingsIcon"/>
+                </button>
+
             </div>
 
             <main className="navbarContainer__main">
@@ -27,15 +33,15 @@ function NavbarContainer() {
             </main>
 
             <nav className="navbarContainer__nav">
-                <button className="navbarContainer__homebutton" onClick={()=>setCurrentScreen('HomeState')}>
+                <button onClick={()=>setCurrentScreen('HomeState')}>
                         <div className="icon homeIcon"/>
                         Home
                 </button>
-                <button className="navbarContainer__mapbutton" onClick={()=>setCurrentScreen('MapState')}>
+                <button onClick={()=>setCurrentScreen('MapState')}>
                     <div className="icon newIcon"/>
                     New Trip
                 </button>
-                <button className="navbarContainer__settingsbutton" onClick={()=>setCurrentScreen('SettingsState')}>
+                <button onClick={()=>setCurrentScreen('HistoryState')}>
                     <div className="icon mapIcon"/>
                     History
                 </button>
