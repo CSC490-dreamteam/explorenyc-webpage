@@ -8,7 +8,8 @@
 }
 
 .for-you,
-.welcome-header {
+.welcome-header,
+.trending {
     padding: 20px;
     width:300px;
 }
