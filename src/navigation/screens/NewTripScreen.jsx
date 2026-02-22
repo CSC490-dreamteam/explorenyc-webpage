@@ -5,18 +5,18 @@ function NewTripScreen() {
 
     //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
-        //later this will have everyhting we throw to the backend for submission
+        //later this will have everything we throw to the backend for submission
         const tripData = {
             locations: stops.map(stop => stop.location)
         };
         console.log(tripData);
 
-        try {
+        try { //fetch request from backend
             const response = await fetch('https://explorenyc-backend-testing.up.railway.app/GenerateRoute', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'X-API-Key': 'sauce1234'
+                    'X-API-Key': 'sauce1234' //YES HARDCODED THE API KEY LMAO i know to fix it later.
                 },
                 body: JSON.stringify(tripData)
             });
@@ -25,8 +25,8 @@ function NewTripScreen() {
                 throw new Error('Network response was not ok');
             }
 
-            const responseData = await response.json();
-            console.log(responseData.url);
+            const responseData = await response.json(); //get generated trip
+            console.log(responseData.url); //simply printing the url for now
         } catch (error) {
             console.error('Error submitting trip data:', error);
         }
