@@ -26,7 +26,10 @@ function NewTripScreen() {
             }
 
             const responseData = await response.json(); //get generated trip
-            console.log(responseData.url); //simply printing the url for now
+            
+            window.open(responseData.url, '_blank'); //open google map url in new tab
+
+
         } catch (error) {
             console.error('Error submitting trip data:', error);
         }
