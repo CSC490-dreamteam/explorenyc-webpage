@@ -6,9 +6,9 @@ import TrendingCard from "./components/TrendingCard.jsx";
 
 function HomeScreen() {
     const trendingSpots = [
-        {id: 1, name: "New York",img:"/public/new-york-city.jpeg"},
-        {id: 2, name: "New York",img:"/public/new-york-city.jpeg"},
-        {id: 3, name: "New York",img:"/public/new-york-city.jpeg"},
+        {id: 1, name: "New York",img:"/new-york-city.jpeg"},
+        {id: 2, name: "New York",img:"/new-york-city.jpeg"},
+        {id: 3, name: "New York",img:"/new-york-city.jpeg"},
     ]
     return (
         <div className="welcome-container">
