@@ -1,7 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './NewTripScreen.css';
 
 function NewTripScreen() {
+
+    //PLACEHOLDER
+    
+
+    // React state variable known as stops that is an array full of JSON
+    const [stops, setStops] = useState([{
+        location: '', mandatory: false, flexible: false, timePreference: ''
+    }]);
+
+    //function that edits a stop by index, used when the user changes it in the ui
+    //under the hood it takes the existing stops array, , edits one index entry as needed, then reassigns the state variable to the new array
+    const handleStopChange = (index, field, value) => {
+        const newStops = [...stops];
+        newStops[index][field] = value;
+        setStops(newStops);
+    }
+
+    //adds stop to the stops array
+    const addStop = () => {
+        setStops([...stops, { location: '', mandatory: false, flexible: false, timePreference: '' }]);
+    };
+
+
     return (
         <div className='content'>
 
@@ -26,20 +49,18 @@ function NewTripScreen() {
             </div>
 
             <h2>Stops</h2>
-                <input type="text" className="smallField" />
-            <br/>
-
-            <br />
-            <label><input type="checkbox" /> Mandatory</label><br />
-            <label><input type="checkbox" /> Flexible</label><br /><br />
-
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <label>Time preference?</label>
-                <input type="time" className="smallField" />
-            </div>
-
+                {
+                    stops.map((stop, index) => (
+                        <StopEntryBlock 
+                        key={index}
+                        data={stop}
+                        onChange={(field, value) => handleStopChange(index, field, value)}
+                        />
+                    ))
+                }
             <div className='spacer'>
-                <button>+ Add an Additional Stop</button>
+                
+                <button onClick={addStop}>+ Add an Additional Stop</button>
             </div>
 
             <h2>Transportation</h2>
@@ -65,6 +86,44 @@ function NewTripScreen() {
 
         </div>
     );
+}
+
+function StopEntryBlock({data, onChange}) {
+    return ( <>
+
+    {/* text box where user enters the location string */}
+    <input type="text" 
+    className="smallField" 
+    value={data.location}
+    onChange={(e) => onChange('location', e.target.value)}
+    />
+            <br/>
+            <br />
+
+            {/* mandatory checkbox */}
+            <label><input type="checkbox" 
+            checked={data.mandatory} 
+            onChange={(e) => onChange('mandatory', e.target.checked)} /> Mandatory</label><br />
+
+
+            {/* flexible checkbox */}
+            <label><input type="checkbox" 
+            checked={data.flexible} 
+            onChange={(e) => onChange('flexible', e.target.checked)} /> Flexible</label><br /><br />
+
+
+            {/* time preference picker */}
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <label>Time preference?</label>
+                <input type="time" className="smallField" 
+                value={data.timePreference} 
+                onChange={(e) => onChange('timePreference', e.target.value)} />
+            </div>
+
+            {/* space between next component  */}
+            <div className='spacer'></div>
+        </> 
+    )
 }
 
 export default NewTripScreen;
