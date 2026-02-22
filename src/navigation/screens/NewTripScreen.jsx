@@ -4,7 +4,36 @@ import './NewTripScreen.css';
 function NewTripScreen() {
 
     //PLACEHOLDER
-    
+    const handleGenerateTripSubmit = async () => {
+        //later this will have everyhting we throw to the backend for submission
+        const tripData = {
+            locations: stops.map(stop => stop.location)
+        };
+        console.log(tripData);
+
+        try {
+            const response = await fetch('https://explorenyc-backend-testing.up.railway.app/GenerateRoute', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-API-Key': 'sauce1234'
+                },
+                body: JSON.stringify(tripData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const responseData = await response.json();
+            console.log(responseData.url);
+        } catch (error) {
+            console.error('Error submitting trip data:', error);
+        }
+        
+    };
+
+
 
     // React state variable known as stops that is an array full of JSON
     const [stops, setStops] = useState([{
@@ -17,7 +46,7 @@ function NewTripScreen() {
         const newStops = [...stops];
         newStops[index][field] = value;
         setStops(newStops);
-    }
+    };
 
     //adds stop to the stops array
     const addStop = () => {
@@ -82,7 +111,7 @@ function NewTripScreen() {
             <input type="range" min="0" max="120" className='slider' />
             <label className="sliderLabel">minutes/hours</label>
 
-            <button className="generateButton">Generate My Trip</button>
+            <button className="generateButton" onClick={handleGenerateTripSubmit}>Generate My Trip</button>
 
         </div>
     );
