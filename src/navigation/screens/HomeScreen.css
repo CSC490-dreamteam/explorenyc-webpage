@@ -1,10 +1,9 @@
-
-
 .welcome-container {
     display: flex;
     place-items: center;
     flex-direction: column;
     height: 100vh;
+    padding-bottom: 180px;
 }
 
 .for-you,
@@ -32,7 +31,7 @@
     padding: 12px 12px;
     border-radius: 10px;
     margin-bottom: 15px;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 .card-title {
     font-size: 12px;
@@ -47,7 +46,7 @@
     font-size: 11px;
     font-weight: 500;
     width: fit-content;
-    margin-top: 0px;
+    margin-top: 0;
     margin-bottom: 8px;
 }
 .card-rating {
@@ -79,7 +78,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 0px;
+    padding: 0;
     margin-left: 10px;
 }
 .card-top {
