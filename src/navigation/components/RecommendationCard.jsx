@@ -30,7 +30,7 @@ function RecommendationCard({ place, loading, error }) {
     <div className="card">
       <div className="card-icon">
         <img
-          src="src/assets/restaurant.svg"
+          src="/restaurant.svg"
           alt={place.DBA}
           className="icon-image"
         />
