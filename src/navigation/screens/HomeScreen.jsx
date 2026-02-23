@@ -1,10 +1,18 @@
 import '../../App.css'
 import './HomeScreen.css'
+import './components/TrendingCard.jsx'
+import TrendingCard from "./components/TrendingCard.jsx";
 import React, { useState, useEffect } from "react";
 import RecommendationCard from '../components/RecommendationCard';
 
 function HomeScreen() {
-
+    
+    const trendingSpots = [
+        {id: 1, name: "New York",img:"/new-york-city.jpeg"},
+        {id: 2, name: "New York",img:"/new-york-city.jpeg"},
+        {id: 3, name: "New York",img:"/new-york-city.jpeg"},
+    ]
+  
     const [places, setPlaces] = useState([]); //Stores the list of recommended places returned from the API
     const [loading, setLoading] = useState(true); //Tracks whether the API request is still in progress
     const [error, setError] = useState(null); //Holds any error message if the API request fails
@@ -48,7 +56,17 @@ function HomeScreen() {
                 </button>
 
             </header>
+            
+            <div className="trending">
+                <h3 align='left'>🔥 Trending spots</h3>
+                <div className="trending_container">
 
+                    {trendingSpots.map((spot) => (<TrendingCard image={spot.img} key={spot.id} title={spot.name} />))}
+
+                </div>
+
+            </div>
+      
             <div className="for-you">
                 <h3 align="left">Recommended for you</h3>
 

@@ -87,7 +87,17 @@
     line-height: 1;
 }
 
-
+.trip-action-btn {
+    margin-top: 10px;
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #0835c8;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+}
 
 @media (prefers-color-scheme: light) {
     .trip-box {
