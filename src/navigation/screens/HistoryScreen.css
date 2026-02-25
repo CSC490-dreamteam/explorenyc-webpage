@@ -1,4 +1,4 @@
-@import './ScreenTheme.css';
+
 
 .history-page {
     min-height: 100vh;
@@ -25,34 +25,33 @@
 
 .start-trip-card {
     width: 100%;
-    border: 1px solid var(--border);
+    border: 1px solid;
     border-radius: 14px;
-    background: var(--surface);
-    color: var(--text-primary);
+    color: white;
     padding: 18px 22px;
     display: flex;
     align-items: center;
     gap: 16px;
     text-align: left;
     cursor: pointer;
-    box-shadow: var(--shadow-soft);
+    box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .start-trip-card:hover {
-    box-shadow: var(--shadow-hover);
+    box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .trip-box {
-    background: var(--surface);
+    background: #1f2937;
     border-radius: 12px;
-    border: 1px solid var(--border);
+    border: 1px solid #374151;
     padding: 14px;
     margin: 15px;
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .newTripCircle {
-    background: var(--accent);
+    background: #2563eb;
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -91,7 +90,7 @@
 }
 
 .start-trip-arrow {
-    color: var(--accent);
+    color: #ffffff;
     font-size: 1.8rem;
     font-weight: 500;
     line-height: 1;
@@ -102,17 +101,17 @@
     border: 1px solid transparent;
     border-radius: 12px;
     padding: 10px 16px;
-    background: var(--accent);
+    background: #2563eb;
     color: #ffffff;
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
 }
 
 .trip-action-btn:hover {
-    background: var(--accent-strong);
-    box-shadow: var(--shadow-hover);
+    background: #1d4ed8;
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.45);
 }
 
 .section-title {

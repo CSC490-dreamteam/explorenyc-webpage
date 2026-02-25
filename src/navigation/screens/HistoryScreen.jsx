@@ -2,7 +2,7 @@ import React from "react";
 import "./HistoryScreen.css";
 import "../../App.css";
 
-export default function History({ setCurrentScreen }) {
+export default function HistoryScreen({ setCurrentScreen }) {
     return (
         <div className="history-page screen-theme">
             <div className="history-header">

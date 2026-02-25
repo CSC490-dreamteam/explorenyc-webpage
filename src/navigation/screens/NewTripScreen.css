@@ -1,4 +1,4 @@
-@import './ScreenTheme.css';
+
 
 .content {
     padding: 0 0 80px;
@@ -17,7 +17,7 @@
 .content span {
     padding-left: 10px;
     padding-right: 10px;
-    color: var(--text-secondary);
+    color: white;
 }
 
 .content label {
@@ -33,14 +33,10 @@
     font-weight: 600;
     width: 100%;
     padding: 10px 14px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-soft);
-}
-
-.content button:hover {
-    box-shadow: var(--shadow-hover);
+    border: 1px solid white;
+    background: grey;
+    color: white;
+    box-shadow: 1px 1px 2px #000;
 }
 
 .spacer {
@@ -65,18 +61,18 @@
     display: block;
     text-align: center;
     padding-bottom: 20px;
-    color: var(--text-secondary);
+    color: white;
 }
 
 .generateButton {
     font-size: 1.05rem;
     border: 1px solid transparent;
-    background: var(--accent);
+    background: white;
     color: #ffffff;
 }
 
 .generateButton:hover {
-    background: var(--accent-strong);
+    background: white;
 }
 
 .content h2 {

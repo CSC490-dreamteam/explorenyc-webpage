@@ -1,7 +1,11 @@
-import React from "react";
 import "./RecommendationCard.css";
 
 function RecommendationCard({ place, loading, error }) {
+  const name = place?.DBA ?? "Unknown place";
+  const grade = place?.GRADE ?? "N/A";
+  const cuisine = place?.["CUISINE DESCRIPTION"] ?? "Unknown cuisine";
+  const address = [place?.BUILDING, place?.STREET, place?.ZIPCODE].filter(Boolean).join(" ");
+
   if (loading) {
     return (
       <div className="card skeleton-card">
@@ -31,24 +35,24 @@ function RecommendationCard({ place, loading, error }) {
       <div className="card-icon">
         <img
           src="/restaurant.svg"
-          alt={place.DBA}
+          alt={name}
           className="icon-image"
         />
       </div>
 
       <div className="card-content">
         <div className="card-top">
-          <h2 className="card-title">{place.DBA}</h2>
-          <div className="card-rating">⭐ {place.GRADE}</div>
+          <h2 className="card-title">{name}</h2>
+          <div className="card-rating">⭐ {grade}</div>
         </div>
 
         <div className="card-category">
-          {place["CUISINE DESCRIPTION"]}
+          {cuisine}
         </div>
 
         <div className="card-bottom">
           <div className="card-distance">
-            {place.BUILDING} {place.STREET}, {place.ZIPCODE}
+            {address || "Address unavailable"}
           </div>
         </div>
       </div>

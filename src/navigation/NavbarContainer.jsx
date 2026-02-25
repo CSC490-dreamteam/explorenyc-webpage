@@ -1,9 +1,9 @@
 import './NavbarContainer.css'
-import HomeScreen from './screens/HomeScreen'
+import { useState } from 'react'
+import HistoryScreen from './screens/HistoryScreen.jsx'
+import HomeScreen from './screens/HomeScreen.jsx'
 import NewTripScreen from './screens/NewTripScreen.jsx'
-import SettingScreen from './screens/SettingsScreen.jsx'
-import {useState} from "react";
-import HistoryScreen from "./screens/HistoryScreen.jsx";
+import SettingsScreen from './screens/SettingsScreen.jsx'
 
 function NavbarContainer() {
     const [currentScreen, setCurrentScreen] = useState('HomeState')
@@ -13,7 +13,7 @@ function NavbarContainer() {
             case 'HomeState': return <HomeScreen />
             case 'MapState': return <NewTripScreen />
             case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
-            case 'SettingsState': return <SettingScreen/>
+            case 'SettingsState': return <SettingsScreen />
             default: return <HomeScreen />
         }
     }
