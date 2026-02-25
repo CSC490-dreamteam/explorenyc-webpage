@@ -3,7 +3,7 @@ import './SettingsScreen.css'
 
 function App() {
     return (
-        <div className="settingsRoot">
+        <div className="settingsRoot screen-theme">
             <h2> Settings </h2>
             <div className="settingsCardsContainer">
                 <div className="settingsCard profileCard">
