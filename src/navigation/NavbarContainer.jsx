@@ -34,8 +34,8 @@ function NavbarContainer() {
 
             <nav className="navbarContainer__nav">
                 <button onClick={()=>setCurrentScreen('HomeState')}>
-                        <div className="icon homeIcon"/>
-                        Home
+                    <div className="icon homeIcon"/>
+                    Home
                 </button>
                 <button onClick={()=>setCurrentScreen('MapState')}>
                     <div className="icon newIcon"/>

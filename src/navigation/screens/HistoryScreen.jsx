@@ -56,7 +56,7 @@ export default function History({ setCurrentScreen }) {
                     View Trip
                 </button>
             </div>
-            </div>
+        </div>
 
 
 

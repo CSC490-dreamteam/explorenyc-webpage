@@ -5,7 +5,7 @@ import App from './App.jsx'
 import NavbarContainer from './navigation/NavbarContainer'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <NavbarContainer />
-  </StrictMode>,
+    <StrictMode>
+        <NavbarContainer />
+    </StrictMode>,
 )
