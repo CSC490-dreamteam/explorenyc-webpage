@@ -48,6 +48,10 @@ function HomeScreen() {
     return (
         <div className="welcome-container">
             <header className="welcome-header">
+                <div style={{ textAlign: "left" }}>
+                <h2>Home</h2>
+                <p>Discover new destinations</p>
+                </div>
 
                 <button className="btn-primary">
                         <div className="statistic">0<br />Trips</div>

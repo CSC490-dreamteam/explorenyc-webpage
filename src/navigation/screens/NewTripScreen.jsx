@@ -58,104 +58,165 @@ function NewTripScreen() {
 
 
     return (
-        <div className='content'>
-
-            <h2>Trip Name</h2>
-            <input type="text" className='bigField'/>
-
-            <h3>Date</h3>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <label>🗓</label>
-                <input type="date" className="smallField"/>
+        <div className='newTripPage'>
+            <div className="newTripHeader">
+                <h2>Plan New Trip</h2>
+                <p>Customize your NYC adventure</p>
             </div>
 
-            <h2>Start & End Destination</h2>
-            <label>📍</label><input type="text" className="smallField" placeholder="Start location" /><br /><br />
-            <label>📍</label><input type="text" className="smallField" placeholder="End location" />
+            <section className="newTripCard">
+                <h3>Trip Name</h3>
 
-            <h2>Entry & Exit Times</h2>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <input type="time" className="smallField" />
-                <span>To</span>
-                <input type="time" className="smallField" />
-            </div>
+                <div className="fieldGroup">
+                    <input id="trip-name" type="text" className='bigField' placeholder="e.g. Weekend Food Tour" />
+                </div>
+            </section>
 
-            <h2>Stops</h2>
-                {
-                    stops.map((stop, index) => (
-                        <StopEntryBlock 
-                        key={index}
-                        data={stop}
-                        onChange={(field, value) => handleStopChange(index, field, value)}
-                        />
-                    ))
-                }
-            <div className='spacer'>
-                
-                <button onClick={addStop}>+ Add an Additional Stop</button>
-            </div>
+            <section className="newTripCard">
+                <h3>Time Window</h3>
 
-            <h2>Transportation</h2>
+                <div className="fieldGroup">
+                    <label htmlFor="trip-date">Date</label>
+                    <div className="inputWithIcon">
+                        <span aria-hidden="true">🗓</span>
+                        <input id="trip-date" type="date" className="smallField" />
+                    </div>
+                </div>
 
-            <label><input type="checkbox" /> Subway</label>
-            <label><input type="checkbox" /> Car</label>
-            <div className='spacer' />
-            <label><input type="checkbox" /> Walking</label>
-            <label><input type="checkbox" /> Uber</label>
+                <div className="fieldRow twoCol">
+                    <div className="fieldGroup">
+                        <label htmlFor="entry-time">Entry Time</label>
+                        <input id="entry-time" type="time" className="smallField timeField" />
+                    </div>
 
+                    <div className="fieldGroup">
+                        <label htmlFor="exit-time">Exit Time</label>
+                        <input id="exit-time" type="time" className="smallField timeField" />
+                    </div>
+                </div>
+            </section>
 
-            <h2>Preferences</h2>
-            <p><input type="checkbox" /> Avoid road tolls (?)</p>
-            <p><input type="checkbox" /> Avoid Chain Restaurants (?)</p>
-            <p><input type="checkbox" /> Place holder</p>
-            <p><input type="checkbox" /> Place holder</p>
+            <section className="newTripCard">
+                <h3>Start & End Points</h3>
+                <div className="fieldGroup">
+                    <label htmlFor="trip-start">Starting Location</label>
+                    <div className="inputWithIcon">
+                        <span aria-hidden="true">📍</span>
+                        <input id="trip-start" type="text" className="smallField noZoomField" placeholder="Enter starting point" />
+                    </div>
+                </div>
 
-            <p>Minimum Buffer Between Stops</p>
-            <input type="range" min="0" max="120" className='slider' />
-            <label className="sliderLabel">minutes/hours</label>
+                <div className="fieldGroup">
+                    <label htmlFor="trip-end">Ending Location</label>
+                    <div className="inputWithIcon">
+                        <span aria-hidden="true">📍</span>
+                        <input id="trip-end" type="text" className="smallField noZoomField" placeholder="Enter ending point" />
+                    </div>
+                </div>
+            </section>
 
-            <button className="generateButton" onClick={handleGenerateTripSubmit}>Generate My Trip</button>
+            <section className="newTripCard">
+                <div className="cardTitleRow">
+                    <h3>Stops</h3>
+                    <button type="button" className="secondaryButton" onClick={addStop}>
+                        + Add Stop
+                    </button>
+                </div>
 
+                <div className="stopsList">
+                    {
+                        stops.map((stop, index) => (
+                            <StopEntryBlock
+                                key={index}
+                                index={index}
+                                data={stop}
+                                onChange={(field, value) => handleStopChange(index, field, value)}
+                            />
+                        ))
+                    }
+                </div>
+            </section>
+
+            <section className="newTripCard">
+                <h3>Transportation</h3>
+                <div className="checkboxGrid">
+                    <label className="checkboxItem"><input type="checkbox" /> Subway</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Car</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Walking</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Uber</label>
+                </div>
+            </section>
+            <section className="newTripCard">
+                <h3 className="subsectionTitle">Preferences</h3>
+                <div className="checkboxList">
+                    <label className="checkboxItem"><input type="checkbox" /> Avoid rush hour (5-7 PM)</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Instagram-worthy spots</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Low-key, hidden gems</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Off the beaten path</label>
+                </div>
+
+                <div className="fieldGroup">
+                    <label htmlFor="stop-buffer">Buffer Time Between Stops</label>
+                    <input id="stop-buffer" type="range" min="0" max="120" className='slider' />
+                    <label className="sliderLabel">0 to 120 minutes</label>
+                </div>
+            </section>
+
+            <button type="button" className="generateButton" onClick={handleGenerateTripSubmit}>
+                Generate My Trip
+            </button>
         </div>
     );
 }
 
-function StopEntryBlock({data, onChange}) {
-    return ( <>
+function StopEntryBlock({data, onChange, index}) {
+    return (
+        <div className="stopCard">
+            <h4>Stop {index + 1}</h4>
 
-    {/* text box where user enters the location string */}
-    <input type="text" 
-    className="smallField" 
-    value={data.location}
-    onChange={(e) => onChange('location', e.target.value)}
-    />
-            <br/>
-            <br />
-
-            {/* mandatory checkbox */}
-            <label><input type="checkbox" 
-            checked={data.mandatory} 
-            onChange={(e) => onChange('mandatory', e.target.checked)} /> Mandatory</label><br />
-
-
-            {/* flexible checkbox */}
-            <label><input type="checkbox" 
-            checked={data.flexible} 
-            onChange={(e) => onChange('flexible', e.target.checked)} /> Flexible</label><br /><br />
-
-
-            {/* time preference picker */}
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <label>Time preference?</label>
-                <input type="time" className="smallField" 
-                value={data.timePreference} 
-                onChange={(e) => onChange('timePreference', e.target.value)} />
+            <div className="fieldGroup">
+                <label htmlFor={`stop-location-${index}`}>Location</label>
+                <input
+                    id={`stop-location-${index}`}
+                    type="text"
+                    className="smallField noZoomField"
+                    value={data.location}
+                    onChange={(e) => onChange('location', e.target.value)}
+                    placeholder="e.g. Central Park"
+                />
             </div>
 
-            {/* space between next component  */}
-            <div className='spacer'></div>
-        </> 
-    )
+            <div className="checkboxGrid stopOptions">
+                <label className="checkboxItem">
+                    <input
+                        type="checkbox"
+                        checked={data.mandatory}
+                        onChange={(e) => onChange('mandatory', e.target.checked)}
+                    />
+                    Mandatory
+                </label>
+                <label className="checkboxItem">
+                    <input
+                        type="checkbox"
+                        checked={data.flexible}
+                        onChange={(e) => onChange('flexible', e.target.checked)}
+                    />
+                    Flexible
+                </label>
+            </div>
+
+            <div className="fieldGroup">
+                <label htmlFor={`stop-time-${index}`}>Time Preference</label>
+                <input
+                    id={`stop-time-${index}`}
+                    type="time"
+                    className="smallField timeField"
+                    value={data.timePreference}
+                    onChange={(e) => onChange('timePreference', e.target.value)}
+                />
+            </div>
+        </div>
+    );
 }
 
 export default NewTripScreen;

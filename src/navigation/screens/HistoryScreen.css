@@ -8,10 +8,11 @@
     text-align: left;
 }
 .history-header h2 {
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 .history-header p {
-    margin-top: 0px;
+    margin-top: 4px;
+    color: #b3b4b6;
 }
 
 .start-trip-section {
