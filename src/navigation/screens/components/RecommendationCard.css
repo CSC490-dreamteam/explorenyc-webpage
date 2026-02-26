@@ -1,12 +1,12 @@
 .card {
   display: flex;
   flex-direction: row;
-  background: white;
-  color: black;
+  background: #3c3c3c;
+  color: #cdcdcd;
   padding: 12px 12px;
   border-radius: 10px;
   margin-bottom: 15px;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 10px #191919;
 }
 
 .card-title {
@@ -31,19 +31,19 @@
 .card-rating {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: inherit;
 }
 
 .card-distance {
   font-size: 10px;
-  color: #678;
+  color: #b3b4b6;
 }
 
 /* Left icon */
 .card-icon {
   width: 40px;
   height: 40px;
-  background: #f8f8f8;
+  background: #5a5a5a;
   color: #2563eb;
   display: flex;
   align-items: center;
@@ -92,12 +92,12 @@
 .skeleton-icon {
   width: 40px;
   height: 40px;
-  background: #e0e0e0;
+  background: #5a5a5a;
   border-radius: 10px;
 }
 
 .skeleton-line {
-  background: #e0e0e0;
+  background: #6a6a6a;
   border-radius: 4px;
   margin-bottom: 8px;
 }
@@ -130,13 +130,6 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .card {
-    background: #313131;
-    color: white;
-  }
-  .card-distance {
-    color: #b3b4b6;
-  }
   .card-icon {
     background: #5a5a5a;
     color: #a0baff;
@@ -144,5 +137,26 @@
   .card-category {
     background: #294d77;
     color: #c5c5ff;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .card {
+    background: #f9f9f9;
+    color: inherit;
+    box-shadow: 0 10px 10px #cdcdcd;
+  }
+
+  .card-distance {
+    color: #678;
+  }
+
+  .card-icon {
+    background: #f8f8f8;
+  }
+
+  .skeleton-icon,
+  .skeleton-line {
+    background: #e0e0e0;
   }
 }

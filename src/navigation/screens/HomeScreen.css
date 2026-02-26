@@ -16,22 +16,23 @@
 .btn-primary {
     margin-top: 15px;
     padding: 15px 10px;
-    background-color: #ff5a5f;
+    background-color: #3c3c3c;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 1rem;
-    color:inherit;
+    color: #cdcdcd;
+    box-shadow: 0 10px 10px #191919;
 }
 
 .card {
     display:flex;
     flex-direction: row;
-    background: white;
-    color: black;
+    background: #3c3c3c;
+    color: #cdcdcd;
     padding: 12px 12px;
     border-radius: 10px;
     margin-bottom: 15px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 10px #191919;
 }
 .card-title {
     font-size: 12px;
@@ -52,11 +53,11 @@
 .card-rating {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: inherit;
 }
 .card-distance {
     font-size: 10px;
-    color: #678;
+    color: #b3b4b6;
 }
 /* left side icon */
 .card-icon {
@@ -95,4 +96,17 @@
     padding-left: 10px;
     padding-right: 10px;
     float: left;
+}
+
+@media (prefers-color-scheme: light) {
+    .btn-primary,
+    .card {
+        background: #f9f9f9;
+        color: inherit;
+        box-shadow: 0 10px 10px #cdcdcd;
+    }
+
+    .card-distance {
+        color: #678;
+    }
 }

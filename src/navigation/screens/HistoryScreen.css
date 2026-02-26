@@ -15,30 +15,32 @@
 }
 
 .start-trip-section {
-    margin: 16px 10px 20px;
+    margin: 16px 0 20px;
 }
 
 .start-trip-card {
-    width: 100%;
+    width: 94%;
+    margin: 0 auto;
     border: 0;
-    border-radius: 18px;
-    background: #535353;
+    border-radius: 10px;
+    background: #3c3c3c;
     color: #cdcdcd;
-    padding: 18px 22px;
+    padding: 10px;
     display: flex;
     align-items: center;
     gap: 16px;
     text-align: left;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.09);
+    box-shadow: 0 10px 10px #191919;
 }
 
 .trip-box {
-    background: #535353;
+    width: 94%;
+    background: #3c3c3c;
     border-radius: 10px;
     padding: 10px;
-    margin: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.09);
+    margin: 15px auto;
+    box-shadow: 0 10px 10px #191919;
 }
 
 .newTripCircle {
@@ -81,7 +83,7 @@
 }
 
 .start-trip-arrow {
-    color: #2f5bf2;
+    color: inherit;
     font-size: 2.6rem;
     font-weight: 300;
     line-height: 1;
@@ -101,11 +103,12 @@
 
 @media (prefers-color-scheme: light) {
     .trip-box {
-        background: #f6f6f6;
-        /*border: 1px solid #d3d3d3;*/
+        background: #f9f9f9;
+        box-shadow: 0 10px 10px #cdcdcd;
     }
     .start-trip-card {
-        background: #ffffff;
+        background: #f9f9f9;
         color: inherit;
+        box-shadow: 0 10px 10px #cdcdcd;
     }
 }

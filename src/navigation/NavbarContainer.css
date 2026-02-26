@@ -25,6 +25,7 @@
     position: fixed;
     background-color: #1a1a1a;
     box-sizing: border-box;
+    z-index: 99;
 }
 
 .navbarContainer__greeting {
