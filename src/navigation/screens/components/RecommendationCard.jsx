@@ -29,11 +29,7 @@ function RecommendationCard({ place, loading, error }) {
   return (
     <div className="card">
       <div className="card-icon">
-        <img
-          src="/restaurant.svg"
-          alt={place.DBA}
-          className="icon-image"
-        />
+        <span className="icon-image" aria-hidden="true" />
       </div>
 
       <div className="card-content">

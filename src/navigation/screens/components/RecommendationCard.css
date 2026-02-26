@@ -44,6 +44,7 @@
   width: 40px;
   height: 40px;
   background: #f8f8f8;
+  color: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,6 +55,10 @@
 .icon-image {
   width: 30px;
   height: 30px;
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: url('/public/restaurant.svg') center / contain no-repeat;
+  mask: url('/public/restaurant.svg') center / contain no-repeat;
 }
 
 .card-content {
@@ -122,4 +127,22 @@
   color: #cc0000;
   font-size: 12px;
   padding: 8px 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .card {
+    background: #313131;
+    color: white;
+  }
+  .card-distance {
+    color: #b3b4b6;
+  }
+  .card-icon {
+    background: #5a5a5a;
+    color: #a0baff;
+  }
+  .card-category {
+    background: #294d77;
+    color: #c5c5ff;
+  }
 }

@@ -3,7 +3,7 @@ import './HomeScreen.css'
 import './components/TrendingCard.jsx'
 import TrendingCard from "./components/TrendingCard.jsx";
 import React, { useState, useEffect } from "react";
-import RecommendationCard from '../components/RecommendationCard';
+import RecommendationCard from './components/RecommendationCard.jsx';
 
 function HomeScreen() {
     
