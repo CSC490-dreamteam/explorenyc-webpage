@@ -95,6 +95,7 @@
     max-width: 150px;
     flex: 0 0 150px;
     align-self: flex-start;
+    max-height: 35px;
 }
 
 .bigField::placeholder,
