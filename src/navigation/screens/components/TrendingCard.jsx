@@ -1,10 +1,11 @@
+import React from "react";
 import './TrendingCard.css'
 
 const TrendingCard = ({ image, title }) => {
     return (
         <div className="trending_card">
             <div className="trending_card_image_container">
-                <img src={image} alt={title} />
+                <img src={image}/>
             </div>
             <div style={{paddingTop:'5px'}}>
                 <label style={{padding: '10px'}}> {title} </label>

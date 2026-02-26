@@ -1,9 +1,9 @@
 import '../../App.css'
 import './SettingsScreen.css'
 
-function SettingsScreen() {
+function App() {
     return (
-        <div className="settingsRoot screen-theme">
+        <div className="settingsRoot">
             <h2> Settings </h2>
             <div className="settingsCardsContainer">
                 <div className="settingsCard profileCard">
@@ -53,4 +53,4 @@ function SettingsScreen() {
 }
 
 
-export default SettingsScreen
+export default App

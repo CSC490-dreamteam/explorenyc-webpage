@@ -1,17 +1,18 @@
 import '../../App.css'
 import './HomeScreen.css'
-import { useEffect, useState } from 'react'
-import RecommendationCard from '../components/RecommendationCard.jsx'
-import TrendingCard from './components/TrendingCard.jsx'
+import './components/TrendingCard.jsx'
+import TrendingCard from "./components/TrendingCard.jsx";
+import React, { useState, useEffect } from "react";
+import RecommendationCard from '../components/RecommendationCard';
 
 function HomeScreen() {
-    
+
     const trendingSpots = [
-        {id: 1, name: 'New York', img: '/new-york-city.jpeg'},
-        {id: 2, name: 'New York', img: '/new-york-city.jpeg'},
-        {id: 3, name: 'New York', img: '/new-york-city.jpeg'},
+        {id: 1, name: "New York",img:"/new-york-city.jpeg"},
+        {id: 2, name: "New York",img:"/new-york-city.jpeg"},
+        {id: 3, name: "New York",img:"/new-york-city.jpeg"},
     ]
-  
+
     const [places, setPlaces] = useState([]); //Stores the list of recommended places returned from the API
     const [loading, setLoading] = useState(true); //Tracks whether the API request is still in progress
     const [error, setError] = useState(null); //Holds any error message if the API request fails
@@ -23,11 +24,11 @@ function HomeScreen() {
             //make request to fastapi backend
             try {
                 const res = await fetch(
-                    'https://explorenyc-recommendation-service.onrender.com/discover'
+                    "https://explorenyc-recommendation-service.onrender.com/discover"
                 );
                 //if the response is not OK status, throw an error
                 if (!res.ok) {
-                    throw new Error('Failed to fetch /discover');
+                    throw new Error("Failed to fetch /discover");
                 }
                 //parse the JSON body of the response
                 const json = await res.json();
@@ -35,7 +36,7 @@ function HomeScreen() {
                 setPlaces(json.data); //the API returns {count, data: []} therefore we want the 'data' array
 
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Unknown error');
+                setError(err.message);
             } finally {
                 setLoading(false); //whether we get success or failure, the loading is now complete
             }
@@ -49,15 +50,15 @@ function HomeScreen() {
             <header className="welcome-header">
 
                 <button className="btn-primary">
-                        <div className="statistic">0<br />Trips</div>
-                        <div className="statistic">0 <br />Places</div>
-                        <div className="statistic">0 <br />Steps</div>
+                    <div className="statistic">0<br />Trips</div>
+                    <div className="statistic">0 <br />Places</div>
+                    <div className="statistic">0 <br />Steps</div>
                 </button>
 
             </header>
-            
+
             <div className="trending">
-                <h3>🔥 Trending spots</h3>
+                <h3 align='left'>🔥 Trending spots</h3>
                 <div className="trending_container">
 
                     {trendingSpots.map((spot) => (<TrendingCard image={spot.img} key={spot.id} title={spot.name} />))}
@@ -65,9 +66,9 @@ function HomeScreen() {
                 </div>
 
             </div>
-      
+
             <div className="for-you">
-                <h3>Recommended for you</h3>
+                <h3 align="left">Recommended for you</h3>
 
                 {
                     // If data is still loading, render 3 skeleton cards
@@ -76,14 +77,12 @@ function HomeScreen() {
                             <RecommendationCard key={n} loading={true} />
                         ))
                         // Else, render the real recommendation cards
-                        : error && places.length === 0
-                        ? <RecommendationCard loading={false} error={error} />
                         : places.map((place, idx) => (
                             <RecommendationCard
-                            key={idx}
-                            place={place}
-                            loading={false}
-                            error={error}
+                                key={idx}
+                                place={place}
+                                loading={false}
+                                error={error}
                             />
                         ))
                 }

@@ -1,105 +1,52 @@
-
-
 .content {
-    padding: 0 0 80px;
+    padding: 0 0 60px;
     text-align: left;
 }
 
 .bigField {
     width: 100%;
-    min-height: 48px;
-    font-size: 1.5rem;
-    font-weight: 600;
+    height: 36px;
+    font-size: 32px;
     font-family: inherit;
+    color: inherit;
     box-sizing: border-box;
 }
-
 .content span {
     padding-left: 10px;
     padding-right: 10px;
-    color: white;
 }
-
 .content label {
     padding-right: 10px;
 }
-
 .smallField {
-    width: 100%;
-    font-size: 1rem;
+    font-family: inherit;
+    font-size: 16px;
+    color: inherit;
 }
-
 .content button {
-    font-weight: 600;
+    font-family: inherit;
+    color: inherit;
     width: 100%;
-    padding: 10px 14px;
-    border: 1px solid white;
-    background: grey;
-    color: white;
-    box-shadow: 1px 1px 2px #000;
 }
-
 .spacer {
     padding-top: 20px;
 }
-
 .transportBoxes {
     display: flex;
     margin-bottom: 0;
 }
-
 .transportBoxes label {
     padding-right: 20px;
     padding-top: 10px;
 }
-
 .slider {
     width: 100%;
 }
-
 .sliderLabel {
     display: block;
     text-align: center;
     padding-bottom: 20px;
-    color: white;
 }
-
 .generateButton {
-    font-size: 1.05rem;
-    border: 1px solid transparent;
-    background: white;
-    color: #ffffff;
-}
-
-.generateButton:hover {
-    background: white;
-}
-
-.content h2 {
-    margin-top: 24px;
-    margin-bottom: 10px;
-}
-
-.content h3 {
-    margin-top: 14px;
-    margin-bottom: 8px;
-}
-
-.content p {
-    margin: 8px 0;
-}
-
-.fieldRow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.fieldRow .smallField {
-    flex: 1;
-}
-
-.destinations {
-    display: grid;
-    gap: 10px;
+    font-size: 24px;
 }
