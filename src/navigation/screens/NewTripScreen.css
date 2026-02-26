@@ -70,14 +70,14 @@
 .bigField,
 .smallField {
     width: 100%;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid #686868;
+    border-radius: 8px;
+    background: #2f2f2f;
+    color: inherit;
     font-family: inherit;
     font-size: 0.95rem;
-    color: inherit;
-    box-sizing: border-box;
-    border-radius: 8px;
-    border: 1px solid #686868;
-    background: #2f2f2f;
-    padding: 10px 12px;
 }
 
 .bigField {
@@ -95,7 +95,6 @@
     max-width: 150px;
     flex: 0 0 150px;
     align-self: flex-start;
-    max-height: 35px;
 }
 
 .bigField::placeholder,
@@ -110,10 +109,10 @@
 }
 
 .stopCard {
-    background: #343434;
+    padding: 12px;
     border: 1px solid #505050;
     border-radius: 8px;
-    padding: 12px;
+    background: #343434;
 }
 
 .stopCard h4 {
@@ -144,9 +143,9 @@
     gap: 8px;
     margin: 0;
     padding: 8px 10px;
+    border: 1px solid #505050;
     border-radius: 8px;
     background: #343434;
-    border: 1px solid #505050;
 }
 
 .checkboxItem input {
@@ -155,13 +154,13 @@
 }
 
 .secondaryButton {
+    padding: 8px 12px;
     border: 0;
     border-radius: 8px;
     background: #0835c8;
     color: #ffffff;
     font-family: inherit;
     font-weight: 600;
-    padding: 8px 12px;
     cursor: pointer;
 }
 
@@ -181,14 +180,14 @@
     width: 94%;
     display: block;
     margin: 4px auto 0;
+    padding: 14px;
     border: 0;
     border-radius: 10px;
-    padding: 14px;
     background: #0835c8;
     color: #ffffff;
+    font-family: inherit;
     font-size: 1rem;
     font-weight: 700;
-    font-family: inherit;
     cursor: pointer;
     box-shadow: 0 10px 10px #191919;
 }
@@ -207,7 +206,7 @@
         width: 136px;
         min-width: 136px;
         max-width: 136px;
-        flex-basis: 136px;
+        flex: 0 0 136px;
     }
 }
 

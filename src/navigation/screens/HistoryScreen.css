@@ -1,15 +1,17 @@
 .history-page {
     min-height: 100vh;
-    padding-bottom: 140px;  /* increased space */
+    padding-bottom: 140px;
 }
 
 .history-header {
     display: flex;
     text-align: left;
 }
+
 .history-header h2 {
     margin-bottom: 0;
 }
+
 .history-header p {
     margin-top: 4px;
     color: #b3b4b6;
@@ -22,11 +24,11 @@
 .start-trip-card {
     width: 94%;
     margin: 0 auto;
+    padding: 10px;
     border: 0;
     border-radius: 10px;
     background: #3c3c3c;
     color: #cdcdcd;
-    padding: 10px;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -37,23 +39,23 @@
 
 .trip-box {
     width: 94%;
-    background: #3c3c3c;
-    border-radius: 10px;
-    padding: 10px;
     margin: 15px auto;
+    padding: 10px;
+    border-radius: 10px;
+    background: #3c3c3c;
     box-shadow: 0 10px 10px #191919;
 }
 
 .newTripCircle {
-    background: #0835c8;
     width: 45px;
     height: 45px;
+    padding: 0;
     border-radius: 50%;
-    color: white;
+    background: #0835c8;
+    color: #ffffff;
     display: grid;
     place-items: center;
     flex-shrink: 0;
-    padding: 0;
     font-size: 30px;
     font-weight: 300;
     line-height: 0;
@@ -75,12 +77,8 @@
 
 .start-trip-copy p {
     margin: 0;
-    line-height: 2;
     font-size: 12px;
-}
-
-.start-trip-copy p + p {
-    margin-top: 6px;
+    line-height: 2;
 }
 
 .start-trip-arrow {
@@ -92,9 +90,9 @@
 
 .trip-action-btn {
     margin-top: 10px;
+    padding: 10px 14px;
     border: 0;
     border-radius: 8px;
-    padding: 10px 14px;
     background: #0835c8;
     color: #ffffff;
     font-size: 0.95rem;
@@ -103,13 +101,17 @@
 }
 
 @media (prefers-color-scheme: light) {
+    .history-header p {
+        color: #5f6874;
+    }
+
+    .start-trip-card,
     .trip-box {
         background: #f9f9f9;
         box-shadow: 0 10px 10px #cdcdcd;
     }
+
     .start-trip-card {
-        background: #f9f9f9;
         color: inherit;
-        box-shadow: 0 10px 10px #cdcdcd;
     }
 }
