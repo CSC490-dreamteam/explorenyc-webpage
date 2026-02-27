@@ -24,10 +24,15 @@ a:hover {
 
 body {
   margin: 0;
-  /*display: flex;
-  place-items: center;*/
   min-width: 320px;
   min-height: 100vh;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 1.0), rgba(0, 0, 0, 1.0)),
+    url('/nyc-stock.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 h1 {
@@ -51,12 +56,17 @@ button {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: transparent;
   }
   a:hover {
     color: #747bff;
   }
   button {
     background-color: #f9f9f9;
+  }
+  body {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+      url('/nyc-stock.png');
   }
 }
