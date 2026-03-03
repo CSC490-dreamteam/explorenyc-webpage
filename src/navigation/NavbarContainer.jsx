@@ -2,18 +2,29 @@ import './NavbarContainer.css'
 import HomeScreen from './screens/HomeScreen'
 import NewTripScreen from './screens/NewTripScreen.jsx'
 import SettingScreen from './screens/SettingsScreen.jsx'
-import {useState} from "react";
+import { useEffect, useState } from "react";
 import HistoryScreen from "./screens/HistoryScreen.jsx";
 
 function NavbarContainer() {
     const [currentScreen, setCurrentScreen] = useState('HomeState')
+    const [appearanceMode, setAppearanceMode] = useState(() => localStorage.getItem('appearanceMode') || 'system')
+
+    useEffect(() => {
+        const root = document.documentElement
+        if (appearanceMode === 'system') {
+            root.removeAttribute('data-theme')
+        } else {
+            root.setAttribute('data-theme', appearanceMode)
+        }
+        localStorage.setItem('appearanceMode', appearanceMode)
+    }, [appearanceMode])
 
     const renderContent = () => {
         switch (currentScreen) {
             case 'HomeState': return <HomeScreen />
             case 'MapState': return <NewTripScreen />
             case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
-            case 'SettingsState': return <SettingScreen/>
+            case 'SettingsState': return <SettingScreen appearanceMode={appearanceMode} setAppearanceMode={setAppearanceMode} />
             default: return <HomeScreen />
         }
     }

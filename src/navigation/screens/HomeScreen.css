@@ -40,13 +40,23 @@
 }
 
 @media (prefers-color-scheme: light) {
-    .welcome-header p {
+    :root:not([data-theme='dark']) .welcome-header p {
         color: #5f6874;
     }
 
-    .btn-primary {
+    :root:not([data-theme='dark']) .btn-primary {
         background: #f9f9f9;
         color: inherit;
         box-shadow: 0 10px 10px #cdcdcd;
     }
+}
+
+:root[data-theme='light'] .welcome-header p {
+    color: #5f6874;
+}
+
+:root[data-theme='light'] .btn-primary {
+    background: #f9f9f9;
+    color: inherit;
+    box-shadow: 0 10px 10px #cdcdcd;
 }

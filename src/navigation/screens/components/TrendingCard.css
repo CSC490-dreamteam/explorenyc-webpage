@@ -51,8 +51,13 @@
 }
 
 @media (prefers-color-scheme: light) {
-    .trending_card {
+    :root:not([data-theme='dark']) .trending_card {
         background: #f9f9f9;
         box-shadow: 0 10px 10px #cdcdcd;
     }
+}
+
+:root[data-theme='light'] .trending_card {
+    background: #f9f9f9;
+    box-shadow: 0 10px 10px #cdcdcd;
 }

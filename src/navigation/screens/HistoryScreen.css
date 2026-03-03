@@ -101,17 +101,31 @@
 }
 
 @media (prefers-color-scheme: light) {
-    .history-header p {
+    :root:not([data-theme='dark']) .history-header p {
         color: #5f6874;
     }
 
-    .start-trip-card,
-    .trip-box {
+    :root:not([data-theme='dark']) .start-trip-card,
+    :root:not([data-theme='dark']) .trip-box {
         background: #f9f9f9;
         box-shadow: 0 10px 10px #cdcdcd;
     }
 
-    .start-trip-card {
+    :root:not([data-theme='dark']) .start-trip-card {
         color: inherit;
     }
+}
+
+:root[data-theme='light'] .history-header p {
+    color: #5f6874;
+}
+
+:root[data-theme='light'] .start-trip-card,
+:root[data-theme='light'] .trip-box {
+    background: #f9f9f9;
+    box-shadow: 0 10px 10px #cdcdcd;
+}
+
+:root[data-theme='light'] .start-trip-card {
+    color: inherit;
 }

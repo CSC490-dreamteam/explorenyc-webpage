@@ -60,25 +60,61 @@ button {
 
 
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme='dark']) {
     color: #213547;
     background-color: transparent;
   }
 
-  a:hover {
+  :root:not([data-theme='dark']) a:hover {
     color: #747bff;
   }
 
-  button {
+  :root:not([data-theme='dark']) button {
     background-color: #f9f9f9;
   }
 
-  body {
+  :root:not([data-theme='dark']) body {
     background-image:
             linear-gradient(rgba(255, 255, 255,0.5),
             rgba(255, 255, 255, 0.75)),
             url('/nyc-stock.png'); /* Light mode image */
     background-blend-mode: normal;
   }
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  color: #213547;
+  background-color: transparent;
+}
+
+:root[data-theme='light'] a:hover {
+  color: #747bff;
+}
+
+:root[data-theme='light'] button {
+  background-color: #f9f9f9;
+}
+
+:root[data-theme='light'] body {
+  background-image:
+          linear-gradient(rgba(255, 255, 255,0.5),
+          rgba(255, 255, 255, 0.75)),
+          url('/nyc-stock.png');
+  background-blend-mode: normal;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+}
+
+:root[data-theme='dark'] body {
+  background-image:
+          linear-gradient(rgba(41, 41, 41, 0.7),
+          rgba(0, 0, 0, 0.7)),
+          url('/nyc-night.png');
+  background-blend-mode: normal;
 }
 

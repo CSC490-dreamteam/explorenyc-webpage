@@ -130,33 +130,62 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .card-icon {
+  :root:not([data-theme='light']) .card-icon {
     background: #5a5a5a;
     color: #a0baff;
   }
-  .card-category {
+  :root:not([data-theme='light']) .card-category {
     background: #294d77;
     color: #c5c5ff;
   }
 }
 
 @media (prefers-color-scheme: light) {
-  .card {
+  :root:not([data-theme='dark']) .card {
     background: #f9f9f9;
     color: inherit;
     box-shadow: 0 10px 10px #cdcdcd;
   }
 
-  .card-distance {
+  :root:not([data-theme='dark']) .card-distance {
     color: #678;
   }
 
-  .card-icon {
+  :root:not([data-theme='dark']) .card-icon {
     background: #f8f8f8;
   }
 
-  .skeleton-icon,
-  .skeleton-line {
+  :root:not([data-theme='dark']) .skeleton-icon,
+  :root:not([data-theme='dark']) .skeleton-line {
     background: #e0e0e0;
   }
+}
+
+:root[data-theme='dark'] .card-icon {
+  background: #5a5a5a;
+  color: #a0baff;
+}
+
+:root[data-theme='dark'] .card-category {
+  background: #294d77;
+  color: #c5c5ff;
+}
+
+:root[data-theme='light'] .card {
+  background: #f9f9f9;
+  color: inherit;
+  box-shadow: 0 10px 10px #cdcdcd;
+}
+
+:root[data-theme='light'] .card-distance {
+  color: #678;
+}
+
+:root[data-theme='light'] .card-icon {
+  background: #f8f8f8;
+}
+
+:root[data-theme='light'] .skeleton-icon,
+:root[data-theme='light'] .skeleton-line {
+  background: #e0e0e0;
 }

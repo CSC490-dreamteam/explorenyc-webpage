@@ -210,35 +210,67 @@
 }
 
 @media (prefers-color-scheme: light) {
-    .newTripHeader p,
-    .sliderLabel {
+    :root:not([data-theme='dark']) .newTripHeader p,
+    :root:not([data-theme='dark']) .sliderLabel {
         color: #5f6874;
     }
 
-    .newTripCard {
+    :root:not([data-theme='dark']) .newTripCard {
         background: #f9f9f9;
         box-shadow: 0 10px 10px #cdcdcd;
     }
 
-    .bigField,
-    .smallField {
+    :root:not([data-theme='dark']) .bigField,
+    :root:not([data-theme='dark']) .smallField {
         background: #ffffff;
         border-color: #d4d7dc;
         color: #111111;
     }
 
-    .bigField::placeholder,
-    .smallField::placeholder {
+    :root:not([data-theme='dark']) .bigField::placeholder,
+    :root:not([data-theme='dark']) .smallField::placeholder {
         color: #7d8694;
     }
 
-    .stopCard,
-    .checkboxItem {
+    :root:not([data-theme='dark']) .stopCard,
+    :root:not([data-theme='dark']) .checkboxItem {
         background: #ffffff;
         border-color: #d8dbe0;
     }
 
-    .generateButton {
+    :root:not([data-theme='dark']) .generateButton {
         box-shadow: 0 10px 10px #cdcdcd;
     }
+}
+
+:root[data-theme='light'] .newTripHeader p,
+:root[data-theme='light'] .sliderLabel {
+    color: #5f6874;
+}
+
+:root[data-theme='light'] .newTripCard {
+    background: #f9f9f9;
+    box-shadow: 0 10px 10px #cdcdcd;
+}
+
+:root[data-theme='light'] .bigField,
+:root[data-theme='light'] .smallField {
+    background: #ffffff;
+    border-color: #d4d7dc;
+    color: #111111;
+}
+
+:root[data-theme='light'] .bigField::placeholder,
+:root[data-theme='light'] .smallField::placeholder {
+    color: #7d8694;
+}
+
+:root[data-theme='light'] .stopCard,
+:root[data-theme='light'] .checkboxItem {
+    background: #ffffff;
+    border-color: #d8dbe0;
+}
+
+:root[data-theme='light'] .generateButton {
+    box-shadow: 0 10px 10px #cdcdcd;
 }
