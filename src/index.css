@@ -26,9 +26,15 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('/nyc-stock.png');
+          linear-gradient(rgba(0, 0, 0, 0.35),
+          rgba(0, 0, 0, 0.35)),
+          url('/nyc-night.png');
+
+  background-color: rgba(255, 255, 255, 0.08);
+  background-blend-mode: lighten;
+
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -58,15 +64,20 @@ button {
     color: #213547;
     background-color: transparent;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
+
   body {
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
-      url('/nyc-stock.png');
+            linear-gradient(rgba(255, 255, 255, 0.5),
+            rgba(255, 255, 255, 0.5)),
+            url('/nyc-stock.png'); /* Light mode image */
   }
 }
+
