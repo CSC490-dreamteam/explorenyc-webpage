@@ -191,6 +191,61 @@
     box-shadow: 0 10px 10px #191919;
 }
 
+.tripGeneratingOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.68);
+    backdrop-filter: blur(2px);
+}
+
+.tripGeneratingContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 24px;
+}
+
+.tripGeneratingContent p {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.loadingSpinner {
+    position: relative;
+    width: 96px;
+    height: 96px;
+}
+
+.loadingSpinnerBar {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 14px;
+    height: 34px;
+    border-radius: 8px;
+    background: #ffffff;
+    transform-origin: 50% 100%;
+    animation: spinnerFade 0.96s linear infinite;
+}
+
+@keyframes spinnerFade {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.16;
+    }
+}
+
 @media (max-width: 420px) {
     .cardTitleRow {
         flex-direction: column;
