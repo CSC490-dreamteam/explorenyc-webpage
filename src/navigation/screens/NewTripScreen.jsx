@@ -2,9 +2,15 @@ import React, {useState} from 'react';
 import './NewTripScreen.css';
 
 function NewTripScreen() {
+    const [isGenerating, setIsGenerating] = useState(false);
 
     //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
+        if (isGenerating) {
+            return;
+        }
+
+        setIsGenerating(true);
         //later this will have everything we throw to the backend for submission
         const tripData = {
             locations: stops.map(stop => stop.location)
@@ -32,6 +38,8 @@ function NewTripScreen() {
 
         } catch (error) {
             console.error('Error submitting trip data:', error);
+        } finally {
+            setIsGenerating(false);
         }
         
     };
@@ -165,6 +173,26 @@ function NewTripScreen() {
             <button type="button" className="generateButton" onClick={handleGenerateTripSubmit}>
                 Generate My Trip
             </button>
+
+            {isGenerating && (
+                <div className="tripGeneratingOverlay" role="status" aria-live="polite" aria-label="Generating your trip">
+                    <div className="tripGeneratingContent">
+                        <div className="loadingSpinner" aria-hidden="true">
+                            {Array.from({ length: 12 }).map((_, index) => (
+                                <span
+                                    key={index}
+                                    className="loadingSpinnerBar"
+                                    style={{
+                                        transform: `translate(-50%, -100%) rotate(${index * 30}deg) translateY(-34px)`,
+                                        animationDelay: `${index * 0.08}s`
+                                    }}
+                                />
+                            ))}
+                        </div>
+                        <p>Generating Your Trip</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
