@@ -209,6 +209,11 @@
     }
 }
 
+.mapSearchIcon {
+    mask-image: url(../../assets/map_search.svg);
+    width: 24px;
+}
+
 @media (prefers-color-scheme: light) {
     .newTripHeader p,
     .sliderLabel {
@@ -240,5 +245,9 @@
 
     .generateButton {
         box-shadow: 0 10px 10px #cdcdcd;
+    }
+
+    .icon {
+        background-color: #0a0a0a;
     }
 }

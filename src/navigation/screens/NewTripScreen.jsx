@@ -172,8 +172,12 @@ function NewTripScreen() {
 function StopEntryBlock({data, onChange, index}) {
     return (
         <div className="stopCard">
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <h4>Stop {index + 1}</h4>
-
+            <button type="button" onClick={null}>
+                <div className='icon mapSearchIcon'/>
+            </button>
+            </div>
             <div className="fieldGroup">
                 <label htmlFor={`stop-location-${index}`}>Location</label>
                 <input
