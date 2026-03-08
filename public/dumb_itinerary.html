@@ -29,7 +29,7 @@ function getTransport(code) {
     return 'Transit';
 }
 
-// get data from storage
+//get data from storage (it should be there from the user hitting generate ont he previous page)
 const raw = localStorage.getItem('itineraryData');
 
 if (!raw) {
@@ -41,7 +41,7 @@ if (!raw) {
 
     let out = '';
 
-    // Header
+    //print the trip
     out += tripName.toUpperCase() + '\n';
     out += '==================================================\n';
     out += 'Transit Cost: ' + formatCost(data.TotalTransitCostInCents) + '\n';
@@ -49,20 +49,22 @@ if (!raw) {
     out += 'Window: ' + formatTime(data.StartTimeInMinutes) + ' --> ' + formatTime(data.EndTimeInMinutes) + '\n';
 
     if (data.DroppedStops && data.DroppedStops.length > 0) {
-        out += 'Note: ' + data.DroppedStops.length + ' stops dropped\n';
+        out += 'Note: ' + data.DroppedStops.length + ' stops dropped\n'; // <----  didnt test thisif statement kekw
     } else {
         out += 'All stops included\n';
     }
 
     out += '--------------------------------------------------\n\n';
 
-    // Stops
+    // individual stops
     data.Entries.forEach((stop, i) => {
         const isLast = i === data.Entries.length - 1;
 
-        out += (i + 1) + '. ' + stop.Name + '\n';
+        //stop itself
+        out += (i + 1) + '. ' + stop.Name + '\n'; 
         out += '   ' + formatTime(stop.ArrivalTimeInMinutes) + ' --> ' + formatTime(stop.DepartureTimeInMinutes) + ' (' + stop.DurationAtStopInMinutes + ' min)\n';
 
+        //arrow
         if (!isLast && stop.TravelTimeToNextStop > 0) {
             out += '\n';
             out += '      |\n';
@@ -71,6 +73,8 @@ if (!raw) {
             out += '      v\n';
             out += '\n';
 
+
+            //transit to next stop
             const cost = stop.TransitCost > 0 ? ' · ' + formatCost(stop.TransitCost) : '';
             out += '   ' + getTransport(stop.TransportToNextStop) + ' ' + stop.TravelTimeToNextStop + ' min' + cost + '\n';
             out += '\n';
