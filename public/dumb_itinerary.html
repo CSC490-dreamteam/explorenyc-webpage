@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trip Itinerary</title>
+</head>
+<body>
+<pre id="app">Loading itinerary...</pre>
+
+<script>
+// formatting functions
+function formatTime(min) {
+    const hrs = Math.floor(min / 60);
+    const mins = min % 60;
+    const ampm = hrs >= 12 ? 'PM' : 'AM';
+    const h = hrs % 12 || 12;
+    const m = mins.toString().padStart(2, '0');
+    return h + ':' + m + ' ' + ampm;
+}
+
+function formatCost(cents) {
+    return '$' + (cents / 100).toFixed(2);
+}
+
+function getTransport(code) {
+    if (code === 0) return 'Walk';
+    if (code === 1) return 'Car';
+    if (code === 2) return 'Subway';
+    if (code === 3) return 'Uber';
+    return 'Transit';
+}
+
+// get data from storage
+const raw = localStorage.getItem('itineraryData');
+
+if (!raw) {
+    document.getElementById('app').innerText = 'No itinerary data found. Generate a trip first.';
+} else {
+    const stored = JSON.parse(raw);
+    const data = stored.response;
+    const tripName = stored.request?.tripName || 'ITINERARY';
+
+    let out = '';
+
+    // Header
+    out += tripName.toUpperCase() + '\n';
+    out += '==================================================\n';
+    out += 'Transit Cost: ' + formatCost(data.TotalTransitCostInCents) + '\n';
+    out += 'Total Travel Time: ' + data.TotalTimeInMinutes + ' min\n';
+    out += 'Window: ' + formatTime(data.StartTimeInMinutes) + ' --> ' + formatTime(data.EndTimeInMinutes) + '\n';
+
+    if (data.DroppedStops && data.DroppedStops.length > 0) {
+        out += 'Note: ' + data.DroppedStops.length + ' stops dropped\n';
+    } else {
+        out += 'All stops included\n';
+    }
+
+    out += '--------------------------------------------------\n\n';
+
+    // Stops
+    data.Entries.forEach((stop, i) => {
+        const isLast = i === data.Entries.length - 1;
+
+        out += (i + 1) + '. ' + stop.Name + '\n';
+        out += '   ' + formatTime(stop.ArrivalTimeInMinutes) + ' --> ' + formatTime(stop.DepartureTimeInMinutes) + ' (' + stop.DurationAtStopInMinutes + ' min)\n';
+
+        if (!isLast && stop.TravelTimeToNextStop > 0) {
+            out += '\n';
+            out += '      |\n';
+            out += '      |\n';
+            out += '      |\n';
+            out += '      v\n';
+            out += '\n';
+
+            const cost = stop.TransitCost > 0 ? ' · ' + formatCost(stop.TransitCost) : '';
+            out += '   ' + getTransport(stop.TransportToNextStop) + ' ' + stop.TravelTimeToNextStop + ' min' + cost + '\n';
+            out += '\n';
+        }
+    });
+
+    document.getElementById('app').innerText = out;
+}
+</script>
+</body>
+</html>
