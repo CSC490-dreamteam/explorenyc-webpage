@@ -50,7 +50,7 @@
 .dividerLine {
     height: 1px;
     width: 100%;
-    background-color: #e4e4e4;
+    background-color: #606060;
     padding:0;
 }
 
@@ -58,5 +58,8 @@
     .settingsCard {
         background-color: #f9f9f9;
         box-shadow: 0 10px 10px #cdcdcd;
+    }
+    .dividerLine {
+        background-color: #e4e4e4;
     }
 }
