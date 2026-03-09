@@ -6,10 +6,18 @@ function SearchModal({ onClose, onSelect }) {
     const [results, setResults] = useState([]);
 
     const handleSearch = async () => {
-        if (!searchText) return;
+        console.log("search button clicked")
+        if (!searchText) {
+            console.log("no search text")
+            return;
+        } 
+        console.log("sending request to backend with: ", searchText)
         try {
             const response = await fetch(`https://explorenyc-recommendation-service.onrender.com/recommend?user_text=${encodeURIComponent(searchText)}&top_k=5`);
             const data = await response.json();
+            
+            console.log("received data:", data)
+
             setResults(data);
         } catch (error) {
             console.error("Search failed:", error);
