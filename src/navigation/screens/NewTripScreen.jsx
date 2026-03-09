@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import './NewTripScreen.css';
+import SearchModal from './components/SearchModal';
+
 
 function NewTripScreen() {
 
@@ -170,11 +172,14 @@ function NewTripScreen() {
 }
 
 function StopEntryBlock({data, onChange, index}) {
+    
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <div className="stopCard">
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <h4>Stop {index + 1}</h4>
-            <button type="button" onClick={null}>
+            <button type="button" onClick={() => setIsModalOpen(true)}>
                 <div className='icon mapSearchIcon'/>
             </button>
             </div>
@@ -189,6 +194,16 @@ function StopEntryBlock({data, onChange, index}) {
                     placeholder="e.g. Central Park"
                 />
             </div>
+
+            {isModalOpen && (
+                <SearchModal 
+                    onClose={() => setIsModalOpen(false)} 
+                    onSelect={(val) => {
+                        onChange('location', val); // Update the main form
+                        setIsModalOpen(false);      // Close modal
+                    }} 
+                />
+            )}
 
             <div className="checkboxGrid stopOptions">
                 <label className="checkboxItem">
