@@ -98,6 +98,7 @@
         border-bottom: #d3d3d3 1px solid;
     }
     .navbarContainer__nav button {
+        background-color: #f9f9f9;
         border-top: 1px solid #d3d3d3;
     }
     .icon {
