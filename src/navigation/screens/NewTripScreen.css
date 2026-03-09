@@ -166,6 +166,7 @@
 .slider {
     width: 100%;
     accent-color: #2f5bf2;
+    direction: ltr;
 }
 
 .sliderLabel {

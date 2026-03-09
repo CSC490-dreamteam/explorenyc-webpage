@@ -3,6 +3,24 @@ import './NewTripScreen.css';
 
 function NewTripScreen() {
     const [isGenerating, setIsGenerating] = useState(false);
+    const [bufferTimeMinutes, setBufferTimeMinutes] = useState(0);
+
+    const formatBufferTime = (minutes) => {
+        const totalMinutes = Number(minutes);
+        if (totalMinutes < 60) {
+            return `${totalMinutes} minute${totalMinutes === 1 ? '' : 's'}`;
+        }
+
+        const hours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
+        const hourLabel = `${hours} hour${hours === 1 ? '' : 's'}`;
+
+        if (remainingMinutes === 0) {
+            return hourLabel;
+        }
+
+        return `${hourLabel} and ${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}`;
+    };
 
     //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
@@ -165,8 +183,17 @@ function NewTripScreen() {
 
                 <div className="fieldGroup">
                     <label htmlFor="stop-buffer">Buffer Time Between Stops</label>
-                    <input id="stop-buffer" type="range" min="0" max="120" className='slider' />
-                    <label className="sliderLabel">0 to 120 minutes</label>
+                    <input
+                        id="stop-buffer"
+                        type="range"
+                        min="0"
+                        max="120"
+                        step="1"
+                        value={bufferTimeMinutes}
+                        onChange={(e) => setBufferTimeMinutes(Number(e.target.value))}
+                        className="slider"
+                    />
+                    <label className="sliderLabel">{formatBufferTime(bufferTimeMinutes)}</label>
                 </div>
             </section>
 
