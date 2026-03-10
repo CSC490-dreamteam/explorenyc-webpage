@@ -4,22 +4,67 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--text-primary);
+  background-color: var(--surface-page);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-on-surface: #cdcdcd;
+  --text-muted: #b3b4b6;
+  --text-distance: #b3b4b6;
+  --text-placeholder: #9ea2ab;
+
+  --link: #646cff;
+  --link-hover: #535bf2;
+
+  --surface-page: #242424;
+  --surface-topbar: #1a1a1a;
+  --surface-plain: #1a1a1a;
+  --surface-card: #3c3c3c;
+  --surface-card-alt: #343434;
+  --surface-input: #2f2f2f;
+  --icon-card-bg: #5a5a5a;
+
+  --border-strong: #686868;
+  --border-default: #505050;
+  --border-nav: #000000;
+  --border-divider: #e4e4e4;
+
+  --shadow-elevated: 0 10px 10px #191919;
+
+  --accent: #0835c8;
+  --accent-strong: #2f5bf2;
+  --accent-contrast: #ffffff;
+  --accent-icon: #a0baff;
+
+  --category-bg: #294d77;
+  --category-text: #c5c5ff;
+
+  --error-bg: #ffe6e6;
+  --error-border: #ffb3b3;
+  --error-text: #cc0000;
+
+  --skeleton-bg: #5a5a5a;
+  --skeleton-line: #6a6a6a;
+
+  --icon-fill: #f1f1f1;
+
+  --page-bg-overlay: linear-gradient(rgba(41, 41, 41, 0.7), rgba(0, 0, 0, 0.7));
+  --page-bg-image: url('/nyc-night.png');
+  --page-bg-color: rgba(255, 255, 255, 0.5);
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--link);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--link-hover);
 }
 
 body {
@@ -27,12 +72,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
 
-  background-image:
-          linear-gradient(rgba(41, 41, 41, 0.7),
-          rgba(0, 0, 0, 0.7)),
-          url('/nyc-night.png');
-
-  background-color: rgba(255, 255, 255, .5);
+  background-image: var(--page-bg-overlay), var(--page-bg-image);
+  background-color: var(--page-bg-color);
   background-blend-mode: normal;
 
   background-size: cover;
@@ -53,32 +94,86 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--surface-plain);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: transparent;
-  }
+:root[data-theme='light'] {
+  --text-primary: #213547;
+  --text-on-surface: #213547;
+  --text-muted: #5f6874;
+  --text-distance: #667788;
+  --text-placeholder: #7d8694;
 
-  a:hover {
-    color: #747bff;
-  }
+  --link-hover: #747bff;
 
-  button {
-    background-color: #f9f9f9;
-  }
+  --surface-page: transparent;
+  --surface-topbar: #f9f9f9;
+  --surface-plain: #f9f9f9;
+  --surface-card: #f9f9f9;
+  --surface-card-alt: #ffffff;
+  --surface-input: #ffffff;
+  --icon-card-bg: #f8f8f8;
 
-  body {
-    background-image:
-            linear-gradient(rgba(255, 255, 255,0.5),
-            rgba(255, 255, 255, 0.75)),
-            url('/nyc-stock.png'); /* Light mode image */
-    background-blend-mode: normal;
-  }
+  --border-strong: #d4d7dc;
+  --border-default: #d8dbe0;
+  --border-nav: #d3d3d3;
+
+  --shadow-elevated: 0 10px 10px #cdcdcd;
+
+  --accent-icon: #2563eb;
+
+  --category-bg: #e0f0ff;
+  --category-text: #0000ff;
+
+  --skeleton-bg: #e0e0e0;
+  --skeleton-line: #e0e0e0;
+
+  --icon-fill: #0a0a0a;
+
+  --page-bg-overlay: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.75));
+  --page-bg-image: url('/nyc-stock.png');
+  --page-bg-color: transparent;
 }
 
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --text-primary: #213547;
+    --text-on-surface: #213547;
+    --text-muted: #5f6874;
+    --text-distance: #667788;
+    --text-placeholder: #7d8694;
+
+    --link-hover: #747bff;
+
+    --surface-page: transparent;
+    --surface-topbar: #f9f9f9;
+    --surface-plain: #f9f9f9;
+    --surface-card: #f9f9f9;
+    --surface-card-alt: #ffffff;
+    --surface-input: #ffffff;
+    --icon-card-bg: #f8f8f8;
+
+    --border-strong: #d4d7dc;
+    --border-default: #d8dbe0;
+    --border-nav: #d3d3d3;
+
+    --shadow-elevated: 0 10px 10px #cdcdcd;
+
+    --accent-icon: #2563eb;
+
+    --category-bg: #e0f0ff;
+    --category-text: #0000ff;
+
+    --skeleton-bg: #e0e0e0;
+    --skeleton-line: #e0e0e0;
+
+    --icon-fill: #0a0a0a;
+
+    --page-bg-overlay: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.75));
+    --page-bg-image: url('/nyc-stock.png');
+    --page-bg-color: transparent;
+  }
+}

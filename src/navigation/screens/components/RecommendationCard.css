@@ -1,12 +1,12 @@
 .card {
   display: flex;
   flex-direction: row;
-  background: #3c3c3c;
-  color: #cdcdcd;
+  background: var(--surface-card);
+  color: var(--text-on-surface);
   padding: 12px 12px;
   border-radius: 10px;
   margin-bottom: 15px;
-  box-shadow: 0 10px 10px #191919;
+  box-shadow: var(--shadow-elevated);
 }
 
 .card-title {
@@ -17,8 +17,8 @@
 }
 
 .card-category {
-  background: #e0f0ff;
-  color: blue;
+  background: var(--category-bg);
+  color: var(--category-text);
   padding: 1px 6px;
   border-radius: 6px;
   font-size: 11px;
@@ -36,15 +36,15 @@
 
 .card-distance {
   font-size: 10px;
-  color: #b3b4b6;
+  color: var(--text-distance);
 }
 
 /* Left icon */
 .card-icon {
   width: 40px;
   height: 40px;
-  background: #5a5a5a;
-  color: #2563eb;
+  background: var(--icon-card-bg);
+  color: var(--accent-icon);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,12 +92,12 @@
 .skeleton-icon {
   width: 40px;
   height: 40px;
-  background: #5a5a5a;
+  background: var(--skeleton-bg);
   border-radius: 10px;
 }
 
 .skeleton-line {
-  background: #6a6a6a;
+  background: var(--skeleton-line);
   border-radius: 4px;
   margin-bottom: 8px;
 }
@@ -119,44 +119,12 @@
 
 /* Error card */
 .error-card {
-  background: #ffe6e6;
-  border: 1px solid #ffb3b3;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
 }
 
 .error-text {
-  color: #cc0000;
+  color: var(--error-text);
   font-size: 12px;
   padding: 8px 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .card-icon {
-    background: #5a5a5a;
-    color: #a0baff;
-  }
-  .card-category {
-    background: #294d77;
-    color: #c5c5ff;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .card {
-    background: #f9f9f9;
-    color: inherit;
-    box-shadow: 0 10px 10px #cdcdcd;
-  }
-
-  .card-distance {
-    color: #678;
-  }
-
-  .card-icon {
-    background: #f8f8f8;
-  }
-
-  .skeleton-icon,
-  .skeleton-line {
-    background: #e0e0e0;
-  }
 }

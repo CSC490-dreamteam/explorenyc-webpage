@@ -1,7 +1,19 @@
+import { useEffect, useState } from 'react'
 import '../../App.css'
 import './SettingsScreen.css'
 
 function App() {
+    const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'system')
+
+    useEffect(() => {
+        const root = document.documentElement
+        if (theme === 'system') {
+            root.removeAttribute('data-theme')
+        } else {
+            root.setAttribute('data-theme', theme)
+        }
+    }, [theme])
+
     return (
         <div className="settingsRoot">
             <h2> Settings </h2>
@@ -36,8 +48,31 @@ function App() {
                         Notifications
                     </div>
                     <div className="dividerLine"/>
-                    <div className="settingsOption">
-                        Dark Mode
+                    <div className="settingsOption settingsOption--spread">
+                        <span>Appearance</span>
+                        <div className="themeToggle" role="group" aria-label="Appearance">
+                            <button
+                                type="button"
+                                className={`themeToggle__btn ${theme === 'light' ? 'is-active' : ''}`}
+                                onClick={() => setTheme('light')}
+                            >
+                                Light
+                            </button>
+                            <button
+                                type="button"
+                                className={`themeToggle__btn ${theme === 'dark' ? 'is-active' : ''}`}
+                                onClick={() => setTheme('dark')}
+                            >
+                                Dark
+                            </button>
+                            <button
+                                type="button"
+                                className={`themeToggle__btn ${theme === 'system' ? 'is-active' : ''}`}
+                                onClick={() => setTheme('system')}
+                            >
+                                System
+                            </button>
+                        </div>
                     </div>
                 </div>
 

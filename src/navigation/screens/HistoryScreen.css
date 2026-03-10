@@ -14,7 +14,7 @@
 
 .history-header p {
     margin-top: 4px;
-    color: #b3b4b6;
+    color: var(--text-muted);
 }
 
 .start-trip-section {
@@ -27,14 +27,14 @@
     padding: 10px;
     border: 0;
     border-radius: 10px;
-    background: #3c3c3c;
-    color: #cdcdcd;
+    background: var(--surface-card);
+    color: var(--text-on-surface);
     display: flex;
     align-items: center;
     gap: 16px;
     text-align: left;
     cursor: pointer;
-    box-shadow: 0 10px 10px #191919;
+    box-shadow: var(--shadow-elevated);
 }
 
 .trip-box {
@@ -42,8 +42,8 @@
     margin: 15px auto;
     padding: 10px;
     border-radius: 10px;
-    background: #3c3c3c;
-    box-shadow: 0 10px 10px #191919;
+    background: var(--surface-card);
+    box-shadow: var(--shadow-elevated);
 }
 
 .newTripCircle {
@@ -51,8 +51,8 @@
     height: 45px;
     padding: 0;
     border-radius: 50%;
-    background: #0835c8;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--accent-contrast);
     display: grid;
     place-items: center;
     flex-shrink: 0;
@@ -93,25 +93,10 @@
     padding: 10px 14px;
     border: 0;
     border-radius: 8px;
-    background: #0835c8;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--accent-contrast);
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
 }
 
-@media (prefers-color-scheme: light) {
-    .history-header p {
-        color: #5f6874;
-    }
-
-    .start-trip-card,
-    .trip-box {
-        background: #f9f9f9;
-        box-shadow: 0 10px 10px #cdcdcd;
-    }
-
-    .start-trip-card {
-        color: inherit;
-    }
-}

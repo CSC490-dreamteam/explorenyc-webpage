@@ -19,7 +19,7 @@
 
 .welcome-header p {
     margin-top: 4px;
-    color: #b3b4b6;
+    color: var(--text-muted);
 }
 
 .btn-primary {
@@ -27,26 +27,14 @@
     padding: 15px 10px;
     border: 0;
     border-radius: 10px;
-    background: #3c3c3c;
-    color: #cdcdcd;
+    background: var(--surface-card);
+    color: var(--text-on-surface);
     font-size: 1rem;
-    box-shadow: 0 10px 10px #191919;
+    box-shadow: var(--shadow-elevated);
 }
 
 .statistic {
     float: left;
     padding-left: 10px;
     padding-right: 10px;
-}
-
-@media (prefers-color-scheme: light) {
-    .welcome-header p {
-        color: #5f6874;
-    }
-
-    .btn-primary {
-        background: #f9f9f9;
-        color: inherit;
-        box-shadow: 0 10px 10px #cdcdcd;
-    }
 }
