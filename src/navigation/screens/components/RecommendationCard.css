@@ -130,62 +130,33 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .card-icon {
+  .card-icon {
     background: #5a5a5a;
     color: #a0baff;
   }
-  :root:not([data-theme='light']) .card-category {
+  .card-category {
     background: #294d77;
     color: #c5c5ff;
   }
 }
 
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme='dark']) .card {
+  .card {
     background: #f9f9f9;
     color: inherit;
     box-shadow: 0 10px 10px #cdcdcd;
   }
 
-  :root:not([data-theme='dark']) .card-distance {
+  .card-distance {
     color: #678;
   }
 
-  :root:not([data-theme='dark']) .card-icon {
+  .card-icon {
     background: #f8f8f8;
   }
 
-  :root:not([data-theme='dark']) .skeleton-icon,
-  :root:not([data-theme='dark']) .skeleton-line {
+  .skeleton-icon,
+  .skeleton-line {
     background: #e0e0e0;
   }
-}
-
-:root[data-theme='dark'] .card-icon {
-  background: #5a5a5a;
-  color: #a0baff;
-}
-
-:root[data-theme='dark'] .card-category {
-  background: #294d77;
-  color: #c5c5ff;
-}
-
-:root[data-theme='light'] .card {
-  background: #f9f9f9;
-  color: inherit;
-  box-shadow: 0 10px 10px #cdcdcd;
-}
-
-:root[data-theme='light'] .card-distance {
-  color: #678;
-}
-
-:root[data-theme='light'] .card-icon {
-  background: #f8f8f8;
-}
-
-:root[data-theme='light'] .skeleton-icon,
-:root[data-theme='light'] .skeleton-line {
-  background: #e0e0e0;
 }
