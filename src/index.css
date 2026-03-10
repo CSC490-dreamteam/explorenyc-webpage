@@ -32,7 +32,7 @@
   --border-strong: #686868;
   --border-default: #505050;
   --border-nav: #000000;
-  --border-divider: #e4e4e4;
+  --border-divider: #535353;
 
   --shadow-elevated: 0 10px 10px #191919;
 
@@ -120,6 +120,7 @@ button {
   --border-strong: #d4d7dc;
   --border-default: #d8dbe0;
   --border-nav: #d3d3d3;
+  --border-divider: #e4e4e4;
 
   --shadow-elevated: 0 10px 10px #cdcdcd;
 
