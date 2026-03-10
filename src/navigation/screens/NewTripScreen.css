@@ -209,10 +209,6 @@
     }
 }
 
-.disabledElement {
-    opacity: 0.5;
-}
-
 @media (prefers-color-scheme: light) {
     .newTripHeader p,
     .sliderLabel {

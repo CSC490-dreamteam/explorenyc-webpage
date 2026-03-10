@@ -7,16 +7,17 @@ function App() {
             <h2> Settings </h2>
             <div className="settingsCardsContainer">
                 <div className="settingsCard profileCard">
-
-                    <div style={{padding:'8px'}}>
-                        <h2 className="profileCardName">Testing User</h2>
-                        <label>testing@user.com</label>
+                    <div className="icon userpicIcon"/>
+                    <div>
+                        <h2 className="profileCardName">John Doe</h2>
+                        <label>john.doe@email.com</label>
                     </div>
                 </div>
 
                 <div className="settingsCard categoriesCard">
                     <label className="categoryHeader"><b>Account</b></label>
                     <div className="settingsOption">
+                        <div className="icon userpicIcon"/>
                         Edit Profile
                     </div>
                     <div className="dividerLine"/>
