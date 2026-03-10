@@ -153,10 +153,10 @@ function NewTripScreen() {
             <section className="newTripCard">
                 <h3>Transportation</h3>
                 <div className="checkboxGrid">
-                    <label className="checkboxItem"><input type="checkbox" /> Subway</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Car</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Walking</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Uber</label>
+                    <label className="checkboxItem"><input type="radio" name="transportation" value="subway" /> Subway</label>
+                    <label className="checkboxItem"><input type="radio" name="transportation" value="car" /> Car</label>
+                    <label className="checkboxItem"><input type="radio" name="transportation" value="walking" /> Walking</label>
+                    <label className="checkboxItem"><input type="radio" name="transportation" value="Bicycle" /> Bicycle</label>
                 </div>
             </section>
             <section className="newTripCard">
