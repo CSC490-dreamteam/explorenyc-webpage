@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import './NewTripScreen.css';
 
 function NewTripScreen() {
+    const [bufferMinutes, setBufferMinutes] = useState(0)
+    const [isLoading, setIsLoading] = useState(false)
 
     //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
@@ -11,6 +13,7 @@ function NewTripScreen() {
         };
         console.log(tripData);
 
+        setIsLoading(true)
         try { //fetch request from backend
             const response = await fetch('https://explorenyc-backend-testing.up.railway.app/GenerateRoute', {
                 method: 'POST',
@@ -32,6 +35,8 @@ function NewTripScreen() {
 
         } catch (error) {
             console.error('Error submitting trip data:', error);
+        } finally {
+            setIsLoading(false)
         }
         
     };
@@ -59,6 +64,14 @@ function NewTripScreen() {
 
     return (
         <div className='newTripPage'>
+            {isLoading && (
+                <div className="loadingOverlay" role="status" aria-live="polite">
+                    <div className="loadingCard">
+                        <div className="loadingSpinner" aria-hidden="true" />
+                        <div className="loadingText">Loading</div>
+                    </div>
+                </div>
+            )}
             <div className="newTripHeader">
                 <h2>Plan New Trip</h2>
                 <p>Customize your NYC adventure</p>
@@ -157,8 +170,17 @@ function NewTripScreen() {
 
                 <div className="fieldGroup">
                     <label htmlFor="stop-buffer">Buffer Time Between Stops</label>
-                    <input id="stop-buffer" type="range" min="0" max="120" className='slider' />
-                    <label className="sliderLabel">0 to 120 minutes</label>
+                    <input
+                        id="stop-buffer"
+                        type="range"
+                        min="0"
+                        max="120"
+                        step="1"
+                        value={bufferMinutes}
+                        onChange={(e) => setBufferMinutes(Number(e.target.value))}
+                        className='slider'
+                    />
+                    <label className="sliderLabel">{formatBufferLabel(bufferMinutes)}</label>
                 </div>
             </section>
 
@@ -220,3 +242,13 @@ function StopEntryBlock({data, onChange, index}) {
 }
 
 export default NewTripScreen;
+    const formatBufferLabel = (minutes) => {
+        if (minutes >= 120) {
+            return '2 hours'
+        }
+        if (minutes >= 60) {
+            const remainder = minutes - 60
+            return remainder === 0 ? '1 hour' : `1 hour ${remainder} minutes`
+        }
+        return `${minutes} minutes`
+    }
