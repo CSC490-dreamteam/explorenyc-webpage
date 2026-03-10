@@ -96,7 +96,7 @@ function NewTripScreen() {
                 </div>
             </section>
 
-            {/*<section className="newTripCard">
+            <section className="newTripCard">
                 <h3>Start & End Points</h3>
                 <div className="fieldGroup">
                     <label htmlFor="trip-start">Starting Location</label>
@@ -113,7 +113,7 @@ function NewTripScreen() {
                         <input id="trip-end" type="text" className="smallField noZoomField" placeholder="Enter ending point" />
                     </div>
                 </div>
-            </section>*/}
+            </section>
 
             <section className="newTripCard">
                 <div className="cardTitleRow">
@@ -138,26 +138,26 @@ function NewTripScreen() {
             </section>
 
             <section className="newTripCard">
-                <h3>More Coming Soon!</h3>
-                <div className="checkboxGrid disabledElement">
-                    <label className="checkboxItem"><input type="checkbox" disabled="true"/> Subway</label>
-                    <label className="checkboxItem"><input type="checkbox" disabled="true"/> Car</label>
-                    <label className="checkboxItem"><input type="checkbox" disabled="true"/> Walking</label>
-                    <label className="checkboxItem"><input type="checkbox" disabled="true"/> Uber</label>
+                <h3>Transportation</h3>
+                <div className="checkboxGrid">
+                    <label className="checkboxItem"><input type="checkbox" /> Subway</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Car</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Walking</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Uber</label>
                 </div>
             </section>
-            <section className="newTripCard" >
-                <h3 className="subsectionTitle">More Coming Soon!</h3>
-                <div className="checkboxList disabledElement">
-                    <label className="checkboxItem"><input type="checkbox" disabled="true"/> Avoid rush hour (5-7 PM)</label>
-                    <label className="checkboxItem"><input type="checkbox" disabled="true"/> Instagram-worthy spots</label>
-                    <label className="checkboxItem"><input type="checkbox" disabled="true"/> Low-key, hidden gems</label>
-                    <label className="checkboxItem"><input type="checkbox" disabled="true"/> Off the beaten path</label>
+            <section className="newTripCard">
+                <h3 className="subsectionTitle">Preferences</h3>
+                <div className="checkboxList">
+                    <label className="checkboxItem"><input type="checkbox" /> Avoid rush hour (5-7 PM)</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Instagram-worthy spots</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Low-key, hidden gems</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Off the beaten path</label>
                 </div>
 
                 <div className="fieldGroup">
                     <label htmlFor="stop-buffer">Buffer Time Between Stops</label>
-                    <input id="stop-buffer" type="range" min="0" max="120" className='slider' disabled="true"/>
+                    <input id="stop-buffer" type="range" min="0" max="120" className='slider' />
                     <label className="sliderLabel">0 to 120 minutes</label>
                 </div>
             </section>
