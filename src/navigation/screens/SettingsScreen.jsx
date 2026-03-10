@@ -1,7 +1,7 @@
 import '../../App.css'
 import './SettingsScreen.css'
 
-function App({ appearanceMode = 'system', setAppearanceMode = () => {} }) {
+function App() {
     return (
         <div className="settingsRoot">
             <h2> Settings </h2>
@@ -36,34 +36,8 @@ function App({ appearanceMode = 'system', setAppearanceMode = () => {} }) {
                         Notifications
                     </div>
                     <div className="dividerLine"/>
-                    <div className="settingsOption appearanceOption">
-                        <span>Appearance</span>
-                        <div className="appearanceToggle" role="group" aria-label="Appearance mode">
-                            <button
-                                type="button"
-                                className={`appearanceToggleButton ${appearanceMode === 'light' ? 'isActive' : ''}`}
-                                onClick={() => setAppearanceMode('light')}
-                                aria-pressed={appearanceMode === 'light'}
-                            >
-                                Light
-                            </button>
-                            <button
-                                type="button"
-                                className={`appearanceToggleButton ${appearanceMode === 'dark' ? 'isActive' : ''}`}
-                                onClick={() => setAppearanceMode('dark')}
-                                aria-pressed={appearanceMode === 'dark'}
-                            >
-                                Dark
-                            </button>
-                            <button
-                                type="button"
-                                className={`appearanceToggleButton ${appearanceMode === 'system' ? 'isActive' : ''}`}
-                                onClick={() => setAppearanceMode('system')}
-                                aria-pressed={appearanceMode === 'system'}
-                            >
-                                System
-                            </button>
-                        </div>
+                    <div className="settingsOption">
+                        Dark Mode
                     </div>
                 </div>
 

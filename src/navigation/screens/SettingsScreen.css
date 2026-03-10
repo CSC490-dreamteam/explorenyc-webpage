@@ -28,32 +28,6 @@
     padding: 10px;
     align-items: center;
 }
-.appearanceOption {
-    justify-content: space-between;
-    width: 100%;
-    gap: 12px;
-}
-.appearanceToggle {
-    display: inline-flex;
-    border-radius: 999px;
-    border: 1px solid #5a5a5a;
-    overflow: hidden;
-}
-.appearanceToggleButton {
-    border: 0;
-    background: transparent;
-    color: #f1f1f1;
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    cursor: pointer;
-}
-.appearanceToggleButton + .appearanceToggleButton {
-    border-left: 1px solid #5a5a5a;
-}
-.appearanceToggleButton.isActive {
-    background: #f1f1f1;
-    color: #222;
-}
 .settingsCardsContainer {
     align-items: center;
     width: 100%;
@@ -81,43 +55,8 @@
 }
 
 @media (prefers-color-scheme: light) {
-    :root:not([data-theme='dark']) .settingsCard {
+    .settingsCard {
         background-color: #f9f9f9;
         box-shadow: 0 10px 10px #cdcdcd;
     }
-    :root:not([data-theme='dark']) .appearanceToggle {
-        border-color: #cfcfcf;
-    }
-    :root:not([data-theme='dark']) .appearanceToggleButton {
-        color: #444;
-    }
-    :root:not([data-theme='dark']) .appearanceToggleButton + .appearanceToggleButton {
-        border-left-color: #cfcfcf;
-    }
-    :root:not([data-theme='dark']) .appearanceToggleButton.isActive {
-        background: #222;
-        color: #fff;
-    }
-}
-
-:root[data-theme='light'] .settingsCard {
-    background-color: #f9f9f9;
-    box-shadow: 0 10px 10px #cdcdcd;
-}
-
-:root[data-theme='light'] .appearanceToggle {
-    border-color: #cfcfcf;
-}
-
-:root[data-theme='light'] .appearanceToggleButton {
-    color: #444;
-}
-
-:root[data-theme='light'] .appearanceToggleButton + .appearanceToggleButton {
-    border-left-color: #cfcfcf;
-}
-
-:root[data-theme='light'] .appearanceToggleButton.isActive {
-    background: #222;
-    color: #fff;
 }

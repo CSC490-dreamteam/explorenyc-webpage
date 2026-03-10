@@ -2,33 +2,25 @@ import React, {useState} from 'react';
 import './NewTripScreen.css';
 
 function NewTripScreen() {
-    const [isGenerating, setIsGenerating] = useState(false);
     const [bufferTimeMinutes, setBufferTimeMinutes] = useState(0);
 
     const formatBufferTime = (minutes) => {
         const totalMinutes = Number(minutes);
-        if (totalMinutes < 60) {
-            return `${totalMinutes} minute${totalMinutes === 1 ? '' : 's'}`;
+        if (totalMinutes >= 120) {
+            return '2 hours';
         }
 
-        const hours = Math.floor(totalMinutes / 60);
-        const remainingMinutes = totalMinutes % 60;
-        const hourLabel = `${hours} hour${hours === 1 ? '' : 's'}`;
-
-        if (remainingMinutes === 0) {
-            return hourLabel;
+        if (totalMinutes >= 60) {
+            const remainingMinutes = totalMinutes - 60;
+            const minuteLabel = remainingMinutes === 1 ? 'minute' : 'minutes';
+            return `1 hour ${remainingMinutes} ${minuteLabel}`;
         }
 
-        return `${hourLabel} and ${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}`;
+        return `${totalMinutes} minute${totalMinutes === 1 ? '' : 's'}`;
     };
 
     //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
-        if (isGenerating) {
-            return;
-        }
-
-        setIsGenerating(true);
         //later this will have everything we throw to the backend for submission
         const tripData = {
             locations: stops.map(stop => stop.location)
@@ -56,8 +48,6 @@ function NewTripScreen() {
 
         } catch (error) {
             console.error('Error submitting trip data:', error);
-        } finally {
-            setIsGenerating(false);
         }
         
     };
@@ -200,26 +190,6 @@ function NewTripScreen() {
             <button type="button" className="generateButton" onClick={handleGenerateTripSubmit}>
                 Generate My Trip
             </button>
-
-            {isGenerating && (
-                <div className="tripGeneratingOverlay" role="status" aria-live="polite" aria-label="Generating your trip">
-                    <div className="tripGeneratingContent">
-                        <div className="loadingSpinner" aria-hidden="true">
-                            {Array.from({ length: 12 }).map((_, index) => (
-                                <span
-                                    key={index}
-                                    className="loadingSpinnerBar"
-                                    style={{
-                                        transform: `translate(-50%, -100%) rotate(${index * 30}deg) translateY(-34px)`,
-                                        animationDelay: `${index * 0.08}s`
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <p>Generating Your Trip</p>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
