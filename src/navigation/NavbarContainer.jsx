@@ -21,7 +21,7 @@ function NavbarContainer() {
     return (
         <div className="navbarContainer">
             <div className="navbarContainer__top">
-                <span className="navbarContainer__greeting">Welcome back, User!</span>
+                <span className="navbarContainer__greeting">Welcome!</span>
                 <button className="navbarContainer__settingsButton" onClick={()=>setCurrentScreen('SettingsState')}>
                     <div className="icon settingsIcon"/>
                 </button>
