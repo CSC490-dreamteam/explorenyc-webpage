@@ -143,3 +143,9 @@
 }
 
 
+.no-results {
+    margin-top: 12px;
+    text-align: center;
+    color: #666;
+    font-size: 0.95rem;
+}

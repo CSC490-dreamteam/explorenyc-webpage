@@ -4,8 +4,12 @@ import "./SearchModal.css";
 function SearchModal({ onClose, onSelect }) {
     const [searchText, setSearchText] = useState('');
     const [results, setResults] = useState([]);
+    const [hasSearched, setHasSearched] = useState(false);
 
     const handleSearch = async () => {
+
+        setHasSearched(true);
+
         console.log("search button clicked")
         if (!searchText) {
             console.log("no search text")
@@ -46,6 +50,11 @@ function SearchModal({ onClose, onSelect }) {
                         </li>
                     ))}
                 </ul>
+
+                {hasSearched && results.length === 0 && (
+                    <div className="no-results">No results found</div>
+                )}
+
             </div>
         </div>
     );
