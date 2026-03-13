@@ -27,6 +27,8 @@
     display: flex;
     padding: 10px;
     align-items: center;
+    color: var(--text-primary);
+    justify-content: center;
 }
 .settingsOption--spread {
     justify-content: space-between;
