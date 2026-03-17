@@ -17,7 +17,9 @@ function SearchModal({ onClose, onSelect }) {
         } 
         console.log("sending request to backend with: ", searchText)
         try {
-            const response = await fetch(`https://explorenyc-recommendation-service.onrender.com/recommend?user_text=${encodeURIComponent(searchText)}&top_k=5`);
+            //const response = await fetch(`https://explorenyc-recommendation-service.onrender.com/recommend?user_text=${encodeURIComponent(searchText)}&top_k=5`);
+            const response = await fetch(`http://127.0.0.1:8000/recommend-all?user_text=${encodeURIComponent(searchText)}&top_k=5`)
+
             const data = await response.json();
             
             console.log("received data:", data)
@@ -44,9 +46,9 @@ function SearchModal({ onClose, onSelect }) {
                 </div>
                 <ul className="modal-results">
                     {results.map((place, i) => (
-                        <li key={i} onClick={() => onSelect(place.dba)}>
-                            <strong>{place.dba}</strong>
-                            <p>{place.building} {place.street}, {place.boro}</p>
+                        <li key={i} onClick={() => onSelect(place.name)}>
+                            <strong>{place.name}</strong>
+                            <p>{place.address}</p>
                         </li>
                     ))}
                 </ul>
