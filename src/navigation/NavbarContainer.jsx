@@ -43,7 +43,7 @@ function NavbarContainer({ onLogout }) {
                 </button>
                 <button onClick={()=>setCurrentScreen('HistoryState')}>
                     <div className="icon mapIcon"/>
-                    History
+                    My Trips
                 </button>
             </nav>
         </div>

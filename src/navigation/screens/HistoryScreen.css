@@ -44,21 +44,41 @@
     border-radius: 10px;
     background: var(--surface-card);
     box-shadow: var(--shadow-elevated);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.trip-box h3 {
+    margin: 0;
+}
+.trip-box p {
+    margin: 0;
+}
+.trip-box-content {
+    text-align: left;
+}
+.trip-box img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 8px;
+    display: block;
+}
+.trip-box label {
+    padding-right: 8px;
 }
 
 .newTripCircle {
     width: 45px;
     height: 45px;
-    padding: 0;
     border-radius: 50%;
     background: var(--accent);
     color: var(--accent-contrast);
     display: grid;
     place-items: center;
-    flex-shrink: 0;
     font-size: 30px;
     font-weight: 300;
-    line-height: 0;
 }
 
 .start-trip-copy {
@@ -99,4 +119,3 @@
     font-weight: 600;
     cursor: pointer;
 }
-
