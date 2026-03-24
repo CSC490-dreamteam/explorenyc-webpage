@@ -6,10 +6,11 @@ function NewTripScreen() {
     const [isLoading, setIsLoading] = useState(false)
     const [startLocation, setStartLocation] = useState('')
     const [errorState, setErrorState] = useState(null)
+    const [endLocation, setEndLocation] = useState('')
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
-    const maxStops = 8
+    const baseMaxStops = 8
 
     //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
@@ -82,8 +83,12 @@ function NewTripScreen() {
     };
 
     //adds stop to the stops array
+    const trimmedStartLocation = startLocation.trim()
+    const trimmedEndLocation = endLocation.trim()
+    const maxStopsAllowed = trimmedStartLocation && !trimmedEndLocation ? 9 : baseMaxStops
+
     const addStop = () => {
-        if (stops.length >= maxStops) {
+        if (stops.length >= maxStopsAllowed) {
             setErrorState({
                 target: 'addStop',
                 message: 'You cannot add any more stops.',
@@ -114,6 +119,12 @@ function NewTripScreen() {
             targetRef.current.focus({preventScroll: true})
         }
     }, [errorState])
+
+    useEffect(() => {
+        if (errorState?.reason === 'maxStops' && stops.length < maxStopsAllowed) {
+            setErrorState(null)
+        }
+    }, [errorState, maxStopsAllowed, stops.length])
 
     const addStopButton = (
         <button type="button" className="secondaryButton" onClick={addStop}>
@@ -185,12 +196,12 @@ function NewTripScreen() {
                                     type="text"
                                     className="smallField noZoomField"
                                     placeholder="Enter starting point"
-                                    value={startLocation}
-                                    onChange={(e) => {
-                                        const nextValue = e.target.value
-                                        setStartLocation(nextValue)
-                                        if (nextValue.trim()) {
-                                            setErrorState(null)
+                                value={startLocation}
+                                onChange={(e) => {
+                                    const nextValue = e.target.value
+                                    setStartLocation(nextValue)
+                                    if (nextValue.trim()) {
+                                        setErrorState(null)
                                         }
                                     }}
                                 />
@@ -216,7 +227,14 @@ function NewTripScreen() {
                 <div className="fieldGroup">
                     <label htmlFor="trip-end">Ending Location</label>
                     <div className="inputWithIcon">
-                        <input id="trip-end" type="text" className="smallField noZoomField" placeholder="Enter ending point" />
+                        <input
+                            id="trip-end"
+                            type="text"
+                            className="smallField noZoomField"
+                            placeholder="Enter ending point"
+                            value={endLocation}
+                            onChange={(e) => setEndLocation(e.target.value)}
+                        />
                     </div>
                 </div>
             </section>
