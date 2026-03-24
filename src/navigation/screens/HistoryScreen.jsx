@@ -35,7 +35,7 @@ export default function History({ setCurrentScreen }) {
 
             <div className="trip-box">
                 <div style={{width:'20%', paddingRight:'1%'}}>
-                    <img src='/public/new-york-city.jpeg' />
+                    <img src='/new-york-city.jpeg' />
                 </div>
                 <div className="trip-box-content" style={{width:'65%'}}>
                     <h3>NYC Adventure</h3>
