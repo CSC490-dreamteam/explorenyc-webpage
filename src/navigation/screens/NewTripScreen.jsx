@@ -260,7 +260,10 @@ export default NewTripScreen;
         }
         if (minutes >= 60) {
             const remainder = minutes - 60
-            return remainder === 0 ? '1 hour' : `1 hour ${remainder} minutes`
+            if (remainder === 0) {
+                return '1 hour'
+            }
+            return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
         }
-        return `${minutes} minutes`
+        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
     }
