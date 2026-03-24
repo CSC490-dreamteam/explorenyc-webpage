@@ -14,7 +14,7 @@
 }
 
 .navbarContainer__top {
-    border-bottom: black 1px solid;
+    border-bottom: var(--border-nav) 1px solid;
     top: 0; left: 0; right: 0;
     padding: 6px 15px;
     min-height: 40px;
@@ -23,7 +23,7 @@
     justify-content: space-between;
     align-items: center;
     position: fixed;
-    background-color: #1a1a1a;
+    background-color: var(--surface-topbar);
     box-sizing: border-box;
     z-index: 99;
 }
@@ -49,7 +49,7 @@
     border-radius: 0;
     width: 100%;
     height: 100%;
-    border-top: 1px solid black;
+    border-top: 1px solid var(--border-nav);
     color: inherit;
     justify-content: center;
 }
@@ -71,7 +71,7 @@
 .icon {
     width: 100%;
     height: 24px;
-    background-color: #f1f1f1;
+    background-color: var(--icon-fill);
     mask-position: center;
     mask-repeat: no-repeat;
 }
@@ -90,18 +90,4 @@
 
 .settingsIcon {
     mask-image: url(../assets/settings.svg);
-}
-
-@media (prefers-color-scheme: light) {
-    .navbarContainer__top {
-        background-color: #f9f9f9;
-        border-bottom: #d3d3d3 1px solid;
-    }
-    .navbarContainer__nav button {
-        background-color: #f9f9f9;
-        border-top: 1px solid #d3d3d3;
-    }
-    .icon {
-        background-color: #0a0a0a;
-    }
 }

@@ -30,11 +30,11 @@
     display: inline-block;
     width: 250px;
     height: 180px;
-    background: #3c3c3c;
+    background: var(--surface-card);
     border-radius: 10px;
     margin-right:10px;
     text-align: left;
-    box-shadow: 0 10px 10px #191919;
+    box-shadow: var(--shadow-elevated);
 }
 
 .trending_card img {
@@ -48,11 +48,4 @@
 .trending_card_image_container {
     height: 50%;
     width: 100%;
-}
-
-@media (prefers-color-scheme: light) {
-    .trending_card {
-        background: #f9f9f9;
-        box-shadow: 0 10px 10px #cdcdcd;
-    }
 }

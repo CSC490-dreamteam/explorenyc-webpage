@@ -10,7 +10,7 @@
 
 .newTripHeader p {
     margin-top: 4px;
-    color: #b3b4b6;
+    color: var(--text-muted);
 }
 
 .newTripCard {
@@ -18,8 +18,8 @@
     margin: 0 auto 16px;
     padding: 14px;
     border-radius: 10px;
-    background: #3c3c3c;
-    box-shadow: 0 10px 10px #191919;
+    background: var(--surface-card);
+    box-shadow: var(--shadow-elevated);
 }
 
 .newTripCard h3 {
@@ -72,9 +72,9 @@
     width: 100%;
     padding: 10px 12px;
     box-sizing: border-box;
-    border: 1px solid #686868;
+    border: 1px solid var(--border-strong);
     border-radius: 8px;
-    background: #2f2f2f;
+    background: var(--surface-input);
     color: inherit;
     font-family: inherit;
     font-size: 0.95rem;
@@ -98,7 +98,7 @@
 
 .bigField::placeholder,
 .smallField::placeholder {
-    color: #9ea2ab;
+    color: var(--text-placeholder);
 }
 
 .stopsList {
@@ -109,9 +109,9 @@
 
 .stopCard {
     padding: 12px;
-    border: 1px solid #505050;
+    border: 1px solid var(--border-default);
     border-radius: 8px;
-    background: #343434;
+    background: var(--surface-card-alt);
 }
 
 .stopCard h4 {
@@ -142,22 +142,22 @@
     gap: 8px;
     margin: 0;
     padding: 8px 10px;
-    border: 1px solid #505050;
+    border: 1px solid var(--border-default);
     border-radius: 8px;
-    background: #343434;
+    background: var(--surface-card-alt);
 }
 
 .checkboxItem input {
     margin: 0;
-    accent-color: #2f5bf2;
+    accent-color: var(--accent-strong);
 }
 
 .secondaryButton {
     padding: 8px 12px;
     border: 0;
     border-radius: 8px;
-    background: #0835c8;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--accent-contrast);
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
@@ -165,14 +165,14 @@
 
 .slider {
     width: 100%;
-    accent-color: #2f5bf2;
+    accent-color: var(--accent-strong);
 }
 
 .sliderLabel {
     display: block;
     text-align: center;
     font-size: 0.85rem;
-    color: #b3b4b6;
+    color: var(--text-muted);
 }
 
 .generateButton {
@@ -182,13 +182,13 @@
     padding: 14px;
     border: 0;
     border-radius: 10px;
-    background: #0835c8;
-    color: #ffffff;
+    background: var(--accent);
+    color: var(--accent-contrast);
     font-family: inherit;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 10px 10px #191919;
+    box-shadow: var(--shadow-elevated);
 }
 
 @media (max-width: 420px) {
@@ -212,42 +212,4 @@
 .mapSearchIcon {
     mask-image: url(../../assets/map_search.svg);
     width: 24px;
-}
-
-@media (prefers-color-scheme: light) {
-    .newTripHeader p,
-    .sliderLabel {
-        color: #5f6874;
-    }
-
-    .newTripCard {
-        background: #f9f9f9;
-        box-shadow: 0 10px 10px #cdcdcd;
-    }
-
-    .bigField,
-    .smallField {
-        background: #ffffff;
-        border-color: #d4d7dc;
-        color: #111111;
-    }
-
-    .bigField::placeholder,
-    .smallField::placeholder {
-        color: #7d8694;
-    }
-
-    .stopCard,
-    .checkboxItem {
-        background: #ffffff;
-        border-color: #d8dbe0;
-    }
-
-    .generateButton {
-        box-shadow: 0 10px 10px #cdcdcd;
-    }
-
-    .icon {
-        background-color: #0a0a0a;
-    }
 }
