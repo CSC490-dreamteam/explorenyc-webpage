@@ -1,0 +1,28 @@
+            - name: Railway Preview Deploy Action
+  # You may pin to the exact commit or the version.
+  # uses: ayungavis/railway-preview-deploy@10f7ea1ca8cb3222effaf7184776ad2898d80ba7
+ #  uses: ayungavis/railway-preview-deploy@v1.0.2
+  with:
+    # The Railway API token
+    railway_api_token: 
+    # The Railway project ID, you can find it in the Railway dashboard > Settings > General page
+    project_id: 
+    # The environment name to be base of the preview deployment
+    environment_name: 
+    # The environment ID to be base of the preview deployment. If it's provided, the `environment_name` will be ignored
+    environment_id: # optional
+    # The new environment name to be created for the preview deployment. E.g. `pr-<PR_NUMBER>-<SHORT_COMMIT_HASH>`
+    preview_environment_name: 
+    # The environment variables to be set in the preview deployment. Should be a JSON object of key value paris. E.g. {"DATABASE_URL": "test_url", "A": "abc", "D": "efg"}
+    environment_variables: # optional
+    # The name of the API service to use for the PR environment. This is used to identify the domain of the deployed PR environment
+    api_service_name: # optional
+    # List of service name to ignore when redeploying the PR environment. This is useful for services that don't need to be redeployed on every PR
+    ignore_service_redeploy: # optional
+    # The branch name of the PR to be used for the preview deployment
+    branch_name: 
+    # Whether to reuse the existing preview environment if it's already created
+    reuse_preview_environment: # optional, default is true
+    # Whether to cleanup the preview environment after the PR is closed
+    cleanup: # optional, default is false
+          
