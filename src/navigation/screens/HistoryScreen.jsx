@@ -34,16 +34,19 @@ export default function History({ setCurrentScreen }) {
             </div>
 
             <div className="trip-box">
-                <div style={{width:'20%', paddingRight:'1%'}}>
-                    <img src='/new-york-city.jpeg' />
+                <div className="trip-box-image">
+                    <img src='/new-york-city.jpeg' alt="New York City trip preview" />
                 </div>
-                <div className="trip-box-content" style={{width:'65%'}}>
+                <div className="trip-box-content">
                     <h3>NYC Adventure</h3>
                     <p>Completed</p>
-                    <br/>
-                    <label>🗓️ Feb 8, 2026 </label> <label>📍 5 stops </label> <label> 🕒 1 day </label>
+                    <div className="trip-box-meta" aria-label="Trip details">
+                        <span>🗓️ Feb 8, 2026</span>
+                        <span>📍 5 stops</span>
+                        <span>🕒 1 day</span>
+                    </div>
                 </div>
-                <button className="trip-action-btn" type="button" style={{marginRight:'1%'}}>
+                <button className="trip-action-btn trip-box-button" type="button">
                     View
                 </button>
             </div>
