@@ -249,3 +249,9 @@
     }
 }
 
+.mapSearchIcon {
+    width: 24px;
+    height: 24px;
+    -webkit-mask-image: url(../../assets/map_search.svg);
+    mask-image: url(../../assets/map_search.svg);
+}
