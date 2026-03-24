@@ -191,6 +191,46 @@
     box-shadow: var(--shadow-elevated);
 }
 
+.loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: grid;
+    place-items: center;
+    z-index: 200;
+}
+
+.loadingCard {
+    width: min(260px, 80vw);
+    padding: 20px 18px;
+    border-radius: 16px;
+    background: var(--surface-card);
+    box-shadow: var(--shadow-elevated);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.loadingSpinner {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.25);
+    border-top-color: var(--accent-strong);
+    animation: spin 0.9s linear infinite;
+}
+
+.loadingText {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 @media (max-width: 420px) {
     .cardTitleRow {
         flex-direction: column;
@@ -209,7 +249,3 @@
     }
 }
 
-.mapSearchIcon {
-    mask-image: url(../../assets/map_search.svg);
-    width: 24px;
-}
