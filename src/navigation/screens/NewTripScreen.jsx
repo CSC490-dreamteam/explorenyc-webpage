@@ -4,7 +4,7 @@ import SearchModal from './components/SearchModal';
 
 
 function NewTripScreen() {
-    const [bufferMinutes, setBufferMinutes] = useState(0)
+    //const [bufferMinutes, setBufferMinutes] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
     const [startLocation, setStartLocation] = useState('')
     const [errorState, setErrorState] = useState(null)
@@ -89,7 +89,7 @@ function NewTripScreen() {
     }]);
 
     //function that edits a stop by index, used when the user changes it in the ui
-    //under the hood it takes the existing stops array, , edits one index entry as needed, then reassigns the state variable to the new array
+    //under the hood it takes the existing stops array, edits one index entry as needed, then reassigns the state variable to the new array
     const handleStopChange = (index, field, value) => {
         const newStops = [...stops];
         newStops[index][field] = value;
@@ -163,6 +163,8 @@ function NewTripScreen() {
                 <h2>Plan New Trip</h2>
                 <p>Customize your NYC adventure</p>
             </div>
+
+
 
             <section className="newTripCard">
                 <h3>Trip Name</h3>
@@ -283,8 +285,17 @@ function NewTripScreen() {
                 </div>
             </section>
 
+            {/*<section className="newTripCard">
+                <h3>Transportation</h3>
+                <div className="checkboxGrid">
+                    <label className="checkboxItem"><input type="checkbox" /> Subway</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Car</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Walking</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Uber</label>
+                </div>
+            </section>*/}
 
-            <section className="newTripCard">
+            {/*<section className="newTripCard">
                 <h3 className="subsectionTitle">Preferences</h3>
 
                 <div className="fieldGroup">
@@ -301,7 +312,7 @@ function NewTripScreen() {
                     />
                     <label className="sliderLabel">{formatBufferLabel(bufferMinutes)}</label>
                 </div>
-            </section>
+            </section>*/}
 
             <button type="button" className="generateButton" onClick={handleGenerateTripSubmit}>
                 Generate My Trip
@@ -359,7 +370,7 @@ function StopEntryBlock({data, onChange, index}) {
                 />
             )}
 
-            <div className="checkboxGrid stopOptions">
+            <div className="stopOptions">
                 <label className="checkboxItem">
                     <input
                         type="checkbox"
@@ -368,32 +379,36 @@ function StopEntryBlock({data, onChange, index}) {
                     />
                     Mandatory
                 </label>
-                <label className="checkboxItem">
+                {/*<label className="checkboxItem">
                     <input
                         type="checkbox"
                         checked={data.flexible}
                         onChange={(e) => onChange('flexible', e.target.checked)}
                     />
                     Flexible
-                </label>
+                </label>*/}
+                <div className="stopOptionsTimeGroup">
+                    <label className="stopOptionsTimeLabel" htmlFor={`stop-time-${index}`}>
+                        Time Preference
+                    </label>
+                    <input
+                        id={`stop-time-${index}`}
+                        type="time"
+                        className="smallField timeField stopOptionsTimeField"
+                        value={data.timePreference}
+                        onChange={(e) => onChange('timePreference', e.target.value)}
+                    />
+                </div>
             </div>
 
-            <div className="fieldGroup">
-                <label htmlFor={`stop-time-${index}`}>Time Preference</label>
-                <input
-                    id={`stop-time-${index}`}
-                    type="time"
-                    className="smallField timeField"
-                    value={data.timePreference}
-                    onChange={(e) => onChange('timePreference', e.target.value)}
-                />
-            </div>
+
+
         </div>
     );
 }
 
 export default NewTripScreen;
-    const formatBufferLabel = (minutes) => {
+    /*const formatBufferLabel = (minutes) => {
         if (minutes >= 120) {
             return '2 hours'
         }
@@ -405,4 +420,4 @@ export default NewTripScreen;
             return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
         }
         return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
-    }
+    }*/
