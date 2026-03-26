@@ -6,6 +6,10 @@ import MapScreen from "./MapScreen.jsx";
 export default function History({ setCurrentScreen }) {
     const [isMapOpen, setIsMapOpen] = useState(false);
 
+    const trips = [
+        {id:1,title:'NYC Adventure',status:'Completed',startDate:'Feb 8, 2026',stops:5,time:'1 day'}
+    ]
+
     return (
         <div className="history-page">
 
@@ -33,23 +37,25 @@ export default function History({ setCurrentScreen }) {
                 </button>
             </div>
 
-            <div className="trip-box">
-                <div className="trip-box-image">
-                    <img src='/new-york-city.jpeg' alt="New York City trip preview" />
-                </div>
-                <div className="trip-box-content">
-                    <h3>NYC Adventure</h3>
-                    <p>Completed</p>
-                    <div className="trip-box-meta" aria-label="Trip details">
-                        <span>🗓️ Feb 8, 2026</span>
-                        <span>📍 5 stops</span>
-                        <span>🕒 1 day</span>
+            {trips.map((trip) => (
+                <div className="trip-box">
+                    <div className="trip-box-image">
+                        <img src='/new-york-city.jpeg' alt="New York City trip preview" />
                     </div>
+                    <div className="trip-box-content">
+                        <h3>{trip.title}</h3>
+                        <p>{trip.status}</p>
+                        <div className="trip-box-meta" aria-label="Trip details">
+                            <span>🗓️ {trip.startDate}</span>
+                            <span>📍 {trip.stops} stops</span>
+                            <span>🕒 {trip.time}</span>
+                        </div>
+                    </div>
+                    <button className="trip-action-btn trip-box-button" type="button">
+                        View
+                    </button>
                 </div>
-                <button className="trip-action-btn trip-box-button" type="button">
-                    View
-                </button>
-            </div>
+            ))}
 
             <button
                 className="trip-action-btn"
@@ -102,16 +108,6 @@ export default function History({ setCurrentScreen }) {
                 </div>
             )}
 
-            {/* Let's make this a reusable component so we can map them later.
-            <div className="trip-box">
-                <h3>Weekend Getaway</h3>
-                <p>⭐ 5.0</p>
-                <p>Completed</p>
-                <p>🕒 2 days 📍 10 stops 💰 500</p>
-                <button className="trip-action-btn" type="button">
-                    View Trip
-                </button>
-            </div>*/}
             </div>
 
 
