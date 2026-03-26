@@ -134,7 +134,6 @@
     width: min(100%, 150px);
     height: min-content;
     align-self: flex-start;
-    max-height: 35px;
 }
 
 .bigField::placeholder,
@@ -204,9 +203,17 @@
 }
 
 .stopOptionsTimeField {
+    height: 38px;
+    min-height: 38px;
     margin-bottom: 0;
     align-self: center;
     flex-shrink: 0;
+    line-height: 1.2;
+}
+
+.stopOptionsTimeField::-webkit-date-and-time-value,
+.stopOptionsTimeField::-webkit-datetime-edit {
+    min-height: 1.2em;
 }
 
 .checkboxItem {
@@ -317,8 +324,6 @@
 
     .timeField {
         width: 70%;
-        min-height: 30px;
-        max-height: 30px;
     }
 
     .stopOptions {
@@ -345,6 +350,8 @@
 
     .stopOptionsTimeField {
         width: 108px;
+        height: 38px;
+        min-height: 38px;
     }
 }
 
