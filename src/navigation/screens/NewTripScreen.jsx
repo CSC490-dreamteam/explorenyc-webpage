@@ -105,7 +105,7 @@ function NewTripScreen() {
         if (stops.length >= maxStopsAllowed) {
             setErrorState({
                 target: 'addStop',
-                message: 'You cannot add any more stops.',
+                message: 'Stop limit reached.',
                 reason: 'maxStops'
             })
             return

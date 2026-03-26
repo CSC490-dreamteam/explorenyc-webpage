@@ -50,6 +50,18 @@
     margin: 0;
 }
 
+.errorWrapper--inline .errorWrapperLabel {
+    top: 50%;
+    left: auto;
+    right: calc(100% + 12px);
+    transform: translateY(-50%);
+    width: 118px;
+    padding: 0;
+    background: transparent;
+    text-align: right;
+    line-height: 1.15;
+}
+
 .newTripCard h3 {
     margin: 0 0 12px;
 }
