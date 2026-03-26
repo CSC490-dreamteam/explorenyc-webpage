@@ -161,6 +161,7 @@ function NewTripScreen() {
                                 key={index}
                                 index={index}
                                 data={stop}
+                                stopCount={stops.length}
                                 onChange={(field, value) => handleStopChange(index, field, value)}
                                 onDelete={() => removeStop(index)}
                             />
@@ -210,7 +211,7 @@ function NewTripScreen() {
     );
 }
 
-function StopEntryBlock({data, onChange, index, onDelete}) {
+function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -232,14 +233,16 @@ function StopEntryBlock({data, onChange, index, onDelete}) {
                         </button>
                     )}
 
-                    <button
-                        type="button"
-                        className="stopDeleteButton"
-                        onClick={onDelete}
-                        aria-label={`Delete stop ${index + 1}`}
-                    >
-                        ❌
-                    </button>
+                    {stopCount > 1 && (
+                        <button
+                            type="button"
+                            className="stopDeleteButton"
+                            onClick={onDelete}
+                            aria-label={`Delete stop ${index + 1}`}
+                        >
+                            ❌
+                        </button>
+                    )}
                 </div>
             </div>
 
