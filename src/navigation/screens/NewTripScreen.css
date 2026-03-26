@@ -118,8 +118,9 @@
 }
 
 .timeField {
+    width: min(100%, 150px);
     min-width: 150px;
-    flex: 0 0 150px;
+    max-width: 150px;
     align-self: flex-start;
     max-height: 35px;
 }
@@ -270,10 +271,15 @@
     }
 
     .timeField {
-        width: 150px;
+        width: min(100%, 136px);
         min-width: 136px;
         max-width: 136px;
-        flex: 0 0 136px;
     }
 }
 
+.mapSearchIcon {
+    width: 24px;
+    height: 24px;
+    -webkit-mask-image: url(../../assets/map_search.svg);
+    mask-image: url(../../assets/map_search.svg);
+}

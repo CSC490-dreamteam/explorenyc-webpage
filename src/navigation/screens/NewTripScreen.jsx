@@ -1,5 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
+import SearchModal from './components/SearchModal';
+
 
 function NewTripScreen() {
     const [bufferMinutes, setBufferMinutes] = useState(0)
@@ -32,6 +34,8 @@ function NewTripScreen() {
             return
         }
 
+        // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
+        const popup = window.open('about:blank', '_blank');
         //later this will have everything we throw to the backend for submission
         const tripData = {
             locations: stops.map(stop => stop.location)
@@ -55,12 +59,22 @@ function NewTripScreen() {
             }
 
             const responseData = await response.json(); //get generated trip
-            
-            window.open(responseData.url, '_blank'); //open google map url in new tab
+
+            if (popup && !popup.closed) {
+                popup.location = responseData.url;
+                if (popup.opener) {
+                    popup.opener = null;
+                }
+            } else {
+                window.location.assign(responseData.url);
+            }
 
 
         } catch (error) {
             console.error('Error submitting trip data:', error);
+            if (popup && !popup.closed) {
+                popup.close();
+            }
         } finally {
             setIsLoading(false)
         }
@@ -326,10 +340,17 @@ function ErrorWrapper({message, children, innerRef, className = ''}) {
 }
 
 function StopEntryBlock({data, onChange, index}) {
+    
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <div className="stopCard">
+            <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <h4>Stop {index + 1}</h4>
-
+            <button type="button" onClick={() => setIsModalOpen(true)}>
+                <div className='icon mapSearchIcon'/>
+            </button>
+            </div>
             <div className="fieldGroup">
                 <label htmlFor={`stop-location-${index}`}>Location</label>
                 <input
@@ -341,6 +362,16 @@ function StopEntryBlock({data, onChange, index}) {
                     placeholder="e.g. Central Park"
                 />
             </div>
+
+            {isModalOpen && (
+                <SearchModal 
+                    onClose={() => setIsModalOpen(false)} 
+                    onSelect={(val) => {
+                        onChange('location', val); // Update the main form
+                        setIsModalOpen(false);      // Close modal
+                    }} 
+                />
+            )}
 
             <div className="checkboxGrid stopOptions">
                 <label className="checkboxItem">
@@ -382,7 +413,10 @@ export default NewTripScreen;
         }
         if (minutes >= 60) {
             const remainder = minutes - 60
-            return remainder === 0 ? '1 hour' : `1 hour ${remainder} minutes`
+            if (remainder === 0) {
+                return '1 hour'
+            }
+            return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
         }
-        return `${minutes} minutes`
+        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
     }
