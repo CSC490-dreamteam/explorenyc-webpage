@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
 
@@ -6,9 +6,34 @@ import SearchModal from './components/SearchModal';
 function NewTripScreen() {
     const [bufferMinutes, setBufferMinutes] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
+    const [startLocation, setStartLocation] = useState('')
+    const [errorState, setErrorState] = useState(null)
+    const [endLocation, setEndLocation] = useState('')
+
+    const addStopErrorRef = useRef(null)
+    const startPointErrorRef = useRef(null)
+    const baseMaxStops = 8
 
     //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
+        if (stops.length < 2) {
+            setErrorState({
+                target: 'addStop',
+                message: 'You must enter at least 2 stops.',
+                reason: 'minStops'
+            })
+            return
+        }
+
+        if (!startLocation.trim()) {
+            setErrorState({
+                target: 'startPoint',
+                message: 'You must specify a starting point.',
+                reason: 'missingStart'
+            })
+            return
+        }
+
         // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
         const popup = window.open('about:blank', '_blank');
         //later this will have everything we throw to the backend for submission
@@ -17,6 +42,7 @@ function NewTripScreen() {
         };
         console.log(tripData);
 
+        setErrorState(null)
         setIsLoading(true)
         try { //fetch request from backend
             const response = await fetch('https://explorenyc-backend-testing.up.railway.app/GenerateRoute', {
@@ -71,10 +97,57 @@ function NewTripScreen() {
     };
 
     //adds stop to the stops array
+    const trimmedStartLocation = startLocation.trim()
+    const trimmedEndLocation = endLocation.trim()
+    const maxStopsAllowed = trimmedStartLocation && !trimmedEndLocation ? 9 : baseMaxStops
+
     const addStop = () => {
+        if (stops.length >= maxStopsAllowed) {
+            setErrorState({
+                target: 'addStop',
+                message: 'Stop limit reached.',
+                reason: 'maxStops'
+            })
+            return
+        }
+
         setStops([...stops, { location: '', mandatory: false, flexible: false, timePreference: '' }]);
+        if (errorState?.reason === 'minStops') {
+            setErrorState(null)
+        }
     };
 
+    useEffect(() => {
+        if (!errorState) {
+            return
+        }
+
+        const refMap = {
+            addStop: addStopErrorRef,
+            startPoint: startPointErrorRef
+        }
+
+        const targetRef = refMap[errorState.target]
+        if (targetRef?.current) {
+            targetRef.current.scrollIntoView({behavior: 'smooth', block: 'center'})
+            targetRef.current.focus({preventScroll: true})
+        }
+    }, [errorState])
+
+    useEffect(() => {
+        if (errorState?.reason === 'maxStops' && stops.length < maxStopsAllowed) {
+            setErrorState(null)
+        }
+    }, [errorState, maxStopsAllowed, stops.length])
+
+    const addStopButton = (
+        <button type="button" className="secondaryButton" onClick={addStop}>
+            + Add Stop
+        </button>
+    )
+
+    const isAddStopError = errorState?.target === 'addStop'
+    const isStartPointError = errorState?.target === 'startPoint'
 
     return (
         <div className='newTripPage'>
@@ -105,7 +178,6 @@ function NewTripScreen() {
                 <div className="fieldGroup">
                     <label htmlFor="trip-date">Date</label>
                     <div className="inputWithIcon">
-                        <span aria-hidden="true">🗓</span>
                         <input id="trip-date" type="date" className="smallField" />
                     </div>
                 </div>
@@ -125,19 +197,58 @@ function NewTripScreen() {
 
             <section className="newTripCard">
                 <h3>Start & End Points</h3>
-                <div className="fieldGroup">
-                    <label htmlFor="trip-start">Starting Location</label>
-                    <div className="inputWithIcon">
-                        <span aria-hidden="true">📍</span>
-                        <input id="trip-start" type="text" className="smallField noZoomField" placeholder="Enter starting point" />
+                {isStartPointError ? (
+                    <ErrorWrapper
+                        message={errorState.message}
+                        innerRef={startPointErrorRef}
+                    >
+                        <div className="fieldGroup">
+                            <label htmlFor="trip-start">Starting Location</label>
+                            <div className="inputWithIcon">
+                                <input
+                                    id="trip-start"
+                                    type="text"
+                                    className="smallField noZoomField"
+                                    placeholder="Enter starting point"
+                                value={startLocation}
+                                onChange={(e) => {
+                                    const nextValue = e.target.value
+                                    setStartLocation(nextValue)
+                                    if (nextValue.trim()) {
+                                        setErrorState(null)
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </ErrorWrapper>
+                ) : (
+                    <div className="fieldGroup">
+                        <label htmlFor="trip-start">Starting Location</label>
+                        <div className="inputWithIcon">
+                            <input
+                                id="trip-start"
+                                type="text"
+                                className="smallField noZoomField"
+                                placeholder="Enter starting point"
+                                value={startLocation}
+                                onChange={(e) => setStartLocation(e.target.value)}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="fieldGroup">
                     <label htmlFor="trip-end">Ending Location</label>
                     <div className="inputWithIcon">
-                        <span aria-hidden="true">📍</span>
-                        <input id="trip-end" type="text" className="smallField noZoomField" placeholder="Enter ending point" />
+                        <input
+                            id="trip-end"
+                            type="text"
+                            className="smallField noZoomField"
+                            placeholder="Enter ending point"
+                            value={endLocation}
+                            onChange={(e) => setEndLocation(e.target.value)}
+                        />
                     </div>
                 </div>
             </section>
@@ -145,9 +256,17 @@ function NewTripScreen() {
             <section className="newTripCard">
                 <div className="cardTitleRow">
                     <h3>Stops</h3>
-                    <button type="button" className="secondaryButton" onClick={addStop}>
-                        + Add Stop
-                    </button>
+                    {isAddStopError ? (
+                        <ErrorWrapper
+                            message={errorState.message}
+                            innerRef={addStopErrorRef}
+                            className="errorWrapper--inline"
+                        >
+                            {addStopButton}
+                        </ErrorWrapper>
+                    ) : (
+                        addStopButton
+                    )}
                 </div>
 
                 <div className="stopsList">
@@ -203,6 +322,21 @@ function NewTripScreen() {
             </button>
         </div>
     );
+}
+
+function ErrorWrapper({message, children, innerRef, className = ''}) {
+    return (
+        <div
+            className={`errorWrapper ${className}`.trim()}
+            ref={innerRef}
+            role="alert"
+            aria-live="assertive"
+            tabIndex={-1}
+        >
+            <span className="errorWrapperLabel">{message}</span>
+            {children}
+        </div>
+    )
 }
 
 function StopEntryBlock({data, onChange, index}) {
