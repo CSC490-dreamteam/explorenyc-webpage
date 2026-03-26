@@ -4,7 +4,6 @@ import SearchModal from './components/SearchModal';
 
 
 function NewTripScreen() {
-    //const [bufferMinutes, setBufferMinutes] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
     const [startLocation, setStartLocation] = useState('')
     const [errorState, setErrorState] = useState(null)
@@ -285,34 +284,7 @@ function NewTripScreen() {
                 </div>
             </section>
 
-            {/*<section className="newTripCard">
-                <h3>Transportation</h3>
-                <div className="checkboxGrid">
-                    <label className="checkboxItem"><input type="checkbox" /> Subway</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Car</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Walking</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Uber</label>
-                </div>
-            </section>*/}
 
-            {/*<section className="newTripCard">
-                <h3 className="subsectionTitle">Preferences</h3>
-
-                <div className="fieldGroup">
-                    <label htmlFor="stop-buffer">Buffer Time Between Stops</label>
-                    <input
-                        id="stop-buffer"
-                        type="range"
-                        min="0"
-                        max="120"
-                        step="1"
-                        value={bufferMinutes}
-                        onChange={(e) => setBufferMinutes(Number(e.target.value))}
-                        className='slider'
-                    />
-                    <label className="sliderLabel">{formatBufferLabel(bufferMinutes)}</label>
-                </div>
-            </section>*/}
 
             <button type="button" className="generateButton" onClick={handleGenerateTripSubmit}>
                 Generate My Trip
@@ -339,7 +311,7 @@ function ErrorWrapper({message, children, innerRef, className = ''}) {
 function StopEntryBlock({data, onChange, index}) {
     
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const [bufferMinutes, setBufferMinutes] = useState(0)
     return (
         <div className="stopCard">
             <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -400,7 +372,20 @@ function StopEntryBlock({data, onChange, index}) {
                     />
                 </div>
             </div>
-
+            <div className="fieldGroup">
+                <label htmlFor="stop-buffer">Duration of Stay</label>
+                <input
+                    id="stop-buffer"
+                    type="range"
+                    min="0"
+                    max="120"
+                    step="1"
+                    value={bufferMinutes}
+                    onChange={(e) => setBufferMinutes(Number(e.target.value))}
+                    className='slider'
+                />
+                <label className="sliderLabel">{formatBufferLabel(bufferMinutes)}</label>
+            </div>
 
 
         </div>
@@ -408,7 +393,7 @@ function StopEntryBlock({data, onChange, index}) {
 }
 
 export default NewTripScreen;
-    /*const formatBufferLabel = (minutes) => {
+    const formatBufferLabel = (minutes) => {
         if (minutes >= 120) {
             return '2 hours'
         }
@@ -420,4 +405,4 @@ export default NewTripScreen;
             return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
         }
         return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
-    }*/
+    }

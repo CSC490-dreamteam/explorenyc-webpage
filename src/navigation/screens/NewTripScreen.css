@@ -110,6 +110,7 @@
 .bigField,
 .smallField {
     width: 100%;
+    height: min-content;
     padding: 10px 12px;
     box-sizing: border-box;
     border: 1px solid var(--border-strong);
@@ -131,8 +132,7 @@
 
 .timeField {
     width: min(100%, 150px);
-    min-width: 150px;
-    max-width: 150px;
+    height: min-content;
     align-self: flex-start;
     max-height: 35px;
 }
@@ -316,7 +316,9 @@
     }
 
     .timeField {
-        width: 80%;
+        width: 70%;
+        min-height: 30px;
+        max-height: 30px;
     }
 
     .stopOptions {
