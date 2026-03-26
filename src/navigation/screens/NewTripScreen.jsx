@@ -75,6 +75,10 @@ function NewTripScreen() {
         setStops([...stops, { location: '', mandatory: false, flexible: false, timePreference: '' }]);
     };
 
+    const removeStop = (indexToRemove) => {
+        setStops(stops.filter((_, index) => index !== indexToRemove));
+    };
+
 
     return (
         <div className='newTripPage'>
@@ -158,6 +162,7 @@ function NewTripScreen() {
                                 index={index}
                                 data={stop}
                                 onChange={(field, value) => handleStopChange(index, field, value)}
+                                onDelete={() => removeStop(index)}
                             />
                         ))
                     }
@@ -205,70 +210,106 @@ function NewTripScreen() {
     );
 }
 
-function StopEntryBlock({data, onChange, index}) {
+function StopEntryBlock({data, onChange, index, onDelete}) {
     
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
-        <div className="stopCard">
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-            <h4>Stop {index + 1}</h4>
-            <button type="button" onClick={() => setIsModalOpen(true)}>
-                <div className='icon mapSearchIcon'/>
+        <div className={`stopCard ${isCollapsed ? 'stopCardCollapsed' : ''}`}>
+            <div className="stopCardHeader">
+                <h4>
+                    {`Stop ${index + 1}`}
+
+                    {data.location.trim() && isCollapsed && (
+                        <span className="stopCardLocationLabel">{data.location.trim()}</span>
+                    )}
+                </h4>
+                <div className="stopCardActions">
+                    {!isCollapsed && (
+                        <button type="button" onClick={() => setIsModalOpen(true)}>
+                            <div className='icon mapSearchIcon'/>
+                        </button>
+                    )}
+
+                    <button
+                        type="button"
+                        className="stopDeleteButton"
+                        onClick={onDelete}
+                        aria-label={`Delete stop ${index + 1}`}
+                    >
+                        ❌
+                    </button>
+                </div>
+            </div>
+
+            {isCollapsed ? null : (
+                <>
+                    <div className="fieldGroup">
+                        <label htmlFor={`stop-location-${index}`}>Location</label>
+                        <input
+                            id={`stop-location-${index}`}
+                            type="text"
+                            className="smallField noZoomField"
+                            value={data.location}
+                            onChange={(e) => onChange('location', e.target.value)}
+                            placeholder="e.g. Central Park"
+                        />
+                    </div>
+
+                    {isModalOpen && (
+                        <SearchModal 
+                            onClose={() => setIsModalOpen(false)} 
+                            onSelect={(val) => {
+                                onChange('location', val); // Update the main form
+                                setIsModalOpen(false);      // Close modal
+                            }} 
+                        />
+                    )}
+
+                    <div className="checkboxGrid stopOptions">
+                        <label className="checkboxItem">
+                            <input
+                                type="checkbox"
+                                checked={data.mandatory}
+                                onChange={(e) => onChange('mandatory', e.target.checked)}
+                            />
+                            Mandatory
+                        </label>
+                        <label className="checkboxItem">
+                            <input
+                                type="checkbox"
+                                checked={data.flexible}
+                                onChange={(e) => onChange('flexible', e.target.checked)}
+                            />
+                            Flexible
+                        </label>
+                    </div>
+
+                    <div className="fieldGroup">
+                        <label htmlFor={`stop-time-${index}`}>Time Preference</label>
+                        <input
+                            id={`stop-time-${index}`}
+                            type="time"
+                            className="smallField timeField"
+                            value={data.timePreference}
+                            onChange={(e) => onChange('timePreference', e.target.value)}
+                        />
+                    </div>
+                </>
+            )}
+            <div style={{width: '100%'}}>
+            <button
+                type="button"
+                className="stopCardToggle"
+                style={{width:'100%'}}
+                onClick={() => setIsCollapsed((current) => !current)}
+            >
+                {isCollapsed ? '⌄' : '^'}
             </button>
             </div>
-            <div className="fieldGroup">
-                <label htmlFor={`stop-location-${index}`}>Location</label>
-                <input
-                    id={`stop-location-${index}`}
-                    type="text"
-                    className="smallField noZoomField"
-                    value={data.location}
-                    onChange={(e) => onChange('location', e.target.value)}
-                    placeholder="e.g. Central Park"
-                />
-            </div>
-
-            {isModalOpen && (
-                <SearchModal 
-                    onClose={() => setIsModalOpen(false)} 
-                    onSelect={(val) => {
-                        onChange('location', val); // Update the main form
-                        setIsModalOpen(false);      // Close modal
-                    }} 
-                />
-            )}
-
-            <div className="checkboxGrid stopOptions">
-                <label className="checkboxItem">
-                    <input
-                        type="checkbox"
-                        checked={data.mandatory}
-                        onChange={(e) => onChange('mandatory', e.target.checked)}
-                    />
-                    Mandatory
-                </label>
-                <label className="checkboxItem">
-                    <input
-                        type="checkbox"
-                        checked={data.flexible}
-                        onChange={(e) => onChange('flexible', e.target.checked)}
-                    />
-                    Flexible
-                </label>
-            </div>
-
-            <div className="fieldGroup">
-                <label htmlFor={`stop-time-${index}`}>Time Preference</label>
-                <input
-                    id={`stop-time-${index}`}
-                    type="time"
-                    className="smallField timeField"
-                    value={data.timePreference}
-                    onChange={(e) => onChange('timePreference', e.target.value)}
-                />
-            </div>
         </div>
+
     );
 }
 
