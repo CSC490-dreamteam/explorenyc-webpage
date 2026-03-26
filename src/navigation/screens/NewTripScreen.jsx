@@ -283,23 +283,9 @@ function NewTripScreen() {
                 </div>
             </section>
 
-            <section className="newTripCard">
-                <h3>Transportation</h3>
-                <div className="checkboxGrid">
-                    <label className="checkboxItem"><input type="checkbox" /> Subway</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Car</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Walking</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Uber</label>
-                </div>
-            </section>
+
             <section className="newTripCard">
                 <h3 className="subsectionTitle">Preferences</h3>
-                <div className="checkboxList">
-                    <label className="checkboxItem"><input type="checkbox" /> Avoid rush hour (5-7 PM)</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Instagram-worthy spots</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Low-key, hidden gems</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Off the beaten path</label>
-                </div>
 
                 <div className="fieldGroup">
                     <label htmlFor="stop-buffer">Buffer Time Between Stops</label>
