@@ -116,6 +116,10 @@ function NewTripScreen() {
         }
     };
 
+    const removeStop = (indexToRemove) => {
+        setStops(stops.filter((_, index) => index !== indexToRemove));
+    };
+
     useEffect(() => {
         if (!errorState) {
             return
@@ -277,7 +281,9 @@ function NewTripScreen() {
                                 key={index}
                                 index={index}
                                 data={stop}
+                                stopCount={stops.length}
                                 onChange={(field, value) => handleStopChange(index, field, value)}
+                                onDelete={() => removeStop(index)}
                             />
                         ))
                     }
@@ -308,39 +314,27 @@ function ErrorWrapper({message, children, innerRef, className = ''}) {
     )
 }
 
-function StopEntryBlock({data, onChange, index}) {
-    
+function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [bufferMinutes, setBufferMinutes] = useState(0)
-    return (
-        <div className="stopCard">
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-            <h4>Stop {index + 1}</h4>
-            <button type="button" onClick={() => setIsModalOpen(true)}>
-                <div className='icon mapSearchIcon'/>
-            </button>
-            </div>
-            <div className="fieldGroup">
-                <label htmlFor={`stop-location-${index}`}>Location</label>
-                <input
-                    id={`stop-location-${index}`}
-                    type="text"
-                    className="smallField noZoomField"
-                    value={data.location}
-                    onChange={(e) => onChange('location', e.target.value)}
-                    placeholder="e.g. Central Park"
-                />
-            </div>
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
-            {isModalOpen && (
-                <SearchModal 
-                    onClose={() => setIsModalOpen(false)} 
-                    onSelect={(val) => {
-                        onChange('location', val); // Update the main form
-                        setIsModalOpen(false);      // Close modal
-                    }} 
-                />
-            )}
+    return (
+        <div className={`stopCard ${isCollapsed ? 'stopCardCollapsed' : ''}`}>
+            <div className="stopCardHeader">
+                <h4>
+                    {`Stop ${index + 1}`}
+
+                    {data.location.trim() && isCollapsed && (
+                        <span className="stopCardLocationLabel">{data.location.trim()}</span>
+                    )}
+                </h4>
+                <div className="stopCardActions">
+                    {!isCollapsed && (
+                        <button type="button" onClick={() => setIsModalOpen(true)}>
+                            <div className='icon mapSearchIcon'/>
+                        </button>
+                    )}
 
             <div className="stopOptions">
                 <label className="checkboxItem">
@@ -385,10 +379,69 @@ function StopEntryBlock({data, onChange, index}) {
                     className='slider'
                 />
                 <label className="sliderLabel">{formatBufferLabel(bufferMinutes)}</label>
+                    {stopCount > 1 && (
+                        <button
+                            type="button"
+                            className="stopDeleteButton"
+                            onClick={onDelete}
+                            aria-label={`Delete stop ${index + 1}`}
+                        >
+                            ❌
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {isCollapsed ? null : (
+                <>
+                    <div className="fieldGroup">
+                        <label htmlFor={`stop-location-${index}`}>Location</label>
+                        <input
+                            id={`stop-location-${index}`}
+                            type="text"
+                            className="smallField noZoomField"
+                            value={data.location}
+                            onChange={(e) => onChange('location', e.target.value)}
+                            placeholder="e.g. Central Park"
+                        />
+                    </div>
+
+                    {isModalOpen && (
+                        <SearchModal 
+                            onClose={() => setIsModalOpen(false)} 
+                            onSelect={(val) => {
+                                onChange('location', val); // Update the main form
+                                setIsModalOpen(false);      // Close modal
+                            }} 
+                        />
+                    )}
+
+                    <div className="fieldGroup">
+                        <label htmlFor={`stop-time-${index}`}>Time Preference</label>
+                        <input
+                            id={`stop-time-${index}`}
+                            type="time"
+                            className="smallField timeField"
+                            value={data.timePreference}
+                            onChange={(e) => onChange('timePreference', e.target.value)}
+                        />
+                    </div>
+                </>
+            )}
+            <div style={{width: '100%'}}>
+            <button
+                type="button"
+                className="stopCardToggle"
+                style={{width:'100%'}}
+                onClick={() => setIsCollapsed((current) => !current)}
+            >
+                {isCollapsed ? '⌄' : '^'}
+            </button>
             </div>
 
 
         </div>
+
     );
 }
 
