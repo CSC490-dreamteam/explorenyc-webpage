@@ -238,7 +238,7 @@
 }
 
 .stopOptionsTimeGroup {
-    margin-left: auto;
+    margin-left: 20%;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -261,8 +261,8 @@
     line-height: 1.2;
 }
 
-.stopOptionsTimeField::-webkit-date-and-time-value,
-.stopOptionsTimeField::-webkit-datetime-edit {
+.stopOptionsTimeField::-webkit-date-and-time-value
+/*.stopOptionsTimeField::-webkit-datetime-edit*/ {
     min-height: 1.2em;
 }
 

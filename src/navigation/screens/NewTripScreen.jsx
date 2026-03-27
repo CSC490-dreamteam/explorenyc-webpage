@@ -292,6 +292,7 @@ function NewTripScreen() {
 
 
 
+
             <button type="button" className="generateButton" onClick={handleGenerateTripSubmit}>
                 Generate My Trip
             </button>
@@ -316,7 +317,7 @@ function ErrorWrapper({message, children, innerRef, className = ''}) {
 
 function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [bufferMinutes, setBufferMinutes] = useState(0)
+    const [stayDurationMinutes, setStayDurationMinutes] = useState(0)
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
@@ -336,49 +337,6 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                         </button>
                     )}
 
-            <div className="stopOptions">
-                <label className="checkboxItem">
-                    <input
-                        type="checkbox"
-                        checked={data.mandatory}
-                        onChange={(e) => onChange('mandatory', e.target.checked)}
-                    />
-                    Mandatory
-                </label>
-                {/*<label className="checkboxItem">
-                    <input
-                        type="checkbox"
-                        checked={data.flexible}
-                        onChange={(e) => onChange('flexible', e.target.checked)}
-                    />
-                    Flexible
-                </label>*/}
-                <div className="stopOptionsTimeGroup">
-                    <label className="stopOptionsTimeLabel" htmlFor={`stop-time-${index}`}>
-                        Time Preference
-                    </label>
-                    <input
-                        id={`stop-time-${index}`}
-                        type="time"
-                        className="smallField timeField stopOptionsTimeField"
-                        value={data.timePreference}
-                        onChange={(e) => onChange('timePreference', e.target.value)}
-                    />
-                </div>
-            </div>
-            <div className="fieldGroup">
-                <label htmlFor="stop-buffer">Duration of Stay</label>
-                <input
-                    id="stop-buffer"
-                    type="range"
-                    min="0"
-                    max="120"
-                    step="1"
-                    value={bufferMinutes}
-                    onChange={(e) => setBufferMinutes(Number(e.target.value))}
-                    className='slider'
-                />
-                <label className="sliderLabel">{formatBufferLabel(bufferMinutes)}</label>
                     {stopCount > 1 && (
                         <button
                             type="button"
@@ -416,15 +374,42 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                         />
                     )}
 
+                    <div className="stopOptions">
+                        <label className="checkboxItem">
+                            <input
+                                type="checkbox"
+                                checked={data.mandatory}
+                                onChange={(e) => onChange('mandatory', e.target.checked)}
+                            />
+                            Mandatory
+                        </label>
+                        <div className="stopOptionsTimeGroup">
+                            <label className="stopOptionsTimeLabel" htmlFor={`stop-time-${index}`}>
+                                Time Preference
+                            </label>
+                            <input
+                                id={`stop-time-${index}`}
+                                type="time"
+                                className="smallField timeField stopOptionsTimeField"
+                                value={data.timePreference}
+                                onChange={(e) => onChange('timePreference', e.target.value)}
+                            />
+                        </div>
+                    </div>
+
                     <div className="fieldGroup">
-                        <label htmlFor={`stop-time-${index}`}>Time Preference</label>
+                        <label htmlFor={`stop-buffer-${index}`}>Duration of Stay</label>
                         <input
-                            id={`stop-time-${index}`}
-                            type="time"
-                            className="smallField timeField"
-                            value={data.timePreference}
-                            onChange={(e) => onChange('timePreference', e.target.value)}
+                            id={`stop-buffer-${index}`}
+                            type="range"
+                            min="0"
+                            max="120"
+                            step="1"
+                            value={stayDurationMinutes}
+                            onChange={(e) => setStayDurationMinutes(Number(e.target.value))}
+                            className='slider'
                         />
+                        <label className="sliderLabel">{formatBufferLabel(stayDurationMinutes)}</label>
                     </div>
                 </>
             )}
@@ -445,17 +430,18 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
     );
 }
 
-export default NewTripScreen;
-    const formatBufferLabel = (minutes) => {
-        if (minutes >= 120) {
-            return '2 hours'
-        }
-        if (minutes >= 60) {
-            const remainder = minutes - 60
-            if (remainder === 0) {
-                return '1 hour'
-            }
-            return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
-        }
-        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+function formatBufferLabel(minutes) {
+    if (minutes >= 120) {
+        return '2 hours'
     }
+    if (minutes >= 60) {
+        const remainder = minutes - 60
+        if (remainder === 0) {
+            return '1 hour'
+        }
+        return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
+    }
+    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+}
+
+export default NewTripScreen;
