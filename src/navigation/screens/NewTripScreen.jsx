@@ -43,7 +43,7 @@ function NewTripScreen() {
 
         if (!entryTime.trim()) {
             setErrorState({
-                target: 'startPoint',
+                target: 'startPoint', //BUGGED
                 message: 'You must specify a start time.',
                 reason: 'missingEntryTime'
             })
@@ -52,7 +52,7 @@ function NewTripScreen() {
 
         if (!exitTime.trim()) {
             setErrorState({
-                target: 'startPoint',
+                target: 'startPoint', //BUGGED
                 message: 'You must specify an exit time.',
                 reason: 'missingExitTime'
             })
