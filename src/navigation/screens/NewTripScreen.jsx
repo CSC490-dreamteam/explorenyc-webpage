@@ -5,9 +5,16 @@ import SearchModal from './components/SearchModal';
 
 function NewTripScreen() {
     const [isLoading, setIsLoading] = useState(false)
-    const [startLocation, setStartLocation] = useState('')
     const [errorState, setErrorState] = useState(null)
+
+    //general trip vars
+    const [startLocation, setStartLocation] = useState('')
     const [endLocation, setEndLocation] = useState('')
+
+    const [tripName, setTripName] = useState('')
+    const [date, setDate] = useState('')
+    const [entryTime, setEntryTime] = useState('')
+    const [exitTime, setExitTime] = useState('')
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
@@ -15,6 +22,7 @@ function NewTripScreen() {
 
     //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
+        //errors
         if (stops.length < 2) {
             setErrorState({
                 target: 'addStop',
@@ -33,18 +41,49 @@ function NewTripScreen() {
             return
         }
 
+        if (!entryTime.trim()) {
+            setErrorState({
+                target: 'startPoint',
+                message: 'You must specify a start time.',
+                reason: 'missingEntryTime'
+            })
+            return
+        }
+
+        if (!exitTime.trim()) {
+            setErrorState({
+                target: 'startPoint',
+                message: 'You must specify an exit time.',
+                reason: 'missingExitTime'
+            })
+            return
+        }
+
+        
+
         // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
         const popup = window.open('about:blank', '_blank');
-        //later this will have everything we throw to the backend for submission
+
         const tripData = {
-            locations: stops.map(stop => stop.location)
+            tripName: tripName.trim() ? tripName.trim() : 'My NYC Trip',
+            date: date,
+            entryTime: entryTime,
+            exitTime: exitTime,
+            startLocation: startLocation.trim(),
+            endLocation: endLocation.trim() ? endLocation.trim() : null,
+            stops: stops.map(stop => ({
+                location: stop.location,
+                mandatory: stop.mandatory,
+                timePreference: stop.timePreference ? stop.timePreference : null,
+                duration: stop.duration
+            }))
         };
         console.log(tripData);
 
         setErrorState(null)
         setIsLoading(true)
         try { //fetch request from backend
-            const response = await fetch('https://explorenyc-backend-testing.up.railway.app/GenerateRoute', {
+            const response = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateItinerary', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -59,6 +98,7 @@ function NewTripScreen() {
 
             const responseData = await response.json(); //get generated trip
 
+            //THE POPUP DOES NOTHNIG CAUSE NO LINK IS GIVEN RN
             if (popup && !popup.closed) {
                 popup.location = responseData.url;
                 if (popup.opener) {
@@ -79,12 +119,11 @@ function NewTripScreen() {
         }
         
     };
-
-
+    
 
     // React state variable known as stops that is an array full of JSON
     const [stops, setStops] = useState([{
-        location: '', mandatory: false, flexible: false, timePreference: ''
+        location: '', mandatory: false, timePreference: '', duration: 60
     }]);
 
     //function that edits a stop by index, used when the user changes it in the ui
@@ -110,7 +149,7 @@ function NewTripScreen() {
             return
         }
 
-        setStops([...stops, { location: '', mandatory: false, flexible: false, timePreference: '' }]);
+        setStops([...stops, { location: '', mandatory: false, timePreference: '', duration: 60 }]);
         if (errorState?.reason === 'minStops') {
             setErrorState(null)
         }
@@ -173,29 +212,35 @@ function NewTripScreen() {
                 <h3>Trip Name</h3>
 
                 <div className="fieldGroup">
-                    <input id="trip-name" type="text" className='bigField' placeholder="e.g. Weekend Food Tour" />
+                    <input id="trip-name" type="text" className='bigField' placeholder="e.g. Weekend Food Tour" 
+                    value={tripName} onChange={(e) => setTripName(e.target.value)}
+                    />
                 </div>
             </section>
 
             <section className="newTripCard">
                 <h3>Time Window</h3>
 
+
                 <div className="fieldGroup">
                     <label htmlFor="trip-date">Date</label>
                     <div className="inputWithIcon">
-                        <input id="trip-date" type="date" className="smallField" />
+                        <input id="trip-date" type="date" className="smallField" 
+                        value={date} onChange={(e) => setDate(e.target.value)}/>
                     </div>
                 </div>
 
                 <div className="fieldRow twoCol">
                     <div className="fieldGroup">
                         <label htmlFor="entry-time">Entry Time</label>
-                        <input id="entry-time" type="time" className="smallField timeField" />
+                        <input id="entry-time" type="time" className="smallField timeField" 
+                        value={entryTime} onChange={(e) => setEntryTime(e.target.value)}/>
                     </div>
 
                     <div className="fieldGroup">
                         <label htmlFor="exit-time">Exit Time</label>
-                        <input id="exit-time" type="time" className="smallField timeField" />
+                        <input id="exit-time" type="time" className="smallField timeField" 
+                        value={exitTime} onChange={(e) => setExitTime(e.target.value)}/>
                     </div>
                 </div>
             </section>
@@ -317,7 +362,6 @@ function ErrorWrapper({message, children, innerRef, className = ''}) {
 
 function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [stayDurationMinutes, setStayDurationMinutes] = useState(0)
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
@@ -398,18 +442,18 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                     </div>
 
                     <div className="fieldGroup">
-                        <label htmlFor={`stop-buffer-${index}`}>Duration of Stay</label>
+                        <label htmlFor={`stop-duration-${index}`}>Duration of Stay</label>
                         <input
-                            id={`stop-buffer-${index}`}
+                            id={`stop-duration-${index}`}
                             type="range"
                             min="0"
                             max="120"
                             step="1"
-                            value={stayDurationMinutes}
-                            onChange={(e) => setStayDurationMinutes(Number(e.target.value))}
+                            value={data.duration}
+                            onChange={(e) => onChange('duration', Number(e.target.value))}
                             className='slider'
                         />
-                        <label className="sliderLabel">{formatBufferLabel(stayDurationMinutes)}</label>
+                        <label className="sliderLabel">{formatBufferLabel(data.duration)}</label>
                     </div>
                 </>
             )}
