@@ -64,7 +64,9 @@ function SearchModal({ onClose, onSelect }) {
                     <div className="search-mid-feedback">No results found</div>
                 )}
                 {loading && (
-                        <div className="search-mid-feedback">Loading...</div>
+                        <div className="loading-dots">
+                            <div></div><div></div><div></div>
+                        </div>
                 )}
 
             </div>
