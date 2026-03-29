@@ -5,14 +5,16 @@ function SearchModal({ onClose, onSelect }) {
     const [searchText, setSearchText] = useState('');
     const [results, setResults] = useState([]);
     const [hasSearched, setHasSearched] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleSearch = async () => {
 
         setHasSearched(true);
+        setLoading(true);
 
         console.log("search button clicked")
         if (!searchText) {
-            console.log("no search text")
+            setLoading(false);
             return;
         } 
         console.log("sending request to backend with: ", searchText)
@@ -30,6 +32,8 @@ function SearchModal({ onClose, onSelect }) {
             setResults(data);
         } catch (error) {
             console.error("Search failed:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -41,14 +45,14 @@ function SearchModal({ onClose, onSelect }) {
                 <div className="modal-search-row">
                     <input 
                         type="text" 
-                        placeholder="Search for places to eat..." 
+                        placeholder="Search for places to visit..." 
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                     />
                     <button type="button" onClick={handleSearch}>Search</button>
                 </div>
                 <ul className="modal-results">
-                    {results.map((place, i) => (
+                    {!loading && results.length > 0 && results.map((place, i) => (
                         <li key={i} onClick={() => onSelect(place.name)}>
                             <strong>{place.name}</strong>
                             <p>{place.address}</p>
@@ -56,8 +60,13 @@ function SearchModal({ onClose, onSelect }) {
                     ))}
                 </ul>
 
-                {hasSearched && results.length === 0 && (
-                    <div className="no-results">No results found</div>
+                {!loading && hasSearched && results.length === 0 && (
+                    <div className="search-mid-feedback">No results found</div>
+                )}
+                {loading && (
+                        <div className="loading-dots">
+                            <div></div><div></div><div></div>
+                        </div>
                 )}
 
             </div>
