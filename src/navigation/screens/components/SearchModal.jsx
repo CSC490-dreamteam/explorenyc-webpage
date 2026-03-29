@@ -45,7 +45,7 @@ function SearchModal({ onClose, onSelect }) {
                 <div className="modal-search-row">
                     <input 
                         type="text" 
-                        placeholder="Search for places to eat..." 
+                        placeholder="Search for places to visit..." 
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                     />
