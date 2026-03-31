@@ -1,14 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './HistoryScreen.css';
+import './components/TripDetail.jsx'
 import '../../App.css'
 import MapScreen from "./MapScreen.jsx";
+import TripDetail from "./components/TripDetail.jsx";
 
 export default function History({ setCurrentScreen }) {
     const [isMapOpen, setIsMapOpen] = useState(false);
+    const [userTrips,setUserTrips] = useState([]);
+    //{id:1,title:'NYC Adventure',status:'Completed',startDate:'Feb 8, 2026',stops:5,time:'1 day'}
+    const trips = Array.isArray(userTrips?.trips) ? userTrips.trips : [];
 
-    const trips = [
-        {id:1,title:'NYC Adventure',status:'Completed',startDate:'Feb 8, 2026',stops:5,time:'1 day'}
-    ]
+    function formatTripDate(dateString) {
+        if (!dateString) return "No date";
+
+        const parsedDate = new Date(dateString);
+        if (Number.isNaN(parsedDate.getTime())) return dateString;
+
+        return parsedDate.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        });
+    }
+
+    function formatTripTags(tags) {
+        if (Array.isArray(tags)) return tags.join(", ");
+        if (tags && typeof tags === "object") return Object.values(tags).join(", ");
+        if (typeof tags === "string") return tags;
+        return "No tags";
+    }
+
+    useEffect(() => {
+        async function fetchTripStops() {
+            try {
+                const res = await fetch(
+                    `https://explorenyc-recommendation-service.onrender.com/trip-stops?user_id=${encodeURIComponent(1)}`
+                );
+                const json = await res.json();
+                setUserTrips(json);
+                console.log("trip-stops response:", json);
+            } catch (err) {
+                console.error("Error fetching /trip-stops:", err);
+            }
+        }
+
+        fetchTripStops();
+    }, []);
+
+
 
     return (
         <div className="history-page">
@@ -37,18 +77,19 @@ export default function History({ setCurrentScreen }) {
                 </button>
             </div>
 
+            {/* Past trips*/}
             {trips.map((trip) => (
-                <div className="trip-box">
+                <div className="trip-box" key={trip.trip_id}>
                     <div className="trip-box-image">
                         <img src='/new-york-city.jpeg' alt="New York City trip preview" />
                     </div>
                     <div className="trip-box-content">
-                        <h3>{trip.title}</h3>
+                        <h3>{trip.name}</h3>
                         <p>{trip.status}</p>
                         <div className="trip-box-meta" aria-label="Trip details">
-                            <span>🗓️ {trip.startDate}</span>
-                            <span>📍 {trip.stops} stops</span>
-                            <span>🕒 {trip.time}</span>
+                            <span>🗓️ {formatTripDate(trip.entry_datetime)}</span>
+                            <span>📍 {trip.stops?.length ?? 0} stops</span>
+                            <span>🏷️ {formatTripTags(trip.tags)}</span>
                         </div>
                     </div>
                     <button className="trip-action-btn trip-box-button" type="button">
@@ -56,6 +97,13 @@ export default function History({ setCurrentScreen }) {
                     </button>
                 </div>
             ))}
+
+            {/* Trip details */}
+            <TripDetail
+                stops={userTrips?.trips?.[0]?.stops}
+            />
+
+            {/* Interactive Map */}
 
             <button
                 className="trip-action-btn"
