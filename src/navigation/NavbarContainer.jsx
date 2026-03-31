@@ -5,7 +5,7 @@ import SettingScreen from './screens/SettingsScreen.jsx'
 import {useState} from "react";
 import HistoryScreen from "./screens/HistoryScreen.jsx";
 
-function NavbarContainer() {
+function NavbarContainer({ onLogout }) {
     const [currentScreen, setCurrentScreen] = useState('HomeState')
 
     const renderContent = () => {
@@ -13,7 +13,7 @@ function NavbarContainer() {
             case 'HomeState': return <HomeScreen />
             case 'MapState': return <NewTripScreen />
             case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
-            case 'SettingsState': return <SettingScreen/>
+            case 'SettingsState': return <SettingScreen onLogout={onLogout} />
             default: return <HomeScreen />
         }
     }
@@ -43,7 +43,7 @@ function NavbarContainer() {
                 </button>
                 <button onClick={()=>setCurrentScreen('HistoryState')}>
                     <div className="icon mapIcon"/>
-                    History
+                    My Trips
                 </button>
             </nav>
         </div>

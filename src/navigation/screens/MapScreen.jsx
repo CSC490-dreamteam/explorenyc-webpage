@@ -1,11 +1,10 @@
 import '../../App.css'
-import './MapScreen.css'
 import React from "react"
 import 'mapbox-gl/dist/mapbox-gl.css'
 import Map from 'react-map-gl/mapbox';
 import mapStyleJson from '../../assets/dark_manhattan.json';
 
-function MapScreen() {
+function MapScreen({ embedded = false }) {
     const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
     const MANHATTAN_BOUNDS = [
@@ -14,7 +13,7 @@ function MapScreen() {
     ];
 
     return (
-        <div style={{width:'100vw', height:'100vh'}}>
+        <div style={embedded ? { width: '100%', height: '100%' } : { width: '100vw', height: '100vh' }}>
             <Map
                 mapboxAccessToken={MAPBOX_TOKEN}
                 initialViewState={{

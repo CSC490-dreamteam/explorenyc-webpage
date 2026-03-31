@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import '../../App.css'
 import './SettingsScreen.css'
 
-function App() {
+function SettingsScreen({ onLogout }) {
     const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'system')
 
     useEffect(() => {
@@ -81,6 +81,12 @@ function App() {
                     <div className="settingsOption">
                         Help & FAQ
                     </div>
+
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button type="button" className="generateButton" style={{marginTop: 20, width: "80%"}} onClick={onLogout}>
+                    Log Out
+                </button>
                 </div>
             </div>
         </div>
@@ -88,4 +94,4 @@ function App() {
 }
 
 
-export default App
+export default SettingsScreen
