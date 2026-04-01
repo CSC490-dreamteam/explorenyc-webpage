@@ -409,7 +409,7 @@
     }
 
     .timeField {
-        width: 70%;
+        width: min(100%, 150px);
     }
 
     .stopOptions {
