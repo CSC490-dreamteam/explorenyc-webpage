@@ -21,7 +21,10 @@ function NewTripScreen() {
     const baseMaxStops = 8
 
     //PLACEHOLDER
-    const handleGenerateTripSubmit = async () => {
+
+
+
+    const handleTripSubmit = async () => {
         //errors
         if (stops.length < 2) {
             setErrorState({
@@ -59,11 +62,10 @@ function NewTripScreen() {
             return
         }
 
-        
-
         // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
         const popup = window.open('about:blank', '_blank');
 
+        //actual endpoint data
         const tripData = {
             tripName: tripName.trim() ? tripName.trim() : 'My NYC Trip',
             date: date,
@@ -80,35 +82,62 @@ function NewTripScreen() {
         };
         console.log(tripData);
 
+        
+        const tempLocations = [
+            startLocation.trim(),
+            ...stops.map(stop => stop.location.trim()).filter(loc => loc),
+            ...(endLocation.trim() ? [endLocation.trim()] : [])
+        ];
+
+        const oldTripData = {
+            locations: tempLocations
+        };
+
+
         setErrorState(null)
         setIsLoading(true)
-        try { //fetch request from backend
+        try {
+            //old endpoint that shows the maps link
+            const oldResponse = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateRoute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-Key': 'sauce1234'
+                },
+                body: JSON.stringify(oldTripData)
+            });
+
+            if (!oldResponse.ok) {
+                throw new Error('Old endpoint response was not ok');
+            }
+
+            const oldResponseData = await oldResponse.json();
+
+            if (popup && !popup.closed) {
+                popup.location = oldResponseData.url;
+                if (popup.opener) {
+                    popup.opener = null;
+                }
+            } else {
+                window.location.assign(oldResponseData.url);
+            }
+
+            //new real endpoint, does nothing rn
             const response = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateItinerary', {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
-                    'X-API-Key': 'sauce1234' //YES HARDCODED THE API KEY LMAO i know to fix it later.
+                    'X-API-Key': 'sauce1234'
                 },
                 body: JSON.stringify(tripData)
             });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const responseData = await response.json(); //get generated trip
-
-            //THE POPUP DOES NOTHNIG CAUSE NO LINK IS GIVEN RN
-            if (popup && !popup.closed) {
-                popup.location = responseData.url;
-                if (popup.opener) {
-                    popup.opener = null;
-                }
+                console.error('New endpoint failed:', response.status);
             } else {
-                window.location.assign(responseData.url);
+                const responseData = await response.json();
+                console.log('New endpoint response:', responseData);
             }
-
-
         } catch (error) {
             console.error('Error submitting trip data:', error);
             if (popup && !popup.closed) {
@@ -117,7 +146,7 @@ function NewTripScreen() {
         } finally {
             setIsLoading(false)
         }
-        
+
     };
     
 
@@ -338,7 +367,7 @@ function NewTripScreen() {
 
 
 
-            <button type="button" className="generateButton" onClick={handleGenerateTripSubmit}>
+            <button type="button" className="generateButton" onClick={handleTripSubmit}>
                 Generate My Trip
             </button>
         </div>
