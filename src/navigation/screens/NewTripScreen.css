@@ -70,7 +70,7 @@
 }
 
 .errorWrapper--timeField .timeField {
-    width: min(100%, 150px);
+    width: auto;
     border-color: var(--error-border);
 }
 
@@ -167,7 +167,7 @@
 }
 
 .timeField {
-    width: min(100%, 150px);
+    width: auto;
     height: min-content;
     align-self: flex-start;
 }
@@ -409,7 +409,7 @@
     }
 
     .timeField {
-        width: min(100%, 150px);
+        width: auto;
     }
 
     .stopOptions {
