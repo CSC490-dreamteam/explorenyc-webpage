@@ -397,7 +397,7 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                         <SearchModal 
                             onClose={() => setIsModalOpen(false)} 
                             onSelect={(val) => {
-                                onChange('location', val); // Update the main form
+                                onChange('location', `${val.name}, ${val.address}`); // Update the main form
                                 setIsModalOpen(false);      // Close modal
                             }} 
                         />
