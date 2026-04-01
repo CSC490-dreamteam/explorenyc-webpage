@@ -1,0 +1,92 @@
+.trip-detail-box {
+    position: relative;
+    width: min(92vw, 520px);
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid var(--border-default);
+    border-radius: 16px;
+    background-color: var(--surface-card);
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: left;
+    box-shadow: var(--shadow-elevated);
+}
+
+.trip-detail-overlay,
+.trip-map-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+.trip-detail-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.trip-detail-box h2,
+.trip-detail-box h3 {
+    margin-top: 0;
+}
+
+.trip-detail-subtitle {
+    margin-top: -4px;
+    margin-bottom: 20px;
+    color: var(--text-muted);
+}
+
+.trip-detail-stops {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.trip-detail-stop {
+    padding: 12px;
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
+    background: var(--surface-card-alt);
+}
+
+.trip-detail-stop strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.trip-detail-stop p {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.trip-map-modal {
+    position: relative;
+    width: min(92vw, 1100px);
+    height: min(80vh, 760px);
+    background: #111;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.trip-map-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+}
