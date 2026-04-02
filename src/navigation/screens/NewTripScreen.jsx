@@ -75,7 +75,7 @@ function NewTripScreen() {
             endLocation: endLocation.trim() ? endLocation.trim() : null,
             stops: stops.map(stop => ({
                 location: stop.location,
-                mandatory: stop.mandatory,
+                mandatory: !stop.optional, //if a stop is not optional that its mandatory
                 timePreference: stop.timePreference ? stop.timePreference : null,
                 duration: stop.duration
             }))
@@ -152,7 +152,7 @@ function NewTripScreen() {
 
     // React state variable known as stops that is an array full of JSON
     const [stops, setStops] = useState([{
-        location: '', mandatory: false, timePreference: '', duration: 60
+        location: '', optional: false, timePreference: '', duration: 60
     }]);
 
     //function that edits a stop by index, used when the user changes it in the ui
@@ -178,7 +178,7 @@ function NewTripScreen() {
             return
         }
 
-        setStops([...stops, { location: '', mandatory: false, timePreference: '', duration: 60 }]);
+        setStops([...stops, { location: '', optional: false, timePreference: '', duration: 60 }]);
         if (errorState?.reason === 'minStops') {
             setErrorState(null)
         }
@@ -451,10 +451,10 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                         <label className="checkboxItem">
                             <input
                                 type="checkbox"
-                                checked={data.mandatory}
-                                onChange={(e) => onChange('mandatory', e.target.checked)}
+                                checked={data.optional}
+                                onChange={(e) => onChange('optional', e.target.checked)}
                             />
-                            Mandatory
+                            Optional
                         </label>
                         <div className="stopOptionsTimeGroup">
                             <label className="stopOptionsTimeLabel" htmlFor={`stop-time-${index}`}>
