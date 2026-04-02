@@ -4,6 +4,7 @@ import MapScreen from "../MapScreen.jsx";
 import { useState } from "react";
 
 
+
 const TRANSPORT_MODES = {
     0: { label: 'Walking', icon: '🚶' },
     1: { label: 'Car', icon: '🚗' },
@@ -14,6 +15,8 @@ function formatCost(cents) {
     if (!cents) return null
     return `$${(cents / 100).toFixed(2)}`
 }
+
+
 
 function formatStopAddress(address) {
     if (!address) return "Address unavailable";
@@ -80,6 +83,7 @@ function TripDetail({ trip, onClose }) {
                             )}
                         </div>
                     ))}
+
 
                         </div>
                     ) : (
