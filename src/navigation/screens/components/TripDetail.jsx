@@ -65,24 +65,38 @@ function TripDetail({ trip, onClose }) {
                                         <p>{formatStopAddress(stop?.Address)}</p>
                                     </div>
 
-                            {index < stops.length - 1 && stop.TravelTimeToNextStop > 0 && (
-                                <div className="transit-block">
+                            {index < stops.length - 1 && stop.Legs && stop.Legs.length > 0 && (
+                                <div className="transit-legs">
+                                    {stop.Legs.map((leg, legIndex) => {
+                                        const isTransfer = leg.TransportType === 0
+                                            && legIndex > 0
+                                            && legIndex < stop.Legs.length - 1
+                                            && stop.Legs[legIndex - 1].TransportType === 2
+                                            && stop.Legs[legIndex + 1].TransportType === 2;
+
+                                        const mode = isTransfer
+                                            ? { label: 'Transfer', className: 'transitIconWalking' }
+                                            : TRANSPORT_MODES[leg.TransportType];
                                     
-                                    <div className={`transit-icon ${TRANSPORT_MODES[stop.TransportToNextStop]?.className}`} />
+                                        return (
+                                            <div className='transit-block' key={legIndex}>
+                                                <div className={`transit-icon ${mode?.className}`} />
+                                                <div className="transit-info">
+                                                    <strong>{mode?.label}</strong>
+                                                    <span className="transit-details">
+                                                        {leg.TravelTimes} min
+                                                        {leg.TransitCosts > 0 && ` · ${formatCost(leg.TransitCosts)}`}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                             </div>
+                        )}
 
-                                    <div className="transit-info">
-                                        <strong>{TRANSPORT_MODES[stop.TransportToNextStop]?.label}</strong>
-                                        <span className="transit-details">
-                                            {stop.TravelTimeToNextStop} min
-                                            {stop.TransitCost > 0 && ` · ${formatCost(stop.TransitCost)}`}
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
                         </div>
-                    ))}
-
-                        </div>
+                            ))}
+                            </div>
                     ) : (
                         <p>No stops found for this trip.</p>
                     )}

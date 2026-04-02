@@ -138,3 +138,11 @@
 .transit-details {
     color: var(--text-muted);
 }
+
+.transit-legs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0;
+}
