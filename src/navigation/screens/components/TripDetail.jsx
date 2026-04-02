@@ -3,6 +3,18 @@ import './TripDetail.css'
 import MapScreen from "../MapScreen.jsx";
 import { useState } from "react";
 
+
+const TRANSPORT_MODES = {
+    0: { label: 'Walking', icon: '🚶' },
+    1: { label: 'Car', icon: '🚗' },
+    2: { label: 'Subway', icon: '🚇' },
+}
+
+function formatCost(cents) {
+    if (!cents) return null
+    return `$${(cents / 100).toFixed(2)}`
+}
+
 function formatStopAddress(address) {
     if (!address) return "Address unavailable";
     if (typeof address === "string") return address;
@@ -46,15 +58,29 @@ function TripDetail({ trip, onClose }) {
                     <h3>Stops Visited</h3>
                     {stops.length > 0 ? (
                         <div className="trip-detail-stops">
+
                             {stops.map((stop, index) => (
-                                <div
-                                    className="trip-detail-stop"
-                                    key={stop?.id ?? `${trip?.trip_id}-${index}`}
-                                >
-                                    <strong>{stop?.Name || `Stop ${index + 1}`}</strong>
-                                    <p>{formatStopAddress(stop?.Address)}</p>
+                                <div key={stop?.id ?? `${trip?.trip_id}-${index}`}>
+                                    <div className="trip-detail-stop">
+                                        <strong>{stop?.Name || `Stop ${index + 1}`}</strong>
+                                        <p>{formatStopAddress(stop?.Address)}</p>
+                                    </div>
+
+                            {index < stops.length - 1 && stop.TravelTimeToNextStop > 0 && (
+                                <div className="transit-block">
+                                    <span className="transit-icon">{TRANSPORT_MODES[stop.TransportToNextStop]?.icon}</span>
+                                    <div className="transit-info">
+                                        <strong>{TRANSPORT_MODES[stop.TransportToNextStop]?.label}</strong>
+                                        <span className="transit-details">
+                                            {stop.TravelTimeToNextStop} min
+                                            {stop.TransitCost > 0 && ` · ${formatCost(stop.TransitCost)}`}
+                                        </span>
+                                    </div>
                                 </div>
-                            ))}
+                            )}
+                        </div>
+                    ))}
+
                         </div>
                     ) : (
                         <p>No stops found for this trip.</p>
