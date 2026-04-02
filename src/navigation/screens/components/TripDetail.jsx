@@ -116,3 +116,4 @@ function TripDetail({ trip, onClose }) {
 }
 
 export default TripDetail
+
