@@ -3,11 +3,10 @@ import './TripDetail.css'
 import MapScreen from "../MapScreen.jsx";
 import { useState } from "react";
 
-
 const TRANSPORT_MODES = {
-    0: { label: 'Walking', icon: '🚶' },
-    1: { label: 'Car', icon: '🚗' },
-    2: { label: 'Subway', icon: '🚇' },
+    0: { label: 'Walking', className: 'transitIconWalking'  },
+    1: { label: 'Car', className: 'transitIconCar' },
+    2: { label: 'Subway', className: 'transitIconSubway' },
 }
 
 function formatCost(cents) {
@@ -68,7 +67,9 @@ function TripDetail({ trip, onClose }) {
 
                             {index < stops.length - 1 && stop.TravelTimeToNextStop > 0 && (
                                 <div className="transit-block">
-                                    <span className="transit-icon">{TRANSPORT_MODES[stop.TransportToNextStop]?.icon}</span>
+                                    
+                                    <div className={`transit-icon ${TRANSPORT_MODES[stop.TransportToNextStop]?.className}`} />
+
                                     <div className="transit-info">
                                         <strong>{TRANSPORT_MODES[stop.TransportToNextStop]?.label}</strong>
                                         <span className="transit-details">
