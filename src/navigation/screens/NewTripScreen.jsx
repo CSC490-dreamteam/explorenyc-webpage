@@ -18,6 +18,8 @@ function NewTripScreen() {
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
+    const entryTimeErrorRef = useRef(null)
+    const exitTimeErrorRef = useRef(null)
     const baseMaxStops = 8
 
     //PLACEHOLDER
@@ -46,8 +48,8 @@ function NewTripScreen() {
 
         if (!entryTime.trim()) {
             setErrorState({
-                target: 'startPoint', //BUGGED
-                message: 'You must specify a start time.',
+                target: 'entryTime',
+                message: 'You must specify an entry time.',
                 reason: 'missingEntryTime'
             })
             return
@@ -55,7 +57,7 @@ function NewTripScreen() {
 
         if (!exitTime.trim()) {
             setErrorState({
-                target: 'startPoint', //BUGGED
+                target: 'exitTime',
                 message: 'You must specify an exit time.',
                 reason: 'missingExitTime'
             })
@@ -195,7 +197,9 @@ function NewTripScreen() {
 
         const refMap = {
             addStop: addStopErrorRef,
-            startPoint: startPointErrorRef
+            startPoint: startPointErrorRef,
+            entryTime: entryTimeErrorRef,
+            exitTime: exitTimeErrorRef
         }
 
         const targetRef = refMap[errorState.target]
@@ -219,6 +223,8 @@ function NewTripScreen() {
 
     const isAddStopError = errorState?.target === 'addStop'
     const isStartPointError = errorState?.target === 'startPoint'
+    const isEntryTimeError = errorState?.target === 'entryTime'
+    const isExitTimeError = errorState?.target === 'exitTime'
 
     return (
         <div className='newTripPage'>
@@ -247,7 +253,7 @@ function NewTripScreen() {
                 </div>
             </section>
 
-            <section className="newTripCard">
+            <section className="newTripCard" style={{minHeight:'227'}}>
                 <h3>Time Window</h3>
 
 
@@ -260,17 +266,77 @@ function NewTripScreen() {
                 </div>
 
                 <div className="fieldRow twoCol">
-                    <div className="fieldGroup">
-                        <label htmlFor="entry-time">Entry Time</label>
-                        <input id="entry-time" type="time" className="smallField timeField" 
-                        value={entryTime} onChange={(e) => setEntryTime(e.target.value)}/>
-                    </div>
+                    {isEntryTimeError ? (
+                        <ErrorWrapper
+                            message={errorState.message}
+                            innerRef={entryTimeErrorRef}
+                            className="errorWrapper--field errorWrapper--timeField"
+                        >
+                            <div className="fieldGroup">
+                                <label htmlFor="entry-time">Entry Time</label>
+                                <input
+                                    id="entry-time"
+                                    type="time"
+                                    className="smallField timeField"
+                                    value={entryTime}
+                                    onChange={(e) => {
+                                        const nextValue = e.target.value
+                                        setEntryTime(nextValue)
+                                        if (nextValue.trim()) {
+                                            setErrorState(null)
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </ErrorWrapper>
+                    ) : (
+                        <div className="fieldGroup">
+                            <label htmlFor="entry-time">Entry Time</label>
+                            <input
+                                id="entry-time"
+                                type="time"
+                                className="smallField timeField"
+                                value={entryTime}
+                                onChange={(e) => setEntryTime(e.target.value)}
+                            />
+                        </div>
+                    )}
 
-                    <div className="fieldGroup">
-                        <label htmlFor="exit-time">Exit Time</label>
-                        <input id="exit-time" type="time" className="smallField timeField" 
-                        value={exitTime} onChange={(e) => setExitTime(e.target.value)}/>
-                    </div>
+                    {isExitTimeError ? (
+                        <ErrorWrapper
+                            message={errorState.message}
+                            innerRef={exitTimeErrorRef}
+                            className="errorWrapper--field errorWrapper--timeField"
+                        >
+                            <div className="fieldGroup">
+                                <label htmlFor="exit-time">Exit Time</label>
+                                <input
+                                    id="exit-time"
+                                    type="time"
+                                    className="smallField timeField"
+                                    value={exitTime}
+                                    onChange={(e) => {
+                                        const nextValue = e.target.value
+                                        setExitTime(nextValue)
+                                        if (nextValue.trim()) {
+                                            setErrorState(null)
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </ErrorWrapper>
+                    ) : (
+                        <div className="fieldGroup">
+                            <label htmlFor="exit-time">Exit Time</label>
+                            <input
+                                id="exit-time"
+                                type="time"
+                                className="smallField timeField"
+                                value={exitTime}
+                                onChange={(e) => setExitTime(e.target.value)}
+                            />
+                        </div>
+                    )}
                 </div>
             </section>
 
