@@ -191,36 +191,34 @@ function HomeScreen() {
     };
 
     const handleAddToTrip = (place) => {
-        //Get existing pending stops or an empty array
+        // 1. Get the current stops from BOTH local storage locations
         const existingStops = JSON.parse(localStorage.getItem('pendingStops') || "[]");
-        const fullAddress = `${place.name}, ${place.address}`;
+        const currentDraft = JSON.parse(localStorage.getItem('active_trip_draft') || "[]");
+        
+        // 2. Calculate total current stops
+        const totalStops = existingStops.length + currentDraft.length;
+        const LIMIT = 8; // Your baseMaxStops
 
-        //check if the location is already in the array
-        const isDuplicate = existingStops.some(s => s.location === fullAddress);
-
-        if (isDuplicate) {
-            //Trigger an "error" or "warning" toast instead of a success toast
-            triggerToast(`${place.name} is already in your trip!`, 'error');
-            
-            // Close the modal so the user isn't stuck
-            setSelectedPlace(null); 
-            return; // Stop the function here so it doesn't add a duplicate
+        // 3. CHECK: Is the limit reached?
+        if (totalStops >= LIMIT) {
+            triggerToast(`Stop limit reached! You can only have ${LIMIT} stops.`, 'error');
+            setSelectedPlace(null);
+            return;
         }
 
-        //Add the new place to the list
-        const newStop = {
-            location: `${place.name}, ${place.address}`,
-            duration: 30, // default
-            mandatory: false
-        };
+        // 4. CHECK: Is it a duplicate? (Existing logic)
+        const fullAddress = `${place.name}, ${place.address}`;
+        if (existingStops.some(s => s.location === fullAddress)) {
+            triggerToast(`${place.name} is already in your trip!`, 'error');
+            setSelectedPlace(null);
+            return;
+        }
+
+        // 5. Proceed with adding if all checks pass
+        const newStop = { location: fullAddress, duration: 30, mandatory: false };
+        localStorage.setItem('pendingStops', JSON.stringify([...existingStops, newStop]));
         
-        const updatedStops = [...existingStops, newStop];
-
-        //Save back to localStorage
-        localStorage.setItem('pendingStops', JSON.stringify(updatedStops));
-
-        //Display toast nofitication
-        triggerToast(`${place.name} added to your NYC trip!`, 'success');
+        triggerToast(`Added ${place.name} to your trip!`, 'success');
         setSelectedPlace(null);
     };
 
