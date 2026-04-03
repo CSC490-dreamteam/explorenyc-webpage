@@ -226,6 +226,26 @@ function NewTripScreen() {
     const isEntryTimeError = errorState?.target === 'entryTime'
     const isExitTimeError = errorState?.target === 'exitTime'
 
+    //check if there are any stops in local storage
+    useEffect(() => {
+        // 1. Check for saved stops in storage
+        const savedStops = localStorage.getItem('pendingStops');
+
+        if (savedStops) {
+            const parsedStops = JSON.parse(savedStops);
+
+            setStops(prevStops => {
+                // Filter out the initial empty stop if it exists
+                const activeStops = prevStops.filter(s => s.location !== "");
+                return [...activeStops, ...parsedStops];
+            });
+
+            // 2. CRITICAL: Clear the storage so they don't get added 
+            // every time the user visits this screen
+            localStorage.removeItem('pendingStops');
+        }
+    }, []); // Runs once when the screen loads
+
     return (
         <div className='newTripPage'>
             {isLoading && (

@@ -182,6 +182,27 @@ function HomeScreen() {
         setRandomTrending(shuffled.slice(0, 3));
     }, []);
 
+    const handleAddToTrip = (place) => {
+        // 1. Get existing pending stops or an empty array
+        const existingStops = JSON.parse(localStorage.getItem('pendingStops') || "[]");
+
+        // 2. Add the new place to the list
+        const newStop = {
+            location: `${place.name}, ${place.address}`,
+            duration: 30, // default
+            mandatory: false
+        };
+        
+        const updatedStops = [...existingStops, newStop];
+
+        // 3. Save back to localStorage
+        localStorage.setItem('pendingStops', JSON.stringify(updatedStops));
+
+        // 4. Close the modal and maybe show a "Saved!" toast/notification
+        setSelectedPlace(null);
+        alert(`${place.name} added to your bucket list!`); 
+    };
+
 
     return (
         <div className="welcome-container">
@@ -252,7 +273,8 @@ function HomeScreen() {
                         place={selectedPlace}
                         onClose={() => setSelectedPlace(null)}
                         onAddToTrip={(place) => {
-                            console.log("Add to trip:", place);
+                            handleAddToTrip(place)
+                            console.log("Add to trip:", place.name);
                             setSelectedPlace(null);
                         }}
                     />
