@@ -154,11 +154,11 @@ function HomeScreen() {
             //make request to fastapi backend
             try {
                 const res = await fetch(
-                    "https://explorenyc-recommendation-service.onrender.com/discover"
+                    "https://explorenyc-recommendation-service.onrender.com/discover-all"
                 );
                 //if the response is not OK status, throw an error
                 if (!res.ok) {
-                    throw new Error("Failed to fetch /discover");
+                    throw new Error("Failed to fetch /discover-all");
                 }
                 //parse the JSON body of the response
                 const json = await res.json();

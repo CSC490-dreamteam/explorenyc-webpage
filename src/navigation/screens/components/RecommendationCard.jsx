@@ -34,17 +34,17 @@ function RecommendationCard({ place, loading, error }) {
 
       <div className="card-content">
         <div className="card-top">
-          <h2 className="card-title">{place.DBA}</h2>
-          <div className="card-rating">⭐ {place.GRADE}</div>
+          <h2 className="card-title">{place.name}</h2>
+          <div className="card-rating">⭐ {"A"}</div>
         </div>
 
         <div className="card-category">
-          {place["CUISINE DESCRIPTION"]}
+          {place.category || place.place_type}
         </div>
 
         <div className="card-bottom">
           <div className="card-distance">
-            {place.BUILDING} {place.STREET}, {place.ZIPCODE}
+            {place.address}, {place.boro}
           </div>
         </div>
       </div>
