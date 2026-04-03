@@ -1,0 +1,64 @@
+.custom-toast {
+    /* Position at bottom-center */
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    /* NYC Aesthetic: Sleek Dark or White (matching your Modal) */
+    background: #ffffff; 
+    color: #333333;
+    
+    /* Layout */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    min-width: 280px;
+    
+    /* Borders & Shadows - matching your app's card style */
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    
+    /* Layering */
+    z-index: 10000; /* Ensures it sits above modals and navbars */
+    
+    /* Animation */
+    animation: nyc-slide-up 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Success State: Using a "Transit Blue" or "Park Green" */
+.custom-toast.success {
+    border-left: 6px solid #007aff; /* Match your btn-primary color */
+}
+
+/* Error State */
+.custom-toast.error {
+    border-left: 6px solid #ff3b30;
+}
+
+.toast-icon {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-message {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Smooth Slide and Fade */
+@keyframes nyc-slide-up {
+    0% {
+        transform: translate(-50%, 20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}

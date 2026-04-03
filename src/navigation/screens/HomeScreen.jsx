@@ -5,6 +5,7 @@ import TrendingCard from "./components/TrendingCard.jsx";
 import React, { useState, useEffect } from "react";
 import RecommendationCard from './components/RecommendationCard.jsx';
 import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
+import Toast from './components/Toast.jsx';
 
 function HomeScreen() {
     
@@ -182,11 +183,18 @@ function HomeScreen() {
         setRandomTrending(shuffled.slice(0, 3));
     }, []);
 
+    // Add state for the toast
+    const [toastConfig, setToastConfig] = useState({ show: false, message: '', type: '' });
+
+    const triggerToast = (message, type) => {
+        setToastConfig({ show: true, message, type });
+    };
+
     const handleAddToTrip = (place) => {
-        // 1. Get existing pending stops or an empty array
+        //Get existing pending stops or an empty array
         const existingStops = JSON.parse(localStorage.getItem('pendingStops') || "[]");
 
-        // 2. Add the new place to the list
+        //Add the new place to the list
         const newStop = {
             location: `${place.name}, ${place.address}`,
             duration: 30, // default
@@ -195,12 +203,12 @@ function HomeScreen() {
         
         const updatedStops = [...existingStops, newStop];
 
-        // 3. Save back to localStorage
+        //Save back to localStorage
         localStorage.setItem('pendingStops', JSON.stringify(updatedStops));
 
-        // 4. Close the modal and maybe show a "Saved!" toast/notification
+        //Display toast nofitication
+        triggerToast(`${place.name} added to your NYC trip!`, 'success');
         setSelectedPlace(null);
-        alert(`${place.name} added to your bucket list!`); 
     };
 
 
@@ -280,6 +288,14 @@ function HomeScreen() {
                     />
                 )}
 
+            {/* Render the toast if state is true */}
+            {toastConfig.show && (
+                <Toast 
+                    message={toastConfig.message} 
+                    type={toastConfig.type} 
+                    onClose={() => setToastConfig({ ...toastConfig, show: false })} 
+                />
+            )}
 
 
         </div>
