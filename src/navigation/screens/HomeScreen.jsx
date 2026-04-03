@@ -191,30 +191,34 @@ function HomeScreen() {
     };
 
     const handleAddToTrip = (place) => {
-        //Get the current stops from BOTH local storage locations
         const existingStops = JSON.parse(localStorage.getItem('pendingStops') || "[]");
         const currentDraft = JSON.parse(localStorage.getItem('active_trip_draft') || "[]");
         
-        //Calculate total current stops
-        const totalStops = existingStops.length + currentDraft.length;
-        const LIMIT = 8; // Your baseMaxStops
+        // 1. Normalize the address (Trending uses .address, Recommendations might vary)
+        const placeAddress = place.address || "";
+        const fullAddress = `${place.name}, ${placeAddress}`;
 
-        //Is the limit reached?
-        if (totalStops >= LIMIT) {
-            triggerToast(`Stop limit reached! You can only have ${LIMIT} stops.`, 'error');
-            setSelectedPlace(null);
-            return;
-        }
+        // 2. CHECK: Is it a duplicate in EITHER the pending list or the active draft?
+        // We trim and lowercase to ensure "Central Park" matches "central park "
+        const isDuplicate = [...existingStops, ...currentDraft].some(s => 
+            s.location.trim().toLowerCase() === fullAddress.trim().toLowerCase()
+        );
 
-        //CHECK: Is it a duplicate? (Existing logic)
-        const fullAddress = `${place.name}, ${place.address}`;
-        if (existingStops.some(s => s.location === fullAddress)) {
+        if (isDuplicate) {
             triggerToast(`${place.name} is already in your trip!`, 'error');
             setSelectedPlace(null);
             return;
         }
 
-        //Proceed with adding if all checks pass
+        // 3. Limit Check
+        const totalStops = existingStops.length + currentDraft.length;
+        if (totalStops >= 8) {
+            triggerToast(`Stop limit reached!`, 'error');
+            setSelectedPlace(null);
+            return;
+        }
+
+        // 4. Success! Add it
         const newStop = { location: fullAddress, duration: 30, mandatory: false };
         localStorage.setItem('pendingStops', JSON.stringify([...existingStops, newStop]));
         

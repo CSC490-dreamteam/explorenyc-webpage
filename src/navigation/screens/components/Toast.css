@@ -1,7 +1,7 @@
 .custom-toast {
     /* Position at bottom-center */
     position: fixed;
-    bottom: 40px;
+    bottom: 65px;
     left: 50%;
     transform: translateX(-50%);
     
