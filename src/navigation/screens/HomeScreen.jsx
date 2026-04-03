@@ -191,22 +191,22 @@ function HomeScreen() {
     };
 
     const handleAddToTrip = (place) => {
-        // 1. Get the current stops from BOTH local storage locations
+        //Get the current stops from BOTH local storage locations
         const existingStops = JSON.parse(localStorage.getItem('pendingStops') || "[]");
         const currentDraft = JSON.parse(localStorage.getItem('active_trip_draft') || "[]");
         
-        // 2. Calculate total current stops
+        //Calculate total current stops
         const totalStops = existingStops.length + currentDraft.length;
         const LIMIT = 8; // Your baseMaxStops
 
-        // 3. CHECK: Is the limit reached?
+        //Is the limit reached?
         if (totalStops >= LIMIT) {
             triggerToast(`Stop limit reached! You can only have ${LIMIT} stops.`, 'error');
             setSelectedPlace(null);
             return;
         }
 
-        // 4. CHECK: Is it a duplicate? (Existing logic)
+        //CHECK: Is it a duplicate? (Existing logic)
         const fullAddress = `${place.name}, ${place.address}`;
         if (existingStops.some(s => s.location === fullAddress)) {
             triggerToast(`${place.name} is already in your trip!`, 'error');
@@ -214,7 +214,7 @@ function HomeScreen() {
             return;
         }
 
-        // 5. Proceed with adding if all checks pass
+        //Proceed with adding if all checks pass
         const newStop = { location: fullAddress, duration: 30, mandatory: false };
         localStorage.setItem('pendingStops', JSON.stringify([...existingStops, newStop]));
         
@@ -248,6 +248,10 @@ function HomeScreen() {
                             key={place.id}
                             image={place.img}
                             title={place.name}
+                            place={place} //pass the whole place object to the modal has data
+                            onClick={() => setSelectedPlace(place)} //set the click handler
+
+                            
                             placeType={place.place_type}
                             category={place.category}
                             description={place.description}

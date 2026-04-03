@@ -49,3 +49,28 @@
     height: 50%;
     width: 100%;
 }
+
+/* Add to TrendingCard.css */
+.trending_card {
+    display: inline-block;
+    width: 250px;
+    height: 180px;
+    background: var(--surface-card);
+    border-radius: 10px;
+    margin-right: 10px;
+    text-align: left;
+    box-shadow: var(--shadow-elevated);
+    
+    /* Add these for a smooth transition */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.trending_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.trending_card:active {
+    transform: translateY(-1px); /* Slight "press" effect when clicked */
+}
