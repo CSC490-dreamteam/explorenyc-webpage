@@ -35,7 +35,7 @@ function RecommendationCard({ place, loading, error }) {
       <div className="card-content">
         <div className="card-top">
           <h2 className="card-title">{place.name}</h2>
-          <div className="card-rating">⭐ {"A"}</div>
+          <div className="card-rating"></div>
         </div>
 
         <div className="card-category">
