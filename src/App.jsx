@@ -1,6 +1,6 @@
 import { useState } from "react";
 import './App.css'
-import NavbarContainer from "./navigation/NavbarContainer.jsx";
+// import NavbarContainer from "./navigation/NavbarContainer.jsx";
 import AIScreen from './components/AIScreen';
 
 //This can be the login screen later. -ak
