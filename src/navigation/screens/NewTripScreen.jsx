@@ -153,9 +153,6 @@ function NewTripScreen() {
     
 
     // React state variable known as stops that is an array full of JSON
-    // const [stops, setStops] = useState([{
-    //     location: '', mandatory: false, timePreference: '', duration: 60
-    // }]);
     const [stops, setStops] = useState(() => {
         const saved = localStorage.getItem('active_trip_draft');
         //If we have a saved draft, use it. If not, start with one empty stop. 
