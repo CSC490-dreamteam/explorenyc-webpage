@@ -4,6 +4,7 @@ import './components/TrendingCard.jsx'
 import TrendingCard from "./components/TrendingCard.jsx";
 import React, { useState, useEffect } from "react";
 import RecommendationCard from './components/RecommendationCard.jsx';
+import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
 
 function HomeScreen() {
     
@@ -146,6 +147,7 @@ function HomeScreen() {
     const [loading, setLoading] = useState(true); //Tracks whether the API request is still in progress
     const [error, setError] = useState(null); //Holds any error message if the API request fails
     const [randomTrending, setRandomTrending] = useState([]);
+    const [selectedPlace, setSelectedPlace] = useState(null);
 
     //The API call
     useEffect(() => {
@@ -238,11 +240,24 @@ function HomeScreen() {
                             place={place}
                             loading={false}
                             error={error}
+                            onClick={() => setSelectedPlace(place)}
                             />
                         ))
                 }
 
             </div>
+
+                {selectedPlace && (
+                    <PlaceDetailsModal
+                        place={selectedPlace}
+                        onClose={() => setSelectedPlace(null)}
+                        onAddToTrip={(place) => {
+                            console.log("Add to trip:", place);
+                            setSelectedPlace(null);
+                        }}
+                    />
+                )}
+
 
 
         </div>

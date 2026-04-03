@@ -1,0 +1,87 @@
+.place-details-modal {
+    background: var(--surface-card);
+    padding: 28px;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+    box-shadow: 0 25px 25px rgba(0,0,0,0.4);
+    color: var(--text-on-surface);
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+/* Header */
+.place-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.place-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--surface-card-alt);
+    border-radius: 12px;
+    margin: 0 auto 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.place-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.place-subtitle {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Divider */
+.divider {
+    height: 1px;
+    background: var(--border-default);
+    margin: 20px 0;
+    opacity: 0.6;
+}
+
+/* Info sections */
+.info-section {
+    margin-bottom: 18px;
+}
+
+.info-section h4 {
+    margin: 0 0 4px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-section p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+/* Add to Trip button */
+.add-trip-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.add-trip-btn:hover {
+    background: var(--accent-hover);
+}
+
+
