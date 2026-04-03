@@ -193,6 +193,19 @@ function HomeScreen() {
     const handleAddToTrip = (place) => {
         //Get existing pending stops or an empty array
         const existingStops = JSON.parse(localStorage.getItem('pendingStops') || "[]");
+        const fullAddress = `${place.name}, ${place.address}`;
+
+        //check if the location is already in the array
+        const isDuplicate = existingStops.some(s => s.location === fullAddress);
+
+        if (isDuplicate) {
+            //Trigger an "error" or "warning" toast instead of a success toast
+            triggerToast(`${place.name} is already in your trip!`, 'error');
+            
+            // Close the modal so the user isn't stuck
+            setSelectedPlace(null); 
+            return; // Stop the function here so it doesn't add a duplicate
+        }
 
         //Add the new place to the list
         const newStop = {
