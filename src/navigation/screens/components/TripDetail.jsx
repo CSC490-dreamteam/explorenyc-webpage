@@ -26,6 +26,32 @@ function formatStopAddress(address) {
     ].filter(Boolean).join(", ") || "Address unavailable";
 }
 
+function processLegs(legs){
+    if (!legs) return [];
+    const processedLegs = [];
+    let i=0;
+    while (i< legs.length) {
+        if ( //if legs has a subway followed by walk followed by another subway, we combine them into a single leg with the walk as a transfer
+            legs[i].TransportType === 2
+            && i + 2 < legs.length
+            && legs[i + 1].TransportType === 0
+            && legs[i + 2].TransportType === 2
+        ) {
+            processedLegs.push({
+                TransportType: 2,
+                TravelTimes: legs[i].TravelTimes + legs[i + 1].TravelTimes + legs[i + 2].TravelTimes,
+                TransitCosts: legs[i].TransitCosts, // just get first cost
+                isTransfer: true,
+            });
+            i += 3;
+        } else {
+            processedLegs.push({...legs[i], isTransfer: false});
+            i++;
+        }
+    }
+    return processedLegs;
+}
+
 function TripDetail({ trip, onClose }) {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
@@ -67,28 +93,22 @@ function TripDetail({ trip, onClose }) {
 
                             {index < stops.length - 1 && stop.Legs && stop.Legs.length > 0 && (
                                 <div className="transit-legs">
-                                    {stop.Legs.map((leg, legIndex) => {
-                                        const isTransfer = leg.TransportType === 0
-                                            && legIndex > 0
-                                            && legIndex < stop.Legs.length - 1
-                                            && stop.Legs[legIndex - 1].TransportType === 2
-                                            && stop.Legs[legIndex + 1].TransportType === 2;
-
-                                        const mode = isTransfer
-                                            ? { label: 'Transfer', className: 'transitIconWalking' }
-                                            : TRANSPORT_MODES[leg.TransportType];
-                                    
+                                    {processLegs(stop.Legs).map((leg, legIndex) => {
+                                        const mode = TRANSPORT_MODES[leg.TransportType];
                                         return (
                                             <div className='transit-block' key={legIndex}>
                                                 <div className={`transit-icon ${mode?.className}`} />
                                                 <div className="transit-info">
-                                                    <strong>{mode?.label}</strong>
-                                                    <span className="transit-details">
-                                                        {leg.TravelTimes} min
-                                                        {leg.TransitCosts > 0 && ` · ${formatCost(leg.TransitCosts)}`}
-                                                    </span>
-                                                </div>
+                                                    <strong>
+                                                        {mode?.label}
+                                                        {leg.isTransfer && ' w/ Transfer'}
+                                                    </strong>
+                                                <span className="transit-details">
+                                                    {leg.TravelTimes} min
+                                                    {leg.TransitCosts > 0 && ` · ${formatCost(leg.TransitCosts)}`}
+                                                </span>
                                             </div>
+                                        </div>
                                         );
                                     })}
                              </div>

@@ -52,13 +52,30 @@
 }
 
 .trip-detail-stops {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-bottom: 18px;
 }
 
+/* transit dotted line */
+.trip-detail-stops::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    border-left: 4px dashed var(--timeline-line, var(--border-default));
+    z-index: 0;
+    pointer-events: none;
+}
+
 .trip-detail-stop {
+    position: relative;
+    z-index: 1;
     padding: 12px;
     border: 1px solid var(--border-default);
     border-radius: 10px;
@@ -92,11 +109,13 @@
 }
 
 .transit-block {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin: 16px auto;
+    margin: 1px auto;
     padding: 10px 18px;
     width: fit-content;
     border-radius: 10px;
@@ -143,6 +162,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 1px;
     margin: 16px 0;
 }
