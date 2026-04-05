@@ -9,7 +9,14 @@ const routeLayer = {
     id: 'test-route',
     type: 'line',
     paint: {
-        'line-color': '#67e8f9',
+        'line-color': [
+            'match',
+            ['get', 'transportType'],
+            0, '#22c55e',
+            1, '#ef4444',
+            2, '#facc15',
+            '#67e8f9',
+        ],
         'line-width': 5,
         'line-opacity': 0.9,
     },
