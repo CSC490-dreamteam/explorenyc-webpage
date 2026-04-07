@@ -1,7 +1,7 @@
 import '/src/App.css'
 import './TripDetail.css'
 import MapScreen from "../MapScreen.jsx";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -59,6 +59,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     const [isDuplicating, setIsDuplicating] = useState(false);
     const [duplicateError, setDuplicateError] = useState("");
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
+    const detailBoxRef = useRef(null);
 
     useEffect(() => {
         setIsDuplicateOpen(false);
@@ -66,6 +67,23 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         setIsDuplicating(false);
         setDuplicateError("");
     }, [trip?.trip_id]);
+
+    useEffect(() => {
+        if (!isDuplicateOpen || !detailBoxRef.current) {
+            return;
+        }
+
+        requestAnimationFrame(() => {
+            if (!detailBoxRef.current) {
+                return;
+            }
+
+            detailBoxRef.current.scrollTo({
+                top: detailBoxRef.current.scrollHeight,
+                behavior: "smooth",
+            });
+        });
+    }, [isDuplicateOpen]);
 
     async function handleDuplicateTrip() {
         if (!trip?.trip_id) {
@@ -130,7 +148,11 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                 aria-labelledby="trip-detail-title"
                 onClick={onClose}
             >
-                <div className="trip-detail-box" onClick={(event) => event.stopPropagation()}>
+                <div
+                    className="trip-detail-box"
+                    ref={detailBoxRef}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     <button
                         className="trip-detail-close"
                         type="button"
