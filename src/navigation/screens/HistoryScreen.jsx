@@ -3,10 +3,27 @@ import './HistoryScreen.css';
 import '../../App.css'
 import TripDetail from "./components/TripDetail.jsx";
 
+async function fetchTripStopsForUser(userId) {
+    const res = await fetch(
+        `https://explorenyc-recommendation-service.onrender.com/trip-stops?user_id=${encodeURIComponent(userId)}`
+    );
+    return res.json();
+}
+
 export default function History({ setCurrentScreen }) {
     const [userTrips, setUserTrips] = useState([]);
     const [selectedTrip, setSelectedTrip] = useState(null);
     const trips = Array.isArray(userTrips?.trips) ? userTrips.trips : [];
+
+    async function refreshTrips() {
+        try {
+            const json = await fetchTripStopsForUser(1);
+            setUserTrips(json);
+            console.log("trip-stops response:", json);
+        } catch (err) {
+            console.error("Error fetching /trip-stops:", err);
+        }
+    }
 
     function formatTripDate(dateString) {
         if (!dateString) return "No date";
@@ -29,20 +46,31 @@ export default function History({ setCurrentScreen }) {
     }
 
     useEffect(() => {
-        async function fetchTripStops() {
+        let isActive = true;
+
+        async function loadTrips() {
             try {
-                const res = await fetch(
-                    `https://explorenyc-recommendation-service.onrender.com/trip-stops?user_id=${encodeURIComponent(1)}`
-                );
-                const json = await res.json();
+                const json = await fetchTripStopsForUser(1);
+                if (!isActive) {
+                    return;
+                }
+
                 setUserTrips(json);
                 console.log("trip-stops response:", json);
             } catch (err) {
+                if (!isActive) {
+                    return;
+                }
+
                 console.error("Error fetching /trip-stops:", err);
             }
         }
 
-        fetchTripStops();
+        loadTrips();
+
+        return () => {
+            isActive = false;
+        };
     }, []);
 
 
@@ -99,6 +127,7 @@ export default function History({ setCurrentScreen }) {
             {selectedTrip && (
                 <TripDetail
                     trip={selectedTrip}
+                    onTripsUpdated={refreshTrips}
                     onClose={() => setSelectedTrip(null)}
                 />
             )}
