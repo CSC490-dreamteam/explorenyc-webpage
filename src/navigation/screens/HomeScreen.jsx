@@ -4,6 +4,8 @@ import './components/TrendingCard.jsx'
 import TrendingCard from "./components/TrendingCard.jsx";
 import React, { useState, useEffect } from "react";
 import RecommendationCard from './components/RecommendationCard.jsx';
+import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
+import Toast from './components/Toast.jsx';
 
 function HomeScreen() {
     
@@ -146,6 +148,7 @@ function HomeScreen() {
     const [loading, setLoading] = useState(true); //Tracks whether the API request is still in progress
     const [error, setError] = useState(null); //Holds any error message if the API request fails
     const [randomTrending, setRandomTrending] = useState([]);
+    const [selectedPlace, setSelectedPlace] = useState(null);
 
     //The API call
     useEffect(() => {
@@ -154,11 +157,11 @@ function HomeScreen() {
             //make request to fastapi backend
             try {
                 const res = await fetch(
-                    "https://explorenyc-recommendation-service.onrender.com/discover"
+                    "https://explorenyc-recommendation-service.onrender.com/discover-all"
                 );
                 //if the response is not OK status, throw an error
                 if (!res.ok) {
-                    throw new Error("Failed to fetch /discover");
+                    throw new Error("Failed to fetch /discover-all");
                 }
                 //parse the JSON body of the response
                 const json = await res.json();
@@ -179,6 +182,49 @@ function HomeScreen() {
         const shuffled = [...trendingSpots].sort(() => Math.random() - 0.5);
         setRandomTrending(shuffled.slice(0, 3));
     }, []);
+
+    // Add state for the toast
+    const [toastConfig, setToastConfig] = useState({ show: false, message: '', type: '' });
+
+    const triggerToast = (message, type) => {
+        setToastConfig({ show: true, message, type });
+    };
+
+    const handleAddToTrip = (place) => {
+        const existingStops = JSON.parse(localStorage.getItem('pendingStops') || "[]");
+        const currentDraft = JSON.parse(localStorage.getItem('active_trip_draft') || "[]");
+        
+        // 1. Normalize the address (Trending uses .address, Recommendations might vary)
+        const placeAddress = place.address || "";
+        const fullAddress = `${place.name}, ${placeAddress}`;
+
+        // 2. CHECK: Is it a duplicate in EITHER the pending list or the active draft?
+        // We trim and lowercase to ensure "Central Park" matches "central park "
+        const isDuplicate = [...existingStops, ...currentDraft].some(s => 
+            s.location.trim().toLowerCase() === fullAddress.trim().toLowerCase()
+        );
+
+        if (isDuplicate) {
+            triggerToast(`${place.name} is already in your trip!`, 'error');
+            setSelectedPlace(null);
+            return;
+        }
+
+        // 3. Limit Check
+        const totalStops = existingStops.length + currentDraft.length;
+        if (totalStops >= 8) {
+            triggerToast(`Stop limit reached!`, 'error');
+            setSelectedPlace(null);
+            return;
+        }
+
+        // 4. Success! Add it
+        const newStop = { location: fullAddress, duration: 30, mandatory: false };
+        localStorage.setItem('pendingStops', JSON.stringify([...existingStops, newStop]));
+        
+        triggerToast(`Added ${place.name} to your trip!`, 'success');
+        setSelectedPlace(null);
+    };
 
 
     return (
@@ -206,6 +252,10 @@ function HomeScreen() {
                             key={place.id}
                             image={place.img}
                             title={place.name}
+                            place={place} //pass the whole place object to the modal has data
+                            onClick={() => setSelectedPlace(place)} //set the click handler
+
+                            
                             placeType={place.place_type}
                             category={place.category}
                             description={place.description}
@@ -238,11 +288,33 @@ function HomeScreen() {
                             place={place}
                             loading={false}
                             error={error}
+                            onClick={() => setSelectedPlace(place)}
                             />
                         ))
                 }
 
             </div>
+
+                {selectedPlace && (
+                    <PlaceDetailsModal
+                        place={selectedPlace}
+                        onClose={() => setSelectedPlace(null)}
+                        onAddToTrip={(place) => {
+                            handleAddToTrip(place)
+                            console.log("Add to trip:", place.name);
+                            setSelectedPlace(null);
+                        }}
+                    />
+                )}
+
+            {/* Render the toast if state is true */}
+            {toastConfig.show && (
+                <Toast 
+                    message={toastConfig.message} 
+                    type={toastConfig.type} 
+                    onClose={() => setToastConfig({ ...toastConfig, show: false })} 
+                />
+            )}
 
 
         </div>

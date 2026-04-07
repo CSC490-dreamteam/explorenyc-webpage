@@ -153,9 +153,17 @@ function NewTripScreen() {
     
 
     // React state variable known as stops that is an array full of JSON
-    const [stops, setStops] = useState([{
-        location: '', optional: false, timePreference: '', duration: 60
-    }]);
+    const [stops, setStops] = useState(() => {
+        const saved = localStorage.getItem('active_trip_draft');
+        //If we have a saved draft, use it. If not, start with one empty stop. 
+        return saved 
+            ? JSON.parse(saved)
+            : [{ location: "", mandatory: false, duration: 30, timePreference: "" }];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('active_trip_draft', JSON.stringify(stops));
+    }, [stops]); // This triggers when 'stops' is updated
 
     //function that edits a stop by index, used when the user changes it in the ui
     //under the hood it takes the existing stops array, edits one index entry as needed, then reassigns the state variable to the new array
@@ -225,6 +233,26 @@ function NewTripScreen() {
     const isStartPointError = errorState?.target === 'startPoint'
     const isEntryTimeError = errorState?.target === 'entryTime'
     const isExitTimeError = errorState?.target === 'exitTime'
+
+    //check if there are any stops in local storage
+    useEffect(() => {
+        // 1. Check for saved stops in storage
+        const savedStops = localStorage.getItem('pendingStops');
+
+        if (savedStops) {
+            const parsedStops = JSON.parse(savedStops);
+
+            setStops(prevStops => {
+                // Filter out the initial empty stop if it exists
+                const activeStops = prevStops.filter(s => s.location !== "");
+                return [...activeStops, ...parsedStops];
+            });
+
+            // 2. CRITICAL: Clear the storage so they don't get added 
+            // every time the user visits this screen
+            localStorage.removeItem('pendingStops');
+        }
+    }, []); // Runs once when the screen loads
 
     return (
         <div className='newTripPage'>
