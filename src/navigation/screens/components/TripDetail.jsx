@@ -81,7 +81,7 @@ function TripDetail({ trip, onClose }) {
                         >
                             X
                         </button>
-                        <MapScreen embedded />
+                        <MapScreen embedded stops={stops} />
                     </div>
                 </div>
             )}
