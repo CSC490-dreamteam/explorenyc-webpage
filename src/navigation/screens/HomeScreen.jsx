@@ -157,7 +157,7 @@ function HomeScreen() {
             //make request to fastapi backend
             try {
                 const res = await fetch(
-                    "https://explorenyc-recommendation-service.onrender.com/discover-all"
+                    "https://explorenyc-recommendation-testing.up.railway.app/discover-all"
                 );
                 //if the response is not OK status, throw an error
                 if (!res.ok) {
