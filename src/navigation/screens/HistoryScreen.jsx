@@ -5,7 +5,7 @@ import TripDetail from "./components/TripDetail.jsx";
 
 async function fetchTripStopsForUser(userId) {
     const res = await fetch(
-        `https://explorenyc-recommendation-service.onrender.com/trip-stops?user_id=${encodeURIComponent(userId)}`
+        `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(userId)}`
     );
     return res.json();
 }
