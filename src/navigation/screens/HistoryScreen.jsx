@@ -32,7 +32,7 @@ export default function History({ setCurrentScreen }) {
         async function fetchTripStops() {
             try {
                 const res = await fetch(
-                      `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(1)}`
+                    `https://explorenyc-recommendation-service.onrender.com/trip-stops?user_id=${encodeURIComponent(1)}`
                 );
                 const json = await res.json();
                 setUserTrips(json);
