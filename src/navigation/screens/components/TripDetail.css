@@ -51,6 +51,55 @@
     color: var(--text-muted);
 }
 
+.trip-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.trip-duplicate-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    background: var(--surface-card-alt);
+}
+
+.trip-duplicate-label {
+    font-weight: 600;
+}
+
+.trip-duplicate-input {
+    width: 100%;
+    max-width: 220px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
+    background: var(--surface-card);
+    color: inherit;
+    box-sizing: border-box;
+}
+
+.trip-duplicate-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.trip-duplicate-error {
+    margin: 0;
+    color: #b42318;
+    font-size: 0.95rem;
+}
+
+.trip-action-btn-secondary {
+    opacity: 0.85;
+}
+
 .trip-detail-stops {
     position: relative;
     display: flex;

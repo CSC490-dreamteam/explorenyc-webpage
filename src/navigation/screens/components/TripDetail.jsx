@@ -1,7 +1,7 @@
 import '/src/App.css'
 import './TripDetail.css'
 import MapScreen from "../MapScreen.jsx";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -52,9 +52,92 @@ function processLegs(legs){
     return processedLegs;
 }
 
-function TripDetail({ trip, onClose }) {
+function TripDetail({ trip, onClose, onTripsUpdated }) {
     const [isMapOpen, setIsMapOpen] = useState(false);
+    const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
+    const [duplicateDate, setDuplicateDate] = useState("");
+    const [isDuplicating, setIsDuplicating] = useState(false);
+    const [duplicateError, setDuplicateError] = useState("");
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
+    const detailBoxRef = useRef(null);
+
+    useEffect(() => {
+        setIsDuplicateOpen(false);
+        setDuplicateDate("");
+        setIsDuplicating(false);
+        setDuplicateError("");
+    }, [trip?.trip_id]);
+
+    useEffect(() => {
+        if (!isDuplicateOpen || !detailBoxRef.current) {
+            return;
+        }
+
+        requestAnimationFrame(() => {
+            if (!detailBoxRef.current) {
+                return;
+            }
+
+            detailBoxRef.current.scrollTo({
+                top: detailBoxRef.current.scrollHeight,
+                behavior: "smooth",
+            });
+        });
+    }, [isDuplicateOpen]);
+
+    async function handleDuplicateTrip() {
+        if (!trip?.trip_id) {
+            const message = "Unable to duplicate this trip because the trip ID is missing.";
+            setDuplicateError(message);
+            console.error(message);
+            return;
+        }
+
+        if (!duplicateDate) {
+            setDuplicateError("Select a new date before duplicating this trip.");
+            return;
+        }
+
+        setIsDuplicating(true);
+        setDuplicateError("");
+
+        const params = new URLSearchParams({
+            trip_id: String(trip.trip_id),
+            new_date: duplicateDate,
+        });
+
+        try {
+            const response = await fetch(
+                `https://explorenyc-recommendation-service.onrender.com/duplicate-trip?${params.toString()}`,
+                { method: "POST" }
+            );
+
+            if (response.status !== 200) {
+                const errorText = await response.text();
+                const message = errorText
+                    ? `Failed to duplicate trip (${response.status}): ${errorText}`
+                    : `Failed to duplicate trip (${response.status}).`;
+                setDuplicateError(message);
+                console.error("Failed to duplicate trip:", {
+                    status: response.status,
+                    body: errorText,
+                });
+                return;
+            }
+
+            if (onTripsUpdated) {
+                await onTripsUpdated();
+            }
+
+            onClose();
+        } catch (error) {
+            const message = `Failed to duplicate trip: ${error instanceof Error ? error.message : "Unknown error."}`;
+            setDuplicateError(message);
+            console.error("Failed to duplicate trip:", error);
+        } finally {
+            setIsDuplicating(false);
+        }
+    }
 
     return (
         <>
@@ -65,7 +148,11 @@ function TripDetail({ trip, onClose }) {
                 aria-labelledby="trip-detail-title"
                 onClick={onClose}
             >
-                <div className="trip-detail-box" onClick={(event) => event.stopPropagation()}>
+                <div
+                    className="trip-detail-box"
+                    ref={detailBoxRef}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     <button
                         className="trip-detail-close"
                         type="button"
@@ -121,13 +208,75 @@ function TripDetail({ trip, onClose }) {
                         <p>No stops found for this trip.</p>
                     )}
 
-                    <button
-                        className="trip-action-btn"
-                        type="button"
-                        onClick={() => setIsMapOpen(true)}
-                    >
-                        Open Map
-                    </button>
+                    <div className="trip-action-row">
+                        <button
+                            className="trip-action-btn"
+                            type="button"
+                            onClick={() => setIsMapOpen(true)}
+                        >
+                            Open Map
+                        </button>
+
+                        <button
+                            className="trip-action-btn"
+                            type="button"
+                            onClick={() => {
+                                setIsDuplicateOpen(true);
+                                setDuplicateError("");
+                            }}
+                        >
+                            Duplicate Trip
+                        </button>
+                    </div>
+
+                    {isDuplicateOpen && (
+                        <div className="trip-duplicate-panel">
+                            <label className="trip-duplicate-label" htmlFor="duplicate-trip-date">
+                                New date
+                            </label>
+                            <input
+                                id="duplicate-trip-date"
+                                type="date"
+                                className="trip-duplicate-input"
+                                value={duplicateDate}
+                                onChange={(event) => {
+                                    setDuplicateDate(event.target.value);
+                                    if (duplicateError) {
+                                        setDuplicateError("");
+                                    }
+                                }}
+                            />
+
+                            {duplicateError && (
+                                <p className="trip-duplicate-error" role="alert">
+                                    {duplicateError}
+                                </p>
+                            )}
+
+                            <div className="trip-duplicate-actions">
+                                <button
+                                    className="trip-action-btn"
+                                    type="button"
+                                    onClick={handleDuplicateTrip}
+                                    disabled={isDuplicating}
+                                >
+                                    {isDuplicating ? "Duplicating..." : "Confirm Duplicate"}
+                                </button>
+                                <button
+                                    className="trip-action-btn trip-action-btn-secondary"
+                                    type="button"
+                                    onClick={() => {
+                                        setIsDuplicateOpen(false);
+                                        setDuplicateDate("");
+                                        setDuplicateError("");
+                                    }}
+                                    disabled={isDuplicating}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -151,4 +300,3 @@ function TripDetail({ trip, onClose }) {
 }
 
 export default TripDetail
-
