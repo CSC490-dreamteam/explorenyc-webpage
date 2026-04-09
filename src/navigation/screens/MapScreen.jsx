@@ -1,9 +1,12 @@
 import '../../App.css'
-import React, { useEffect, useMemo, useRef } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import 'mapbox-gl/dist/mapbox-gl.css'
 import polyline from '@mapbox/polyline';
 import Map, { Layer, Marker, Source } from 'react-map-gl/mapbox';
 import mapStyleJson from '../../assets/dark_manhattan.json';
+import PlaceDetailsModal from "./components/PlaceDetailsModal.jsx";
+import { addPlaceToPendingTrip } from "./utils/tripDrafts.js";
+import { getStopMapMarker, normalizeStopToPlace } from "./utils/stopPlace.js";
 
 const routeLayer = {
     id: 'test-route',
@@ -25,28 +28,6 @@ const routeLayer = {
         'line-join': 'round',
     },
 };
-
-function parseCoordinate(value) {
-    const parsedValue = Number(value);
-    return Number.isFinite(parsedValue) ? parsedValue : null;
-}
-
-function getStopCoordinate(stop, index) {
-    const latitude = parseCoordinate(stop?.Lat ?? stop?.Address?.Lat);
-    const longitude = parseCoordinate(stop?.Lon ?? stop?.Address?.Lon);
-
-    if (latitude === null || longitude === null) {
-        return null;
-    }
-
-    return {
-        id: stop?.id ?? `${stop?.Name ?? 'stop'}-${index}`,
-        latitude,
-        longitude,
-        label: index + 1,
-        name: stop?.Name || `Stop ${index + 1}`,
-    };
-}
 
 function buildBounds(points) {
     if (points.length === 0) {
@@ -117,15 +98,27 @@ function getRouteFeatures(stops) {
 function MapScreen({ embedded = false, stops = [] }) {
     const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
     const mapRef = useRef(null);
+    const [selectedStop, setSelectedStop] = useState(null);
 
     const MANHATTAN_BOUNDS = [
         [-74.047285, 40.679548], // Southwest coordinates
         [-73.907000, 40.882214]  // Northeast coordinates
     ];
 
-    const stopMarkers = useMemo(
+    const stopPins = useMemo(
         () => stops
-            .map((stop, index) => getStopCoordinate(stop, index))
+            .map((stop, index) => {
+                const marker = getStopMapMarker(stop, index);
+
+                if (!marker) {
+                    return null;
+                }
+
+                return {
+                    ...marker,
+                    place: normalizeStopToPlace(stop, index, null),
+                };
+            })
             .filter(Boolean),
         [stops]
     );
@@ -139,9 +132,9 @@ function MapScreen({ embedded = false, stops = [] }) {
 
     const combinedBounds = useMemo(() => {
         const routePoints = routeFeatures.flatMap((feature) => feature.geometry.coordinates);
-        const stopCoordinates = stopMarkers.map(({ longitude, latitude }) => [longitude, latitude]);
+        const stopCoordinates = stopPins.map(({ longitude, latitude }) => [longitude, latitude]);
         return buildBounds([...routePoints, ...stopCoordinates]);
-    }, [routeFeatures, stopMarkers]);
+    }, [routeFeatures, stopPins]);
 
     useEffect(() => {
         if (!mapRef.current || !combinedBounds) {
@@ -182,53 +175,70 @@ function MapScreen({ embedded = false, stops = [] }) {
                         <Layer {...routeLayer} />
                     </Source>
                 )}
-                {stopMarkers.map((stop) => (
-                    <Marker
-                        key={stop.id}
-                        longitude={stop.longitude}
-                        latitude={stop.latitude}
-                        anchor="bottom"
-                    >
-                        <div
-                            title={stop.name}
-                            aria-label={`${stop.name}, stop ${stop.label}`}
-                            style={{
-                                position: 'relative',
-                                width: 30,
-                                height: 30,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: 28,
-                                lineHeight: 1,
-                                textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)',
-                            }}
+                {stopPins.map((stop) => (
+                        <Marker
+                            key={stop.id}
+                            longitude={stop.longitude}
+                            latitude={stop.latitude}
+                            anchor="bottom"
                         >
-                            <span aria-hidden="true">📍</span>
-                            <span
+                            <button
+                                type="button"
+                                title={stop.name}
+                                aria-label={`${stop.name}, stop ${stop.label}`}
+                                onClick={() => setSelectedStop(stop.place)}
                                 style={{
-                                    position: 'absolute',
-                                    top: -4,
-                                    right: -8,
-                                    minWidth: 16,
-                                    height: 16,
-                                    padding: '0 4px',
-                                    borderRadius: 999,
-                                    background: '#ffffff',
-                                    color: '#111111',
-                                    fontSize: 10,
-                                    fontWeight: 700,
-                                    lineHeight: '16px',
-                                    textAlign: 'center',
-                                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.35)',
+                                    position: 'relative',
+                                    width: 30,
+                                    height: 30,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 28,
+                                    lineHeight: 1,
+                                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.5)',
+                                    background: 'transparent',
+                                    border: 'none',
+                                    padding: 0,
+                                    cursor: 'pointer',
                                 }}
                             >
-                                {stop.label}
-                            </span>
-                        </div>
-                    </Marker>
-                ))}
+                                <span aria-hidden="true">📍</span>
+                                <span
+                                    style={{
+                                        position: 'absolute',
+                                        top: -4,
+                                        right: -8,
+                                        minWidth: 16,
+                                        height: 16,
+                                        padding: '0 4px',
+                                        borderRadius: 999,
+                                        background: '#ffffff',
+                                        color: '#111111',
+                                        fontSize: 10,
+                                        fontWeight: 700,
+                                        lineHeight: '16px',
+                                        textAlign: 'center',
+                                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.35)',
+                                    }}
+                                >
+                                    {stop.label}
+                                </span>
+                            </button>
+                        </Marker>
+                    ))}
             </Map>
+
+            {selectedStop && (
+                <PlaceDetailsModal
+                    place={selectedStop}
+                    onClose={() => setSelectedStop(null)}
+                    onAddToTrip={(place) => {
+                        addPlaceToPendingTrip(place);
+                        setSelectedStop(null);
+                    }}
+                />
+            )}
         </div>
     )
 }

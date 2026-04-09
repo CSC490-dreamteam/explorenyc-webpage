@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import RecommendationCard from './components/RecommendationCard.jsx';
 import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
 import Toast from './components/Toast.jsx';
+import { addPlaceToPendingTrip } from './utils/tripDrafts.js';
 
 function HomeScreen() {
     
@@ -191,38 +192,8 @@ function HomeScreen() {
     };
 
     const handleAddToTrip = (place) => {
-        const existingStops = JSON.parse(localStorage.getItem('pendingStops') || "[]");
-        const currentDraft = JSON.parse(localStorage.getItem('active_trip_draft') || "[]");
-        
-        // 1. Normalize the address (Trending uses .address, Recommendations might vary)
-        const placeAddress = place.address || "";
-        const fullAddress = `${place.name}, ${placeAddress}`;
-
-        // 2. CHECK: Is it a duplicate in EITHER the pending list or the active draft?
-        // We trim and lowercase to ensure "Central Park" matches "central park "
-        const isDuplicate = [...existingStops, ...currentDraft].some(s => 
-            s.location.trim().toLowerCase() === fullAddress.trim().toLowerCase()
-        );
-
-        if (isDuplicate) {
-            triggerToast(`${place.name} is already in your trip!`, 'error');
-            setSelectedPlace(null);
-            return;
-        }
-
-        // 3. Limit Check
-        const totalStops = existingStops.length + currentDraft.length;
-        if (totalStops >= 8) {
-            triggerToast(`Stop limit reached!`, 'error');
-            setSelectedPlace(null);
-            return;
-        }
-
-        // 4. Success! Add it
-        const newStop = { location: fullAddress, duration: 30, mandatory: false };
-        localStorage.setItem('pendingStops', JSON.stringify([...existingStops, newStop]));
-        
-        triggerToast(`Added ${place.name} to your trip!`, 'success');
+        const result = addPlaceToPendingTrip(place);
+        triggerToast(result.message, result.type);
         setSelectedPlace(null);
     };
 

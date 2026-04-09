@@ -2,6 +2,10 @@ import '/src/App.css'
 import './TripDetail.css'
 import MapScreen from "../MapScreen.jsx";
 import { useEffect, useRef, useState } from "react";
+import PlaceDetailsModal from "./PlaceDetailsModal.jsx";
+import Toast from "./Toast.jsx";
+import { addPlaceToPendingTrip } from "../utils/tripDrafts.js";
+import { normalizeStopToPlace } from "../utils/stopPlace.js";
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -12,18 +16,6 @@ const TRANSPORT_MODES = {
 function formatCost(cents) {
     if (!cents) return null
     return `$${(cents / 100).toFixed(2)}`
-}
-
-function formatStopAddress(address) {
-    if (!address) return "Address unavailable";
-    if (typeof address === "string") return address;
-
-    return [
-        address.Street,
-        address.City,
-        address.State,
-        address.ZipCode,
-    ].filter(Boolean).join(", ") || "Address unavailable";
 }
 
 function processLegs(legs){
@@ -58,6 +50,8 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     const [duplicateDate, setDuplicateDate] = useState("");
     const [isDuplicating, setIsDuplicating] = useState(false);
     const [duplicateError, setDuplicateError] = useState("");
+    const [selectedPlace, setSelectedPlace] = useState(null);
+    const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
     const detailBoxRef = useRef(null);
 
@@ -66,6 +60,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         setDuplicateDate("");
         setIsDuplicating(false);
         setDuplicateError("");
+        setSelectedPlace(null);
     }, [trip?.trip_id]);
 
     useEffect(() => {
@@ -139,6 +134,20 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         }
     }
 
+    function triggerToast(message, type) {
+        setToastConfig({ show: true, message, type });
+    }
+
+    function handleStopClick(stop, index) {
+        setSelectedPlace(normalizeStopToPlace(stop, index, trip?.trip_id));
+    }
+
+    function handleAddToTrip(place) {
+        const result = addPlaceToPendingTrip(place);
+        triggerToast(result.message, result.type);
+        setSelectedPlace(null);
+    }
+
     return (
         <>
             <div
@@ -171,39 +180,46 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                     {stops.length > 0 ? (
                         <div className="trip-detail-stops">
 
-                            {stops.map((stop, index) => (
-                                <div key={stop?.id ?? `${trip?.trip_id}-${index}`}>
-                                    <div className="trip-detail-stop">
-                                        <strong>{stop?.Name || `Stop ${index + 1}`}</strong>
-                                        <p>{formatStopAddress(stop?.Address)}</p>
-                                    </div>
+                            {stops.map((stop, index) => {
+                                const place = normalizeStopToPlace(stop, index, trip?.trip_id);
 
-                            {index < stops.length - 1 && stop.Legs && stop.Legs.length > 0 && (
-                                <div className="transit-legs">
-                                    {processLegs(stop.Legs).map((leg, legIndex) => {
-                                        const mode = TRANSPORT_MODES[leg.TransportType];
-                                        return (
-                                            <div className='transit-block' key={legIndex}>
-                                                <div className={`transit-icon ${mode?.className}`} />
-                                                <div className="transit-info">
-                                                    <strong>
-                                                        {mode?.label}
-                                                        {leg.isTransfer && ' w/ Transfer'}
-                                                    </strong>
-                                                <span className="transit-details">
-                                                    {leg.TravelTimes} min
-                                                    {leg.TransitCosts > 0 && ` · ${formatCost(leg.TransitCosts)}`}
-                                                </span>
+                                return (
+                                    <div key={stop?.id ?? `${trip?.trip_id}-${index}`}>
+                                        <button
+                                            className="trip-detail-stop trip-detail-stop-button"
+                                            type="button"
+                                            onClick={() => handleStopClick(stop, index)}
+                                        >
+                                            <strong>{place.name}</strong>
+                                            <p>{place.address}</p>
+                                        </button>
+
+                                        {index < stops.length - 1 && stop.Legs && stop.Legs.length > 0 && (
+                                            <div className="transit-legs">
+                                                {processLegs(stop.Legs).map((leg, legIndex) => {
+                                                    const mode = TRANSPORT_MODES[leg.TransportType];
+                                                    return (
+                                                        <div className='transit-block' key={legIndex}>
+                                                            <div className={`transit-icon ${mode?.className}`} />
+                                                            <div className="transit-info">
+                                                                <strong>
+                                                                    {mode?.label}
+                                                                    {leg.isTransfer && ' w/ Transfer'}
+                                                                </strong>
+                                                                <span className="transit-details">
+                                                                    {leg.TravelTimes} min
+                                                                    {leg.TransitCosts > 0 && ` · ${formatCost(leg.TransitCosts)}`}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
-                                        </div>
-                                        );
-                                    })}
-                             </div>
-                        )}
-
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
-                            ))}
-                            </div>
                     ) : (
                         <p>No stops found for this trip.</p>
                     )}
@@ -294,6 +310,22 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                         <MapScreen embedded stops={stops} />
                     </div>
                 </div>
+            )}
+
+            {selectedPlace && (
+                <PlaceDetailsModal
+                    place={selectedPlace}
+                    onClose={() => setSelectedPlace(null)}
+                    onAddToTrip={handleAddToTrip}
+                />
+            )}
+
+            {toastConfig.show && (
+                <Toast
+                    message={toastConfig.message}
+                    type={toastConfig.type}
+                    onClose={() => setToastConfig((current) => ({ ...current, show: false }))}
+                />
             )}
         </>
     )
