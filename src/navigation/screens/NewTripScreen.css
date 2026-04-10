@@ -466,10 +466,14 @@
     padding: 15px 5px;
     cursor: pointer;
     transition: transform 0.1s ease;
+    background: var(--surface-card-amount, var(--surface-card-alt)); 
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
 }
 
 .transitCard:active {
     transform: scale(0.95);
+    background-color: var(--surface-input);
 }
 
 
@@ -485,20 +489,6 @@
     -webkit-mask-position: center;
 }
 
-.transitIconWalking {
-    -webkit-mask-image: url('../assets/walking.svg');
-    mask-image: url('../../assets/walking.svg');
-}
-
-.transitIconSubway {
-    -webkit-mask-image: url('../../assets/subway.svg');
-    mask-image: url('../../assets/subway.svg');
-}
-
-.transitIconCar {
-    -webkit-mask-image: url('../../assets/car.svg');
-    mask-image: url('../../assets/car.svg');
-}
 
 .transitLabel {
     font-size: 0.75rem;
