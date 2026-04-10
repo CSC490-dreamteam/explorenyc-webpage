@@ -131,6 +131,21 @@
     background: var(--surface-card-alt);
 }
 
+.trip-detail-stop-button {
+    width: 100%;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.trip-detail-stop-button:hover {
+    border-color: var(--accent);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+
 .trip-detail-stop strong {
     display: block;
     margin-bottom: 4px;
