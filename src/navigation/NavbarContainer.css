@@ -32,6 +32,13 @@
     margin: 0;
 }
 
+.navbarContainer__actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+
 .navbarContainer__main {
     padding-top: 20px;
 }
@@ -53,17 +60,17 @@
     color: inherit;
     justify-content: center;
 }
-.navbarContainer__settingsButton {
+.navbarContainer__actionButton {
     width: 52px;
     height: 48px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: auto;
 }
 
-.navbarContainer__settingsButton .settingsIcon {
+.navbarContainer__actionButton .settingsIcon,
+.navbarContainer__actionButton .aiIcon {
     width: 22px;
     height: 22px;
 }
@@ -90,4 +97,8 @@
 
 .settingsIcon {
     mask-image: url(../assets/settings.svg);
+}
+
+.aiIcon {
+    mask-image: url(../assets/robot.svg);
 }
