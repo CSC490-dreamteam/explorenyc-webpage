@@ -97,6 +97,7 @@ function NewTripScreen() {
             exitTime: exitTime,
             startLocation: startLocation.trim(),
             endLocation: endLocation.trim() ? endLocation.trim() : null,
+            transitTypes: transitPreferences,
             stops: stops.map(stop => ({
                 location: stop.location,
                 mandatory: !stop.optional, //if a stop is not optional that its mandatory
