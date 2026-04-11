@@ -172,6 +172,48 @@
     z-index: 2;
 }
 
+.trip-stop-timedata {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+    opacity: 0.8; 
+    margin-top: 4px;
+}
+
+.trip-detail-stop-button {
+    position: relative;
+    padding-right: 70px;
+    text-align: left;
+    display: block;
+}
+
+.stop-main-info p {
+    margin: 4px 0 0 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.stop-arrival-time {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.75rem;
+    opacity: 0.6;
+    font-weight: 400;
+}
+
+.stop-duration-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background-color: rgba(128, 128, 128, 0.15);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
 .transit-block {
     position: relative;
     z-index: 1;
