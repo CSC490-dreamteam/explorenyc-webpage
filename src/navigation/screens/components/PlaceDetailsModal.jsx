@@ -41,21 +41,21 @@ function PlaceDetailsModal({ place, onClose, onAddToTrip }) {
 
                     <div className="divider" />
 
-                    {/* Info Sections */}
+                    {/* Info Sections
                     <div className="info-section">
                         <h4>Description</h4>
                         <p>{place.description || "No description available."}</p>
-                    </div>
+                    </div>*/}
 
                     <div className="info-section">
                         <h4>Address</h4>
                         <p>{place.address}</p>
                     </div>
 
-                    <div className="info-section">
+                    {/* <div className="info-section">
                         <h4>Borough</h4>
                         <p>{place.boro}</p>
-                    </div>
+                    </div>*/}
 
                     <div className="divider" />
 
