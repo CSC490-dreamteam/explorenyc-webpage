@@ -151,32 +151,65 @@ function HomeScreen() {
     const [randomTrending, setRandomTrending] = useState([]);
     const [selectedPlace, setSelectedPlace] = useState(null);
 
-    //The API call
     useEffect(() => {
-        //we define an async function so we can use await inside useEffect
-        async function fetchDiscover() {
-            //make request to fastapi backend
-            try {
-                const res = await fetch(
-                    "https://explorenyc-recommendation-testing.up.railway.app/discover-all"
-                );
-                //if the response is not OK status, throw an error
-                if (!res.ok) {
-                    throw new Error("Failed to fetch /discover-all");
-                }
-                //parse the JSON body of the response
-                const json = await res.json();
-                //the api returns { count, data: [...] }, so we store only the data array
-                setPlaces(json.data); //the API returns {count, data: []} therefore we want the 'data' array
+    async function fetchTailoredRecommendations() {
+        setLoading(true);
+        try {
+            // Fetch user history (using ID 1 for now)
+            const historyRes = await fetch(
+                "https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=1"
+            );
+            const historyData = await historyRes.json();
+            
+            // Extract Location Titles from past trips
+            // historyData.trips contains an array of trips, each having a 'stops' array
+            const pastLocations = historyData.trips
+                ? historyData.trips.flatMap(trip => 
+                    trip.stops ? trip.stops.map(stop => stop.name || stop.location) : []
+                  )
+                : [];
 
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false); //whether we get success or failure, the loading is now complete
-            }
+            // Create a unique list and join them into a search string
+            // Take the most recent 5-10 locations so the query isn't too long
+            const recentLocations = [...new Set(pastLocations)].slice(0, 8).join(", ");
+            
+            //Determine the query History based or Default
+            const searchQuery = recentLocations.length > 0 
+                ? `Places similar to ${recentLocations}` 
+                : "Top rated sights in New York City";
+
+            //Fetch from the recommendation engine
+            const recRes = await fetch(
+                `https://explorenyc-recommendation-testing.up.railway.app/recommend-all-db?user_text=${encodeURIComponent(searchQuery)}&top_k=10`
+            );
+            
+            if (!recRes.ok) throw new Error("Recommendation fetch failed");
+            
+            const data = await recRes.json();
+            setPlaces(data);
+
+        } catch (err) {
+            console.error("Personalization Error:", err);
+            setError(err.message);
+            // Fallback to your original general fetch if the history fetch fails
+            fetchGeneralDiscover();
+        } finally {
+            setLoading(false);
         }
-        fetchDiscover(); //start fetching the data
-    }, []); //end useEffect
+    }
+
+    async function fetchGeneralDiscover() {
+        try {
+            const res = await fetch("https://explorenyc-recommendation-testing.up.railway.app/discover-all");
+            const json = await res.json();
+            setPlaces(json.data);
+        } catch (e) {
+            setError("Could not load any places.");
+        }
+    }
+
+    fetchTailoredRecommendations();
+    }, []);
 
     useEffect(() => {
         //shuffle and pick three
@@ -245,25 +278,26 @@ function HomeScreen() {
       
             <div className="for-you">
                 <h3 align="left">Recommended for you</h3>
-
-                {
-                    // If data is still loading, render 3 skeleton cards
-                    loading
+                
+                <div className="recommendation-vertical-slider">
+                    {loading
                         ? [1, 2, 3].map((n) => (
-                            <RecommendationCard key={n} loading={true} />
+                            <div className="v-slider-item" key={n}>
+                                <RecommendationCard loading={true} />
+                            </div>
                         ))
-                        // Else, render the real recommendation cards
                         : places.map((place, idx) => (
-                            <RecommendationCard
-                            key={idx}
-                            place={place}
-                            loading={false}
-                            error={error}
-                            onClick={() => setSelectedPlace(place)}
-                            />
+                            <div className="v-slider-item" key={idx}>
+                                <RecommendationCard
+                                    place={place}
+                                    loading={false}
+                                    error={error}
+                                    onClick={() => setSelectedPlace(place)}
+                                />
+                            </div>
                         ))
-                }
-
+                    }
+                </div>
             </div>
 
                 {selectedPlace && (
