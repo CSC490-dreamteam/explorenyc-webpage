@@ -307,25 +307,26 @@ function HomeScreen() {
       
             <div className="for-you">
                 <h3 align="left">Recommended for you</h3>
-
-                {
-                    // If data is still loading, render 3 skeleton cards
-                    loading
+                
+                <div className="recommendation-vertical-slider">
+                    {loading
                         ? [1, 2, 3].map((n) => (
-                            <RecommendationCard key={n} loading={true} />
+                            <div className="v-slider-item" key={n}>
+                                <RecommendationCard loading={true} />
+                            </div>
                         ))
-                        // Else, render the real recommendation cards
                         : places.map((place, idx) => (
-                            <RecommendationCard
-                            key={idx}
-                            place={place}
-                            loading={false}
-                            error={error}
-                            onClick={() => setSelectedPlace(place)}
-                            />
+                            <div className="v-slider-item" key={idx}>
+                                <RecommendationCard
+                                    place={place}
+                                    loading={false}
+                                    error={error}
+                                    onClick={() => setSelectedPlace(place)}
+                                />
+                            </div>
                         ))
-                }
-
+                    }
+                </div>
             </div>
 
                 {selectedPlace && (
