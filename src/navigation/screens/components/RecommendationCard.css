@@ -57,8 +57,8 @@
   height: 30px;
   display: inline-block;
   background-color: currentColor;
-  -webkit-mask: url('/public/restaurant.svg') center / contain no-repeat;
-  mask: url('/public/restaurant.svg') center / contain no-repeat;
+  -webkit-mask: url('/public/location.svg') center / contain no-repeat;
+  mask: url('/public/location.svg') center / contain no-repeat;
 }
 
 .card-content {
@@ -127,4 +127,9 @@
   color: var(--error-text);
   font-size: 12px;
   padding: 8px 0;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }

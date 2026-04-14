@@ -43,6 +43,37 @@
     letter-spacing: 0.01em;
 }
 
+.errorWrapper--field {
+    flex: 1;
+    min-width: 130px;
+    margin-bottom: 12px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.errorWrapper--field .errorWrapperLabel {
+    position: static;
+    display: block;
+    order: 2;
+    margin: 6px 0 0;
+    padding: 0;
+    background: transparent;
+    line-height: 1.25;
+}
+
+.errorWrapper--field .fieldGroup {
+    order: 1;
+    margin-bottom: 0;
+}
+
+.errorWrapper--timeField .timeField {
+    width: auto;
+    border-color: var(--error-border);
+}
+
 .errorWrapper--inline {
     display: inline-flex;
     align-items: center;
@@ -89,6 +120,11 @@
     min-width: 130px;
 }
 
+.twoCol > .errorWrapper--field {
+    flex: 1;
+    min-width: 130px;
+}
+
 .fieldGroup {
     display: flex;
     flex-direction: column;
@@ -110,6 +146,7 @@
 .bigField,
 .smallField {
     width: 100%;
+    height: min-content;
     padding: 10px 12px;
     box-sizing: border-box;
     border: 1px solid var(--border-strong);
@@ -130,11 +167,9 @@
 }
 
 .timeField {
-    width: min(100%, 150px);
-    min-width: 150px;
-    max-width: 150px;
+    width: auto;
+    height: min-content;
     align-self: flex-start;
-    max-height: 35px;
 }
 
 .bigField::placeholder,
@@ -224,11 +259,52 @@
 }
 
 .stopOptions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
     margin-bottom: 12px;
+    width: 100%;
+}
+
+.stopOptions .checkboxItem {
+    width: auto;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.stopOptionsTimeGroup {
+    margin-left: 20%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.stopOptionsTimeLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.stopOptionsTimeField {
+    height: 38px;
+    min-height: 38px;
+    margin-bottom: 0;
+    align-self: center;
+    flex-shrink: 0;
+    line-height: 1.2;
+}
+
+.stopOptionsTimeField::-webkit-date-and-time-value
+/*.stopOptionsTimeField::-webkit-datetime-edit*/ {
+    min-height: 1.2em;
 }
 
 .checkboxItem {
     display: flex;
+    width: min(100%, 150px);
     align-items: center;
     gap: 8px;
     margin: 0;
@@ -322,7 +398,7 @@
     to { transform: rotate(360deg); }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 502px) {
     .cardTitleRow {
         flex-direction: column;
         align-items: stretch;
@@ -333,9 +409,35 @@
     }
 
     .timeField {
-        width: min(100%, 136px);
-        min-width: 136px;
-        max-width: 136px;
+        width: auto;
+    }
+
+    .stopOptions {
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 8px;
+        align-items: stretch;
+    }
+
+    .stopOptions .checkboxItem {
+        align-self: stretch;
+        display: flex;
+        padding-block: 12px;
+    }
+
+    .stopOptionsTimeGroup {
+        margin-left: 0;
+        width: 100%;
+        display: grid;
+        justify-items: end;
+        align-content: center;
+        gap: 4px;
+    }
+
+    .stopOptionsTimeField {
+        width: 108px;
+        height: 38px;
+        min-height: 38px;
     }
 }
 

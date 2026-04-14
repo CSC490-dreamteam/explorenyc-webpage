@@ -4,6 +4,9 @@ import './components/TrendingCard.jsx'
 import TrendingCard from "./components/TrendingCard.jsx";
 import React, { useState, useEffect } from "react";
 import RecommendationCard from './components/RecommendationCard.jsx';
+import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
+import Toast from './components/Toast.jsx';
+import { addPlaceToPendingTrip } from './utils/tripDrafts.js';
 
 function HomeScreen() {
     
@@ -146,39 +149,86 @@ function HomeScreen() {
     const [loading, setLoading] = useState(true); //Tracks whether the API request is still in progress
     const [error, setError] = useState(null); //Holds any error message if the API request fails
     const [randomTrending, setRandomTrending] = useState([]);
+    const [selectedPlace, setSelectedPlace] = useState(null);
 
-    //The API call
     useEffect(() => {
-        //we define an async function so we can use await inside useEffect
-        async function fetchDiscover() {
-            //make request to fastapi backend
-            try {
-                const res = await fetch(
-                    "https://explorenyc-recommendation-service.onrender.com/discover"
-                );
-                //if the response is not OK status, throw an error
-                if (!res.ok) {
-                    throw new Error("Failed to fetch /discover");
-                }
-                //parse the JSON body of the response
-                const json = await res.json();
-                //the api returns { count, data: [...] }, so we store only the data array
-                setPlaces(json.data); //the API returns {count, data: []} therefore we want the 'data' array
+    async function fetchTailoredRecommendations() {
+        setLoading(true);
+        try {
+            // Fetch user history (using ID 1 for now)
+            const historyRes = await fetch(
+                "https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=1"
+            );
+            const historyData = await historyRes.json();
+            
+            // Extract Location Titles from past trips
+            // historyData.trips contains an array of trips, each having a 'stops' array
+            const pastLocations = historyData.trips
+                ? historyData.trips.flatMap(trip => 
+                    trip.stops ? trip.stops.map(stop => stop.name || stop.location) : []
+                  )
+                : [];
 
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false); //whether we get success or failure, the loading is now complete
-            }
+            // Create a unique list and join them into a search string
+            // Take the most recent 5-10 locations so the query isn't too long
+            const recentLocations = [...new Set(pastLocations)].slice(0, 8).join(", ");
+            
+            //Determine the query History based or Default
+            const searchQuery = recentLocations.length > 0 
+                ? `Places similar to ${recentLocations}` 
+                : "Top rated sights in New York City";
+
+            //Fetch from the recommendation engine
+            const recRes = await fetch(
+                `https://explorenyc-recommendation-testing.up.railway.app/recommend-all-db?user_text=${encodeURIComponent(searchQuery)}&top_k=10`
+            );
+            
+            if (!recRes.ok) throw new Error("Recommendation fetch failed");
+            
+            const data = await recRes.json();
+            setPlaces(data);
+
+        } catch (err) {
+            console.error("Personalization Error:", err);
+            setError(err.message);
+            // Fallback to your original general fetch if the history fetch fails
+            fetchGeneralDiscover();
+        } finally {
+            setLoading(false);
         }
-        fetchDiscover(); //start fetching the data
-    }, []); //end useEffect
+    }
+
+    async function fetchGeneralDiscover() {
+        try {
+            const res = await fetch("https://explorenyc-recommendation-testing.up.railway.app/discover-all");
+            const json = await res.json();
+            setPlaces(json.data);
+        } catch (e) {
+            setError("Could not load any places.");
+        }
+    }
+
+    fetchTailoredRecommendations();
+    }, []);
 
     useEffect(() => {
         //shuffle and pick three
         const shuffled = [...trendingSpots].sort(() => Math.random() - 0.5);
         setRandomTrending(shuffled.slice(0, 3));
     }, []);
+
+    // Add state for the toast
+    const [toastConfig, setToastConfig] = useState({ show: false, message: '', type: '' });
+
+    const triggerToast = (message, type) => {
+        setToastConfig({ show: true, message, type });
+    };
+
+    const handleAddToTrip = (place) => {
+        const result = addPlaceToPendingTrip(place);
+        triggerToast(result.message, result.type);
+        setSelectedPlace(null);
+    };
 
 
     return (
@@ -206,6 +256,10 @@ function HomeScreen() {
                             key={place.id}
                             image={place.img}
                             title={place.name}
+                            place={place} //pass the whole place object to the modal has data
+                            onClick={() => setSelectedPlace(place)} //set the click handler
+
+                            
                             placeType={place.place_type}
                             category={place.category}
                             description={place.description}
@@ -224,25 +278,48 @@ function HomeScreen() {
       
             <div className="for-you">
                 <h3 align="left">Recommended for you</h3>
-
-                {
-                    // If data is still loading, render 3 skeleton cards
-                    loading
+                
+                <div className="recommendation-vertical-slider">
+                    {loading
                         ? [1, 2, 3].map((n) => (
-                            <RecommendationCard key={n} loading={true} />
+                            <div className="v-slider-item" key={n}>
+                                <RecommendationCard loading={true} />
+                            </div>
                         ))
-                        // Else, render the real recommendation cards
                         : places.map((place, idx) => (
-                            <RecommendationCard
-                            key={idx}
-                            place={place}
-                            loading={false}
-                            error={error}
-                            />
+                            <div className="v-slider-item" key={idx}>
+                                <RecommendationCard
+                                    place={place}
+                                    loading={false}
+                                    error={error}
+                                    onClick={() => setSelectedPlace(place)}
+                                />
+                            </div>
                         ))
-                }
-
+                    }
+                </div>
             </div>
+
+                {selectedPlace && (
+                    <PlaceDetailsModal
+                        place={selectedPlace}
+                        onClose={() => setSelectedPlace(null)}
+                        onAddToTrip={(place) => {
+                            handleAddToTrip(place)
+                            console.log("Add to trip:", place.name);
+                            setSelectedPlace(null);
+                        }}
+                    />
+                )}
+
+            {/* Render the toast if state is true */}
+            {toastConfig.show && (
+                <Toast 
+                    message={toastConfig.message} 
+                    type={toastConfig.type} 
+                    onClose={() => setToastConfig({ ...toastConfig, show: false })} 
+                />
+            )}
 
 
         </div>

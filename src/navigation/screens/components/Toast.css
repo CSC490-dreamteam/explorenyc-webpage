@@ -1,0 +1,65 @@
+.custom-toast {
+    /* Position - KEPT THE SAME (Adjusted slightly higher as discussed) */
+    position: fixed;
+    bottom: 85px; 
+    left: 50%;
+    transform: translateX(-50%);
+    
+    /* DARK MODE COMPATIBILITY: Using your app's variables */
+    background: var(--surface-card); 
+    color: var(--text-on-surface);
+    
+    /* Layout - KEPT THE SAME */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    min-width: 280px;
+    
+    /* Borders & Shadows - Updated to use variables and your specific shadow */
+    border-radius: 12px;
+    border: 1px solid var(--border-default);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); /* Slightly deeper shadow for dark mode */
+    
+    /* Layering */
+    z-index: 10000;
+    
+    /* Animation */
+    animation: nyc-slide-up 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Success State: Using your App's Accent color */
+.custom-toast.success {
+    border-left: 6px solid var(--accent); 
+}
+
+/* Error State */
+.custom-toast.error {
+    border-left: 6px solid #ff3b30; /* Keep high-visibility red for errors */
+}
+
+.toast-icon {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-message {
+    /* Font inherited from your app for consistency */
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Animation - KEPT THE SAME */
+@keyframes nyc-slide-up {
+    0% {
+        transform: translate(-50%, 20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}

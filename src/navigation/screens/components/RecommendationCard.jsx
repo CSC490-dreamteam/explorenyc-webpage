@@ -1,7 +1,7 @@
 import React from "react";
 import "./RecommendationCard.css";
 
-function RecommendationCard({ place, loading, error }) {
+function RecommendationCard({ place, loading, error, onClick }) {
   if (loading) {
     return (
       <div className="card skeleton-card">
@@ -27,24 +27,24 @@ function RecommendationCard({ place, loading, error }) {
   }
 
   return (
-    <div className="card">
+    <div className="card" onClick={() => onClick && onClick(place)}>
       <div className="card-icon">
         <span className="icon-image" aria-hidden="true" />
       </div>
 
       <div className="card-content">
         <div className="card-top">
-          <h2 className="card-title">{place.DBA}</h2>
-          <div className="card-rating">⭐ {place.GRADE}</div>
+          <h2 className="card-title">{place.name}</h2>
+          <div className="card-rating"></div>
         </div>
 
         <div className="card-category">
-          {place["CUISINE DESCRIPTION"]}
+          {place.category || place.place_type}
         </div>
 
         <div className="card-bottom">
           <div className="card-distance">
-            {place.BUILDING} {place.STREET}, {place.ZIPCODE}
+            {place.address}, {place.boro}
           </div>
         </div>
       </div>
