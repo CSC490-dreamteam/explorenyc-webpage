@@ -54,6 +54,33 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
     const detailBoxRef = useRef(null);
+    const [gmapsButton, setGmapsButton] = useState(null);
+
+    function handleTransitClick(event, leg) {
+        if (!detailBoxRef.current) return;
+        const rect = detailBoxRef.current.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        setGmapsButton({ x, y, leg });
+    }
+
+    function handleDetailBoxClick(event) {
+        // prevent overlay from closing
+        event.stopPropagation();
+        // if clicked the gm button or a transit block, keep it
+        if (event.target && event.target.closest && event.target.closest('.gmaps-open-btn')) {
+            return;
+        }
+        if (event.target && event.target.closest && event.target.closest('.transit-block')) {
+            return;
+        }
+        setGmapsButton(null);
+    }
+
+    function handleOpenInGoogleMaps() {
+        // placeholder for future implementation
+        console.log('Open in Google Maps clicked', gmapsButton);
+    }
 
     useEffect(() => {
         setIsDuplicateOpen(false);
@@ -160,7 +187,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                 <div
                     className="trip-detail-box"
                     ref={detailBoxRef}
-                    onClick={(event) => event.stopPropagation()}
+                    onClick={handleDetailBoxClick}
                 >
                     <button
                         className="trip-detail-close"
@@ -199,7 +226,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                                 {processLegs(stop.Legs).map((leg, legIndex) => {
                                                     const mode = TRANSPORT_MODES[leg.TransportType];
                                                     return (
-                                                        <div className='transit-block' key={legIndex}>
+                                                        <div className='transit-block' key={legIndex} onClick={(e) => handleTransitClick(e, leg)}>
                                                             <div className={`transit-icon ${mode?.className}`} />
                                                             <div className="transit-info">
                                                                 <strong>
@@ -292,6 +319,27 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                 </button>
                             </div>
                         </div>
+                    )}
+
+                    {gmapsButton && (
+                        <button
+                            type="button"
+                            className="gmaps-open-btn"
+                            style={{
+                                position: "absolute",
+                                left: `${gmapsButton.x}px`,
+                                top: `${gmapsButton.y}px`,
+                                zIndex: 1200,
+                                transform: "translate(-50%, -140%)",
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenInGoogleMaps();
+                            }}
+                        >
+                            <img src="/gmaps_icon.svg" alt="" className="gmaps-open-btn-icon" />
+                            <span>Open In Google Maps</span>
+                        </button>
                     )}
                 </div>
             </div>

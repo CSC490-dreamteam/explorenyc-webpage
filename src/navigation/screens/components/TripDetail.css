@@ -185,6 +185,7 @@
     border-radius: 10px;
     background: var(--surface-card-alt);
     border: 1px solid var(--border-default);
+    cursor: pointer;
 }
 
 .transit-icon {
@@ -228,4 +229,28 @@
     align-items: center;
     gap: 1px;
     margin: 16px 0;
+}
+
+/* Google Maps open button */
+.gmaps-open-btn {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #34a853;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    z-index: 2000;
+}
+
+.gmaps-open-btn-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
 }
