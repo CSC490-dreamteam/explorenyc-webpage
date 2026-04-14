@@ -253,4 +253,6 @@
     width: 18px;
     height: 18px;
     display: inline-block;
+    /* white outline via layered drop-shadow for better visibility */
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 2px #fff);
 }
