@@ -18,6 +18,35 @@ function formatCost(cents) {
     return `$${(cents / 100).toFixed(2)}`
 }
 
+function formatArrivalTime(baseDateTime, minutesOffset) {
+    if (!baseDateTime || minutesOffset === undefined) return null;
+    const date = new Date(baseDateTime);
+    date.setMinutes(date.getMinutes() + minutesOffset);
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function formatTimeRange(baseDateTime, arrivalOffset, departureOffset) {
+    if (!baseDateTime || arrivalOffset === undefined) return null;
+    
+    const arrivalStr = formatArrivalTime(baseDateTime, arrivalOffset);
+    
+    //if departure is the same as arrival, just show arrival
+    if (departureOffset === undefined || departureOffset === arrivalOffset) {
+        return arrivalStr;
+    }
+
+    const departureStr = formatArrivalTime(baseDateTime, departureOffset);
+    return `${arrivalStr} - ${departureStr}`;
+}
+
+function formatDuration(minutes) {
+    if (minutes === 0 || !minutes) return null;
+    if (minutes < 60) return `${minutes} min`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}h ${m > 0 ? m + 'm' : ''}`.trim();
+}
+
 function processLegs(legs){
     if (!legs) return [];
     const processedLegs = [];
@@ -190,8 +219,25 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                             type="button"
                                             onClick={() => handleStopClick(stop, index)}
                                         >
-                                            <strong>{place.name}</strong>
-                                            <p>{place.address}</p>
+
+                                            {/* name and address */}
+                                            <div className="stop-main-info">
+                                                <strong>{place.name}</strong>
+                                                <p>{place.address}</p>
+                                            </div>
+
+                                            {/* trip stop arrival time and duration  */}
+                                            {formatTimeRange(trip?.entry_datetime, stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes) && (
+                                                <span className="stop-arrival-time">
+                                                    {formatTimeRange(trip?.entry_datetime, stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes)}
+                                                </span>
+                                            )}
+
+                                            {stop.DurationAtStopInMinutes > 0 && (
+                                                <span className="stop-duration-badge">
+                                                    {formatDuration(stop.DurationAtStopInMinutes)}
+                                                </span>
+                                            )}
                                         </button>
 
                                         {index < stops.length - 1 && stop.Legs && stop.Legs.length > 0 && (
