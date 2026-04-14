@@ -58,9 +58,11 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
 
     function handleTransitClick(event, leg) {
         if (!detailBoxRef.current) return;
-        const rect = detailBoxRef.current.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        // anchor to the transit-block element center and account for container scroll
+        const containerRect = detailBoxRef.current.getBoundingClientRect();
+        const targetRect = event.currentTarget.getBoundingClientRect();
+        const x = (targetRect.left - containerRect.left) + (targetRect.width / 2) + detailBoxRef.current.scrollLeft;
+        const y = (targetRect.top - containerRect.top) + detailBoxRef.current.scrollTop;
         setGmapsButton({ x, y, leg });
     }
 
@@ -78,7 +80,8 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     }
 
     function handleOpenInGoogleMaps() {
-        // placeholder for future implementation
+        // placeholder
+        setGmapsButton(null);
         console.log('Open in Google Maps clicked', gmapsButton);
     }
 
