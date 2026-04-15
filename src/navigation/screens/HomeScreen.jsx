@@ -150,6 +150,7 @@ function HomeScreen() {
     const [error, setError] = useState(null); //Holds any error message if the API request fails
     const [randomTrending, setRandomTrending] = useState([]);
     const [selectedPlace, setSelectedPlace] = useState(null);
+    const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
     useEffect(() => {
     async function fetchTailoredRecommendations() {
@@ -230,6 +231,30 @@ function HomeScreen() {
         setSelectedPlace(null);
     };
 
+    useEffect(() => {
+        const closeDropdown = () => setShowFilterDropdown(false);
+        if (showFilterDropdown) {
+            window.addEventListener('click', closeDropdown);
+        }
+        return () => window.removeEventListener('click', closeDropdown);
+    }, [showFilterDropdown]);
+
+    const handleFilterSelection = async (category) => {
+        setLoading(true);
+        setShowFilterDropdown(false); //close dropdown menu
+        try {
+            const response = await fetch(
+                `https://explorenyc-recommendation-testing.up.railway.app/discover-category?category=${encodeURIComponent(category)}&k=10`
+            );
+            const json = await response.json();
+            setPlaces(json.data); //Update the 'Recommended for you' list
+        } catch (err) {
+            setError("Failed to filter places.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <div className="welcome-container">
@@ -277,7 +302,35 @@ function HomeScreen() {
             </div>
       
             <div className="for-you">
-                <h3 align="left">Recommended for you</h3>
+                <div className="section-header">
+                    <h3 align="left">🎯 Recommended for you</h3>
+
+                    <div className="dropdown-container">
+                        <button 
+                            className="three-dots-btn" 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowFilterDropdown(!showFilterDropdown);
+                            }}
+                        >
+                                ⋮
+                        </button>
+
+                        {showFilterDropdown && (
+                            <div className="filter-dropdown">
+                                <div className="dropdown-item" onClick={() => handleFilterSelection('Park')}>
+                                    <span>🌳</span> Park
+                                </div>
+                                <div className="dropdown-item" onClick={() => handleFilterSelection('Museum')}>
+                                    <span>🏛️</span> Museum
+                                </div>
+                                <div className="dropdown-item" onClick={() => handleFilterSelection('Restaurant')}>
+                                    <span>🍴</span> Restaurant
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
                 
                 <div className="recommendation-vertical-slider">
                     {loading
