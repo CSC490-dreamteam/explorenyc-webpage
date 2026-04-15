@@ -5,9 +5,11 @@ import Auth from "./auth";
 
 function App() {
   const LOGIN_URL = 'https://explorenyc-recommendation-testing.up.railway.app/login';
+  const SIGNUP_URL = 'https://explorenyc-recommendation-testing.up.railway.app/signup';
   const [showNav, setShowNav] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -64,8 +66,44 @@ function App() {
         setIsSubmitting(false);
       }
     } else {
-      // Sign up - nothing yet other than closing the modal
-      setShowAuthModal(false);
+      if (password !== confirmPassword) {
+        setAuthError('Passwords do not match.');
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      try {
+        const response = await fetch(SIGNUP_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+          }),
+        });
+
+        const data = await response.json();
+        const message = typeof data?.message === 'string' ? data.message : '';
+        const userId = data?.user_id;
+        const signupSucceeded = response.ok && userId !== undefined && userId !== null &&
+          (message === '' || message.toLowerCase().includes('success'));
+
+        if (!signupSucceeded) {
+          throw new Error(message || 'Signup failed');
+        }
+
+        Auth.setCurrentUserId(userId);
+        setShowAuthModal(false);
+        setShowNav(true);
+      } catch (error) {
+        setAuthError(error instanceof Error && error.message ? error.message : 'Unable to sign up.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   }
 
@@ -91,6 +129,13 @@ function App() {
           <div className="auth-modal" role="dialog" aria-modal="true">
             <h3>{authMode === 'login' ? 'Log in' : 'Sign up'}</h3>
             <form className="auth-form" onSubmit={submitAuth}>
+              {authMode === 'signup' && (
+                <div className="fieldGroup">
+                  <label htmlFor="auth-name">Name</label>
+                  <input id="auth-name" name="name" type="text" className="bigField" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} required />
+                </div>
+              )}
+
               <div className="fieldGroup">
                 <label htmlFor="auth-email">Email</label>
                 <input id="auth-email" name="email" type="email" className="bigField" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -113,7 +158,7 @@ function App() {
               <div className="auth-action-row">
                 <button type="button" onClick={() => { setShowAuthModal(false); setAuthError(''); }} disabled={isSubmitting}>Cancel</button>
                 <button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && authMode === 'login' ? 'Logging in...' : authMode === 'login' ? 'Log in' : 'Sign up'}
+                  {isSubmitting ? authMode === 'login' ? 'Logging in...' : 'Signing up...' : authMode === 'login' ? 'Log in' : 'Sign up'}
                 </button>
               </div>
             </form>
