@@ -177,7 +177,7 @@ function HomeScreen() {
             </header>
             
             <div className="trending">
-                <h3 align='left'>🔥 Trending spots</h3>
+                <h3 align='left'>📅 Events & Activities</h3>
                 <div className="trending_container">
 
                     {randomTrending.map(place => (
