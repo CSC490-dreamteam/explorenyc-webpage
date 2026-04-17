@@ -41,12 +41,12 @@ function formatStopLocation(stop, index) {
   //best case: Name + Coordinates.
   //"Name@Lat,Lng" forces Google Maps to display the name but route using exact coordinates
   if (hasValidName && hasValidAddress) {
-    return encodeURIComponent(`${name}, ${address}`);
+    return `${name}, ${address}`;
   }
 
   // fallback case: Address only
   if (hasValidAddress) {
-    return encodeURIComponent(address);
+    return address;
   }
 
   // fallback case: Lat, Lng only
