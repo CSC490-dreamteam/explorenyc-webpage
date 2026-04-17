@@ -1,6 +1,6 @@
 import { getStopLatitude, getStopLongitude, formatAddress, getStopName } from "./stopPlace.js";
 
-function getGoogleMapsNavLink(originStop, destinationStop, transitType) {
+export function getGoogleMapsNavLink(originStop, destinationStop, transitType) {
   const travelModeMap = {
     0: "walking",
     1: "driving",
