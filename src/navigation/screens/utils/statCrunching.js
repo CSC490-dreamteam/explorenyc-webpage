@@ -1,3 +1,5 @@
+import { getStopName, formatAddress } from "./stopPlace";
+
 export function calculateTripWalkingTime(trip) {
     let totalMinutes = 0;
 
@@ -46,13 +48,12 @@ export function calculateAllTripsWalkingTimes(trips) {
 }
 
 export function calculateTripCountandUniqueStops(trips) {
+    if (!Array.isArray(trips)) return { tripCount: 0, uniqueStopsCount: 0 };
     let totalCompletedTrips = 0;
+    const now = new Date();
     const uniqueStopsSet = new Set();
 
     //check for valid trips array
-    if (!Array.isArray(trips)) return { totalCompletedTrips: 0, uniqueStopsCount: 0 };
-
-    const now = new Date();
 
     for (const trip of trips) {
         //only process if trip exists and is in the past
@@ -61,17 +62,17 @@ export function calculateTripCountandUniqueStops(trips) {
 
             //process stops within this trip
             if (trip.stops && Array.isArray(trip.stops)) {
-                for (const stop of trip.stops) {
+                trip.stops.forEach((stop, index) => {
                     //create unique identifier with fallback for missing name or address
-                    const name = stop.name || "";
-                    const address = stop.address || "";
+                    const name = getStopName(stop, index);
+                    const address = formatAddress(stop?.Address, "");
                     const stopKey = `${name} | ${address}`.trim();
 
-                    //only add to set if we have a valid identifier
-                    if (stopKey) {
+                    //skip the fallback "Stop N" names so empty stops don't inflate the count
+                    if (name && !/^Stop \d+$/.test(name) && stopKey !== "|") {
                         uniqueStopsSet.add(stopKey);
                     }
-                }
+                });
             }
         }
     }
@@ -85,7 +86,7 @@ export function calculateTripCountandUniqueStops(trips) {
 
 export function calculateAllUserStats(userTripsObject) {
     //extract trips array safely from the object
-    const trips = userTripsObject?.trips || [];
+    const trips = Array.isArray(userTripsObject) ? userTripsObject : (userTripsObject?.trips || []);
 
     //use existing function for total walking minutes
     const totalWalkingMinutes = calculateAllTripsWalkingTimes(trips);

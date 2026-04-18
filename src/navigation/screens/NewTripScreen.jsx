@@ -1,6 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
+import Auth from '../../auth';
+import { calculateAllUserStats } from './utils/statCrunching';
 
 import walkingIcon from '../../assets/walking.svg';
 import subwayIcon from '../../assets/subway.svg';
@@ -172,16 +174,19 @@ function NewTripScreen() {
             setIsLoading(false)
         }
 
+        updateUserStats();
+
     };
 
     async function updateUserStats() {
-        const id = userId ?? Auth.currentUserId ?? 1;
+        console.log("Updating user stats...");
+        const id = Auth?.currentUserId ?? 1;
 
         try {
 
             //grab user's trips
             const res = await fetch(
-                `https://explorenyc-recommendation-production.up.railway.app/trip-stops?user_id=${encodeURIComponent(id)}`
+                `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(id)}`
             );
 
             if (!res.ok) throw new Error("Failed to fetch trip data");
@@ -189,8 +194,9 @@ function NewTripScreen() {
        
             const json = await res.json();
             const trips = Array.isArray(json?.trips) ? json.trips : [];
+
             //calc the stats
-            const UserStats = calculateAllUserStats(json);
+            const UserStats = calculateAllUserStats(trips);
 
             //send the stats to the backend TODO
 
