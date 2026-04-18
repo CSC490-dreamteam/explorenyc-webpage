@@ -45,7 +45,7 @@ export function calculateAllTripsWalkingTimes(trips) {
     return totalWalkingMinutes;
 }
 
-export function calculateTripMetrics(trips) {
+export function calculateTripCountandUniqueStops(trips) {
     let totalCompletedTrips = 0;
     const uniqueStopsSet = new Set();
 
@@ -77,9 +77,27 @@ export function calculateTripMetrics(trips) {
     }
 
     return {
-        totalCompletedTrips,
+        tripCount: totalCompletedTrips,
         uniqueStopsCount: uniqueStopsSet.size
     };
 }
 
 
+export function calculateAllUserStats(userTripsObject) {
+    //extract trips array safely from the object
+    const trips = userTripsObject?.trips || [];
+
+    //use existing function for total walking minutes
+    const totalWalkingMinutes = calculateAllTripsWalkingTimes(trips);
+
+    //use existing function for trip and stop counts
+    const { tripCount, uniqueStopsCount } = calculateTripCountandUniqueStops(trips);
+
+    const UserStats = {
+        totalWalkingMinutes,
+        tripCount,
+        uniqueStopsCount
+    };
+
+    return UserStats;
+}
