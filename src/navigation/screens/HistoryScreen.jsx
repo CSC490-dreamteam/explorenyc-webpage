@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import './HistoryScreen.css';
 import '../../App.css'
 import TripDetail from "./components/TripDetail.jsx";
+import Auth from '../../auth';
 
 async function fetchTripStopsForUser(userId) {
+    const id = userId ?? Auth.currentUserId ?? 1;
     const res = await fetch(
-        `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(userId)}`
+        `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(id)}`
     );
     return res.json();
 }
@@ -17,7 +19,7 @@ export default function History({ setCurrentScreen }) {
 
     async function refreshTrips() {
         try {
-            const json = await fetchTripStopsForUser(1);
+            const json = await fetchTripStopsForUser();
             setUserTrips(json);
             console.log("trip-stops response:", json);
         } catch (err) {
@@ -50,7 +52,7 @@ export default function History({ setCurrentScreen }) {
 
         async function loadTrips() {
             try {
-                const json = await fetchTripStopsForUser(1);
+                const json = await fetchTripStopsForUser();
                 if (!isActive) {
                     return;
                 }
