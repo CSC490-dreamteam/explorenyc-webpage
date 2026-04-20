@@ -244,7 +244,7 @@ function HomeScreen() {
         setShowFilterDropdown(false); //close dropdown menu
         try {
             const response = await fetch(
-                `https://explorenyc-recommendation-testing.up.railway.app/discover-category?category=${encodeURIComponent(category)}&k=10`
+                `https://explorenyc-recommendation-service-production.up.railway.app/discover-category?category=${encodeURIComponent(category)}&k=10`
             );
             const json = await response.json();
             setPlaces(json.data); //Update the 'Recommended for you' list
