@@ -6,6 +6,7 @@ import PlaceDetailsModal from "./PlaceDetailsModal.jsx";
 import Toast from "./Toast.jsx";
 import { addPlaceToPendingTrip } from "../utils/tripDrafts.js";
 import { normalizeStopToPlace } from "../utils/stopPlace.js";
+import { getGoogleMapsNavLink } from "../utils/mapURLs.js"; //
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -16,6 +17,35 @@ const TRANSPORT_MODES = {
 function formatCost(cents) {
     if (!cents) return null
     return `$${(cents / 100).toFixed(2)}`
+}
+
+function formatArrivalTime(baseDateTime, minutesOffset) {
+    if (!baseDateTime || minutesOffset === undefined) return null;
+    const date = new Date(baseDateTime);
+    date.setMinutes(date.getMinutes() + minutesOffset);
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function formatTimeRange(baseDateTime, arrivalOffset, departureOffset) {
+    if (!baseDateTime || arrivalOffset === undefined) return null;
+    
+    const arrivalStr = formatArrivalTime(baseDateTime, arrivalOffset);
+    
+    //if departure is the same as arrival, just show arrival
+    if (departureOffset === undefined || departureOffset === arrivalOffset) {
+        return arrivalStr;
+    }
+
+    const departureStr = formatArrivalTime(baseDateTime, departureOffset);
+    return `${arrivalStr} - ${departureStr}`;
+}
+
+function formatDuration(minutes) {
+    if (minutes === 0 || !minutes) return null;
+    if (minutes < 60) return `${minutes} min`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}h ${m > 0 ? m + 'm' : ''}`.trim();
 }
 
 function processLegs(legs){
@@ -54,6 +84,47 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
     const detailBoxRef = useRef(null);
+    const [gmapsButton, setGmapsButton] = useState(null);
+
+    function handleTransitClick(event, leg, originStop, destinationStop) {
+        if (!detailBoxRef.current) return;
+        // anchor to the transit-block element center and account for container scroll
+        const containerRect = detailBoxRef.current.getBoundingClientRect();
+        const targetRect = event.currentTarget.getBoundingClientRect();
+        const x = (targetRect.left - containerRect.left) + (targetRect.width / 2) + detailBoxRef.current.scrollLeft;
+        const y = (targetRect.top - containerRect.top) + detailBoxRef.current.scrollTop;
+        setGmapsButton({ x, y, leg,originStop, destinationStop });
+    }
+
+    function handleDetailBoxClick(event) {
+        // prevent overlay from closing
+        event.stopPropagation();
+        // if clicked the gm button or a transit block, keep it
+        if (event.target && event.target.closest && event.target.closest('.gmaps-open-btn')) {
+            return;
+        }
+        if (event.target && event.target.closest && event.target.closest('.transit-block')) {
+            return;
+        }
+        setGmapsButton(null);
+    }
+
+    function handleOpenInGoogleMaps() {
+        if (!gmapsButton) return;
+
+        const { originStop, destinationStop, leg } = gmapsButton;
+        const transitType = leg.TransportType; // 0=walking, 1=car, 2=subway
+
+        const navLink = getGoogleMapsNavLink(originStop, destinationStop, transitType);
+
+        if (navLink) {
+            window.open(navLink, '_blank', 'noopener,noreferrer');
+        } else {
+            console.warn('Failed to generate Google Maps link');
+        }
+
+        setGmapsButton(null);
+    }
 
     useEffect(() => {
         setIsDuplicateOpen(false);
@@ -160,7 +231,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                 <div
                     className="trip-detail-box"
                     ref={detailBoxRef}
-                    onClick={(event) => event.stopPropagation()}
+                    onClick={handleDetailBoxClick}
                 >
                     <button
                         className="trip-detail-close"
@@ -190,8 +261,25 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                             type="button"
                                             onClick={() => handleStopClick(stop, index)}
                                         >
-                                            <strong>{place.name}</strong>
-                                            <p>{place.address}</p>
+
+                                            {/* name and address */}
+                                            <div className="stop-main-info">
+                                                <strong>{place.name}</strong>
+                                                <p>{place.address}</p>
+                                            </div>
+
+                                            {/* trip stop arrival time and duration  */}
+                                            {formatTimeRange(trip?.entry_datetime, stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes) && (
+                                                <span className="stop-arrival-time">
+                                                    {formatTimeRange(trip?.entry_datetime, stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes)}
+                                                </span>
+                                            )}
+
+                                            {stop.DurationAtStopInMinutes > 0 && (
+                                                <span className="stop-duration-badge">
+                                                    {formatDuration(stop.DurationAtStopInMinutes)}
+                                                </span>
+                                            )}
                                         </button>
 
                                         {index < stops.length - 1 && stop.Legs && stop.Legs.length > 0 && (
@@ -199,7 +287,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                                 {processLegs(stop.Legs).map((leg, legIndex) => {
                                                     const mode = TRANSPORT_MODES[leg.TransportType];
                                                     return (
-                                                        <div className='transit-block' key={legIndex}>
+                                                        <div className='transit-block' key={legIndex} onClick={(e) => handleTransitClick(e, leg, stop, stops[index + 1])}>
                                                             <div className={`transit-icon ${mode?.className}`} />
                                                             <div className="transit-info">
                                                                 <strong>
@@ -292,6 +380,27 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                 </button>
                             </div>
                         </div>
+                    )}
+
+                    {gmapsButton && (
+                        <button
+                            type="button"
+                            className="gmaps-open-btn"
+                            style={{
+                                position: "absolute",
+                                left: `${gmapsButton.x}px`,
+                                top: `${gmapsButton.y}px`,
+                                zIndex: 1200,
+                                transform: "translate(-50%, -140%)",
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenInGoogleMaps();
+                            }}
+                        >
+                            <img src="/gmaps_icon.svg" alt="" className="gmaps-open-btn-icon" />
+                            <span>Open In Google Maps</span>
+                        </button>
                     )}
                 </div>
             </div>

@@ -1,4 +1,4 @@
-function formatAddress(address, fallbackLocation = "") {
+export function formatAddress(address, fallbackLocation = "") {
     if (typeof address === "string" && address.trim()) {
         return address.trim();
     }
@@ -15,7 +15,7 @@ function formatAddress(address, fallbackLocation = "") {
     return fallbackLocation || "Address unavailable";
 }
 
-function getStopName(stop, index) {
+export function getStopName(stop, index) {
     return stop?.Name
         || stop?.name
         || stop?.Title
@@ -26,7 +26,7 @@ function getStopName(stop, index) {
         || `Stop ${index + 1}`;
 }
 
-function getStopType(stop) {
+export function getStopType(stop) {
     return stop?.PlaceType
         || stop?.place_type
         || stop?.Type
@@ -34,7 +34,7 @@ function getStopType(stop) {
         || "Stop";
 }
 
-function getStopDescription(stop) {
+export function getStopDescription(stop) {
     return stop?.Description
         || stop?.description
         || stop?.Summary
@@ -42,7 +42,7 @@ function getStopDescription(stop) {
         || "";
 }
 
-function getStopBorough(stop) {
+export function getStopBorough(stop) {
     return stop?.Address?.Borough
         || stop?.Address?.Boro
         || stop?.Borough
@@ -51,12 +51,12 @@ function getStopBorough(stop) {
         || "Borough unavailable";
 }
 
-function parseCoordinate(value) {
+export function parseCoordinate(value) {
     const parsedValue = Number(value);
     return Number.isFinite(parsedValue) ? parsedValue : null;
 }
 
-function getStopLatitude(stop) {
+export function getStopLatitude(stop) {
     return parseCoordinate(
         stop?.Lat
         ?? stop?.lat
@@ -69,7 +69,7 @@ function getStopLatitude(stop) {
     );
 }
 
-function getStopLongitude(stop) {
+export function getStopLongitude(stop) {
     return parseCoordinate(
         stop?.Lon
         ?? stop?.lon

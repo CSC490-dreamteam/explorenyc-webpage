@@ -2,6 +2,10 @@ import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
 
+import walkingIcon from '../../assets/walking.svg';
+import subwayIcon from '../../assets/subway.svg';
+import carIcon from '../../assets/car.svg';
+
 
 function NewTripScreen() {
     const [isLoading, setIsLoading] = useState(false)
@@ -10,6 +14,17 @@ function NewTripScreen() {
     //general trip vars
     const [startLocation, setStartLocation] = useState('')
     const [endLocation, setEndLocation] = useState('')
+    const [transitPreferences, setTransitPreferences] = useState({
+        walking: true,
+        subway: true,
+        car: true
+    });
+
+    const transitIcons = {
+        walking: walkingIcon,
+        subway: subwayIcon,
+        car: carIcon
+    };
 
     const [tripName, setTripName] = useState('')
     const [date, setDate] = useState('')
@@ -20,11 +35,8 @@ function NewTripScreen() {
     const startPointErrorRef = useRef(null)
     const entryTimeErrorRef = useRef(null)
     const exitTimeErrorRef = useRef(null)
+    const transitTypesErrorRef = useRef(null)
     const baseMaxStops = 8
-
-    //PLACEHOLDER
-
-
 
     const handleTripSubmit = async () => {
         //errors
@@ -64,6 +76,16 @@ function NewTripScreen() {
             return
         }
 
+        const hasSelectedTransit = Object.values(transitPreferences).includes(true);
+        if (!hasSelectedTransit) {
+            setErrorState({
+                target: 'transitTypes',
+                message: 'Please select at least one transit type.',
+                reason: 'noTransitSelected'
+            });
+            return;
+        }
+
         // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
         const popup = window.open('about:blank', '_blank');
 
@@ -75,6 +97,7 @@ function NewTripScreen() {
             exitTime: exitTime,
             startLocation: startLocation.trim(),
             endLocation: endLocation.trim() ? endLocation.trim() : null,
+            transitTypes: transitPreferences,
             stops: stops.map(stop => ({
                 location: stop.location,
                 mandatory: !stop.optional, //if a stop is not optional that its mandatory
@@ -173,6 +196,14 @@ function NewTripScreen() {
         setStops(newStops);
     };
 
+    //handles changes to transit checkboxes
+    const handleTransitChange = (type) => {
+        setTransitPreferences(prev => ({
+            ...prev,
+            [type]: !prev[type]
+        }));
+    };
+
     //adds stop to the stops array
     const trimmedStartLocation = startLocation.trim()
     const trimmedEndLocation = endLocation.trim()
@@ -207,7 +238,8 @@ function NewTripScreen() {
             addStop: addStopErrorRef,
             startPoint: startPointErrorRef,
             entryTime: entryTimeErrorRef,
-            exitTime: exitTimeErrorRef
+            exitTime: exitTimeErrorRef,
+            transitTypes: transitTypesErrorRef
         }
 
         const targetRef = refMap[errorState.target]
@@ -458,6 +490,50 @@ function NewTripScreen() {
                 </div>
             </section>
 
+            {/* Transit Types Selection Section */}
+            <section className="newTripCard">
+                <h3 className="transitTitle">Transit Types</h3>
+                {errorState?.target === 'transitTypes' ? (
+                    <ErrorWrapper
+                        message={errorState.message}
+                        innerRef={transitTypesErrorRef}
+                        className="errorWrapper--field"
+                    >
+                        <div className="transitGroup">
+                            {Object.keys(transitPreferences).map((type) => (
+                                <label key={type} className="transitCard">
+                                    <div className={`transitIcon transitIcon${type.charAt(0).toUpperCase() + type.slice(1)}`} />
+                                    <span className="transitLabel">{type}</span>
+                                    <input
+                                        type="checkbox"
+                                        className="transitCheckbox"
+                                        checked={transitPreferences[type]}
+                                        onChange={() => handleTransitChange(type)}
+                                    />
+                                </label>
+                            ))}
+                        </div>
+                    </ErrorWrapper>
+                ) : (
+                    <div className="transitGroup">
+                        {Object.keys(transitPreferences).map((type) => (
+                            <label key={type} className="transitCard">
+                                <div className={`transitIcon transitIcon${type.charAt(0).toUpperCase() + type.slice(1)}`} />
+
+                                <span className="transitLabel">{type}</span>
+                                <input
+                                    type="checkbox"
+                                    className="transitCheckbox"
+                                    checked={transitPreferences[type]}
+                                    onChange={() => handleTransitChange(type)}
+                                />
+                            </label>
+                        ))}
+                    </div>
+                )}
+            </section>
+
+           
 
 
 
