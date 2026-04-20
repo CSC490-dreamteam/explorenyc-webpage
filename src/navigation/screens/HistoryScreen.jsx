@@ -7,7 +7,7 @@ import Auth from '../../auth';
 async function fetchTripStopsForUser(userId) {
     const id = userId ?? Auth.currentUserId ?? 1;
     const res = await fetch(
-        `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(id)}`
+        `https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=${encodeURIComponent(id)}`
     );
     return res.json();
 }

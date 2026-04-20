@@ -28,7 +28,7 @@ function HomeScreen() {
         try {
             // Fetch user history (using ID 1 for now)
             const historyRes = await fetch(
-                "https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=1"
+                "https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=1"
             );
             const historyData = await historyRes.json();
             
@@ -51,7 +51,7 @@ function HomeScreen() {
 
             //Fetch from the recommendation engine
             const recRes = await fetch(
-                `https://explorenyc-recommendation-testing.up.railway.app/recommend-all-db?user_text=${encodeURIComponent(searchQuery)}&top_k=10`
+                `https://explorenyc-recommendation-service-production.up.railway.app/recommend-all-db?user_text=${encodeURIComponent(searchQuery)}&top_k=10`
             );
             
             if (!recRes.ok) throw new Error("Recommendation fetch failed");
@@ -71,7 +71,7 @@ function HomeScreen() {
 
     async function fetchGeneralDiscover() {
         try {
-            const res = await fetch("https://explorenyc-recommendation-testing.up.railway.app/discover-all");
+            const res = await fetch("https://explorenyc-recommendation-service-production.up.railway.app/discover-all");
             const json = await res.json();
             setPlaces(json.data);
         } catch (e) {
