@@ -4,8 +4,8 @@ import NavbarContainer from "./navigation/NavbarContainer.jsx";
 import Auth from "./auth";
 
 function App() {
-  const LOGIN_URL = 'https://explorenyc-recommendation-testing.up.railway.app/login';
-  const SIGNUP_URL = 'https://explorenyc-recommendation-testing.up.railway.app/signup';
+  const LOGIN_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/login';
+  const SIGNUP_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/signup';
   const [showNav, setShowNav] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'

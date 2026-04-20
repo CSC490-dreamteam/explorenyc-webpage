@@ -74,3 +74,47 @@
 .trending_card:active {
     transform: translateY(-1px); /* Slight "press" effect when clicked */
 }
+
+.trending_card_content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Creates consistent spacing between title, date, and boro */
+    white-space: normal; /* Essential: allows text to wrap inside the card */
+}
+
+.trending_card_title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary, #222);
+    display: block;
+    /* Truncate long event names to one line with an ellipsis (...) */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.trending_card_datetime {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #666);
+    display: flex;
+    align-items: center;
+}
+
+.datetime_spacer {
+    margin-left: 10px;
+}
+
+.boro_badge {
+    display: inline-block;
+    background-color: #f0f2f5;
+    color: #475569;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-top: 4px;
+    
+    letter-spacing: 0.02em;
+}

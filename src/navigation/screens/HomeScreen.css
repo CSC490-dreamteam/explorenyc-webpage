@@ -93,3 +93,71 @@
     width: 100%;
     border-radius: 12px;
 }
+
+/* Layout to put text and dots on the same line */
+.section-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;          
+    width: 100%;
+    margin-bottom: 15px;           
+}
+
+.section-header h3 {
+    margin: 0;                    
+}
+
+.dropdown-container {
+    position: relative;
+}
+
+.three-dots-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    font-weight: 900;
+    
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    
+    color: var(--text-on-surface);
+    border-radius: 50%;            
+    transition: all 0.2s ease-in-out;
+    outline: none;
+    
+    flex-shrink: 0; 
+}
+
+
+.filter-dropdown {
+    position: absolute;
+    right: 0;                      
+    top: 35px;                     
+    background: var(--surface-card); 
+    border-radius: 8px;
+    box-shadow: var(--shadow-elevated);
+    z-index: 100;
+    min-width: 150px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.dropdown-item {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-on-surface);
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}

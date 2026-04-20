@@ -174,7 +174,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
 
         try {
             const response = await fetch(
-                `https://explorenyc-recommendation-service.onrender.com/duplicate-trip?${params.toString()}`,
+                `https://explorenyc-recommendation-service-production.up.railway.app/duplicate-trip?${params.toString()}`,
                 { method: "POST" }
             );
 
