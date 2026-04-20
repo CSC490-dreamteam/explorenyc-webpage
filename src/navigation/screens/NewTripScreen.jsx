@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
+import Auth from '../../auth';
 
 import walkingIcon from '../../assets/walking.svg';
 import subwayIcon from '../../assets/subway.svg';
@@ -162,6 +163,35 @@ function NewTripScreen() {
             } else {
                 const responseData = await response.json();
                 console.log('New endpoint response:', responseData);
+
+                // Store Itinerary
+                const itineraryData = {
+                    user_id: String(Auth.currentUserId),
+                    date: date,
+                    entryTime: entryTime,
+                    exitTime: exitTime,
+                    stops: JSON.stringify(responseData.Stops),
+                    trip_name: tripName.trim() ? tripName.trim() : 'My NYC Trip'
+                };
+
+                try {
+                    const storeResponse = await fetch('https://explorenyc-recommendation-service-production.up.railway.app/StoreItinerary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(itineraryData)
+                    });
+
+                    if (!storeResponse.ok) {
+                        console.error('StoreItinerary failed:', storeResponse.status);
+                    } else {
+                        const storeData = await storeResponse.json();
+                        console.log('StoreItinerary success:', storeData);
+                    }
+                } catch (storeError) {
+                    console.error('Error storing itinerary:', storeError);
+                }
             }
         } catch (error) {
             console.error('Error submitting trip data:', error);
