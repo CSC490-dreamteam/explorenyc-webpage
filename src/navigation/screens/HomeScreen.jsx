@@ -92,7 +92,7 @@ function HomeScreen() {
         try {
             const response = await fetch("https://api.nyc.gov/calendar/discover", {
                 headers: {
-                    "Ocp-Apim-Subscription-Key": "dca93bc1050e4756bc93900f7c54a2e9",
+                    "Ocp-Apim-Subscription-Key": process.env.NYC_API_KEY,
                     "Cache-Control": "no-cache"
                 }
             });
