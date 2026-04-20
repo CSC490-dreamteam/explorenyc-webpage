@@ -8,6 +8,8 @@ import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
 import Toast from './components/Toast.jsx';
 import { addPlaceToPendingTrip } from './utils/tripDrafts.js';
 
+const nyc_env_var = import.meta.env.VITE_NYC_API_KEY;
+
 function HomeScreen() {
     
 
@@ -93,7 +95,7 @@ function HomeScreen() {
         try {
             const response = await fetch("https://api.nyc.gov/calendar/discover", {
                 headers: {
-                    "Ocp-Apim-Subscription-Key": process.env.NYC_API_KEY,
+                    "Ocp-Apim-Subscription-Key": nyc_env_var,
                     "Cache-Control": "no-cache"
                 }
             });
