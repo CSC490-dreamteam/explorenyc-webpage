@@ -34,6 +34,7 @@ function NewTripScreen() {
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
+    const dateErrorRef = useRef(null)
     const entryTimeErrorRef = useRef(null)
     const exitTimeErrorRef = useRef(null)
     const transitTypesErrorRef = useRef(null)
@@ -55,6 +56,15 @@ function NewTripScreen() {
                 target: 'startPoint',
                 message: 'You must specify a starting point.',
                 reason: 'missingStart'
+            })
+            return
+        }
+
+        if (!date.trim()) {
+            setErrorState({
+                target: 'date',
+                message: 'You must specify a date.',
+                reason: 'missingDate'
             })
             return
         }
@@ -164,15 +174,24 @@ function NewTripScreen() {
                 const responseData = await response.json();
                 console.log('New endpoint response:', responseData);
 
+                // Remove tripName and date from responseData and rename Stops to stops
+                const { tripName: _unusedName, date: _unusedDate, Stops, ...rest } = responseData;
+                const stopsData = {
+                    stops: Stops,
+                    ...rest
+                };
+
                 // Store Itinerary
                 const itineraryData = {
                     user_id: String(Auth.currentUserId),
-                    date: date,
-                    entryTime: entryTime,
-                    exitTime: exitTime,
-                    stops: JSON.stringify(responseData.Stops),
-                    trip_name: tripName.trim() ? tripName.trim() : 'My NYC Trip'
+                    date: date.trim(),
+                    entryTime: entryTime.trim(),
+                    exitTime: exitTime.trim(),
+                    trip_name: tripName.trim() ? tripName.trim() : 'My NYC Trip',
+                    stops: stopsData
                 };
+
+                console.log('Sending to StoreItinerary:', itineraryData);
 
                 try {
                     const storeResponse = await fetch('https://explorenyc-recommendation-service-production.up.railway.app/StoreItinerary', {
@@ -267,6 +286,7 @@ function NewTripScreen() {
         const refMap = {
             addStop: addStopErrorRef,
             startPoint: startPointErrorRef,
+            date: dateErrorRef,
             entryTime: entryTimeErrorRef,
             exitTime: exitTimeErrorRef,
             transitTypes: transitTypesErrorRef
@@ -349,10 +369,29 @@ function NewTripScreen() {
 
                 <div className="fieldGroup">
                     <label htmlFor="trip-date">Date</label>
-                    <div className="inputWithIcon">
-                        <input id="trip-date" type="date" className="smallField" 
-                        value={date} onChange={(e) => setDate(e.target.value)}/>
-                    </div>
+                    {errorState?.target === 'date' ? (
+                        <ErrorWrapper
+                            message={errorState.message}
+                            innerRef={dateErrorRef}
+                            className="errorWrapper--field"
+                        >
+                            <div className="inputWithIcon">
+                                <input id="trip-date" type="date" className="smallField" 
+                                value={date} onChange={(e) => {
+                                    const nextValue = e.target.value
+                                    setDate(nextValue)
+                                    if (nextValue.trim()) {
+                                        setErrorState(null)
+                                    }
+                                }}/>
+                            </div>
+                        </ErrorWrapper>
+                    ) : (
+                        <div className="inputWithIcon">
+                            <input id="trip-date" type="date" className="smallField" 
+                            value={date} onChange={(e) => setDate(e.target.value)}/>
+                        </div>
+                    )}
                 </div>
 
                 <div className="fieldRow twoCol">
