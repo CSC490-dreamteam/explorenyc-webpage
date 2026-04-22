@@ -97,9 +97,6 @@ function NewTripScreen() {
             return;
         }
 
-        // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
-        const popup = window.open('about:blank', '_blank');
-
         //actual endpoint data
         const tripData = {
             tripName: tripName.trim() ? tripName.trim() : 'My NYC Trip',
@@ -125,40 +122,9 @@ function NewTripScreen() {
             ...(endLocation.trim() ? [endLocation.trim()] : [])
         ];
 
-        const oldTripData = {
-            locations: tempLocations
-        };
-
-
         setErrorState(null)
         setIsLoading(true)
         try {
-            //old endpoint that shows the maps link
-            const oldResponse = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateRoute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-Key': 'sauce1234'
-                },
-                body: JSON.stringify(oldTripData)
-            });
-
-            if (!oldResponse.ok) {
-                throw new Error('Old endpoint response was not ok');
-            }
-
-            const oldResponseData = await oldResponse.json();
-
-            if (popup && !popup.closed) {
-                popup.location = oldResponseData.url;
-                if (popup.opener) {
-                    popup.opener = null;
-                }
-            } else {
-                window.location.assign(oldResponseData.url);
-            }
-
-            //new real endpoint, does nothing rn
             const response = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateItinerary', {
                 method: 'POST',
                 headers: {
@@ -169,10 +135,10 @@ function NewTripScreen() {
             });
 
             if (!response.ok) {
-                console.error('New endpoint failed:', response.status);
+                console.error('Endpoint failed:', response.status);
             } else {
                 const responseData = await response.json();
-                console.log('New endpoint response:', responseData);
+                console.log('Endpoint response:', responseData);
 
                 // Remove tripName and date from responseData and rename Stops to stops
                 const { tripName: _unusedName, date: _unusedDate, Stops, ...rest } = responseData;
