@@ -48,6 +48,31 @@
     gap: 8px;
 }
 
+.chat-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chat-fill-button {
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #0d8f55;
+    color: #fff;
+    font-weight: 600;
+}
+
+.chat-fill-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.chat-error {
+    color: #b42318;
+    font-size: 0.9rem;
+}
+
 .chat-input input {
     flex: 1;
     padding: 8px 10px;

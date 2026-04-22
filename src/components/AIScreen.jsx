@@ -1,11 +1,59 @@
 import { useState } from 'react';
 import Groq from 'groq-sdk';
 import './AIScreen.css';
+import { createTripDraftFromAiPayload, writeTripDraft } from '../utils/tripDraftStorage';
 
-const AIScreen = () => {
+function extractJsonBlock(content) {
+    if (typeof content !== 'string') {
+        return null;
+    }
+
+    const firstBraceIndex = content.indexOf('{');
+    if (firstBraceIndex === -1) {
+        return null;
+    }
+
+    let depth = 0;
+    let inString = false;
+    let isEscaped = false;
+
+    for (let index = firstBraceIndex; index < content.length; index += 1) {
+        const character = content[index];
+
+        if (inString) {
+            if (isEscaped) {
+                isEscaped = false;
+            } else if (character === '\\') {
+                isEscaped = true;
+            } else if (character === '"') {
+                inString = false;
+            }
+            continue;
+        }
+
+        if (character === '"') {
+            inString = true;
+            continue;
+        }
+
+        if (character === '{') {
+            depth += 1;
+        } else if (character === '}') {
+            depth -= 1;
+            if (depth === 0) {
+                return content.slice(firstBraceIndex, index + 1);
+            }
+        }
+    }
+
+    return null;
+}
+
+const AIScreen = ({ setCurrentScreen }) => {
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [fillError, setFillError] = useState('');
 
     const systemPrompt = `You are a New York City travel assistant. Your goal is to find out the user's wishes for a trip to the city so you can fill out a plan form for them.
 
@@ -52,6 +100,20 @@ Rules:
         dangerouslyAllowBrowser: true,
     });
 
+    const latestAssistantMessage = [...messages].reverse().find((message) => message.role === 'assistant');
+    const latestJsonBlock = extractJsonBlock(latestAssistantMessage?.content ?? '');
+    let parsedTripPayload = null;
+
+    if (latestJsonBlock) {
+        try {
+            parsedTripPayload = JSON.parse(latestJsonBlock);
+        } catch {
+            parsedTripPayload = null;
+        }
+    }
+
+    const isReadyToFill = Boolean(parsedTripPayload);
+
     const handleSend = async () => {
         if (!input.trim() || loading) {
             return;
@@ -59,6 +121,7 @@ Rules:
 
         const userMessage = { role: "user", content: input.trim() };
         const nextMessages = [...messages, userMessage];
+        setFillError('');
         setMessages(nextMessages);
         setInput("");
         setLoading(true);
@@ -77,6 +140,17 @@ Rules:
         setLoading(false);
     };
 
+    const handleFillForm = () => {
+        if (!parsedTripPayload) {
+            setFillError('The latest AI response does not contain a valid trip JSON block yet.');
+            return;
+        }
+
+        writeTripDraft(createTripDraftFromAiPayload(parsedTripPayload));
+        setFillError('');
+        setCurrentScreen?.('MapState');
+    };
+
     return (
         <div className="ai-container">
             <div className="chat-history" aria-live="polite">
@@ -92,6 +166,17 @@ Rules:
                         </div>
                     ))
                 )}
+            </div>
+            <div className="chat-actions">
+                <button
+                    type="button"
+                    className="chat-fill-button"
+                    onClick={handleFillForm}
+                    disabled={!isReadyToFill || loading}
+                >
+                    Fill Form and Open Trip
+                </button>
+                {fillError ? <div className="chat-error">{fillError}</div> : null}
             </div>
             <div className="chat-input">
                 <input

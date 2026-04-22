@@ -7,7 +7,7 @@ import HistoryScreen from "./screens/HistoryScreen.jsx";
 import AIScreen from "../components/AIScreen.jsx";
 
 function NavbarContainer({ onLogout }) {
-    const [currentScreen, setCurrentScreen] = useState('HomeState')
+    const [currentScreen, setCurrentScreen] = useState('AIState')
 
     const renderContent = () => {
         switch (currentScreen) {
@@ -15,7 +15,7 @@ function NavbarContainer({ onLogout }) {
             case 'MapState': return <NewTripScreen />
             case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
             case 'SettingsState': return <SettingScreen onLogout={onLogout} />
-            case 'AIState': return <AIScreen />
+            case 'AIState': return <AIScreen setCurrentScreen={setCurrentScreen} />
             default: return <HomeScreen />
         }
     }

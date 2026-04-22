@@ -1,7 +1,6 @@
 import { useState } from "react";
 import './App.css'
-// import NavbarContainer from "./navigation/NavbarContainer.jsx";
-import AIScreen from './components/AIScreen';
+import NavbarContainer from "./navigation/NavbarContainer.jsx";
 
 //This can be the login screen later. -ak
 
@@ -9,9 +8,7 @@ function App() {
   const [showNav, setShowNav] = useState(false);
 
   if (showNav) {
-    // Comment out the Navbar and return AIScreen instead
-    // return <NavbarContainer onLogout={() => setShowNav(false)} />;
-    return <AIScreen />;
+    return <NavbarContainer onLogout={() => setShowNav(false)} />;
   }
 
   return (

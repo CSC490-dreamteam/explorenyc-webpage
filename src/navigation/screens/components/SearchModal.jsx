@@ -53,7 +53,7 @@ function SearchModal({ onClose, onSelect }) {
                 </div>
                 <ul className="modal-results">
                     {!loading && results.length > 0 && results.map((place, i) => (
-                        <li key={i} onClick={() => onSelect(place.name)}>
+                        <li key={i} onClick={() => onSelect({ location: place.name, address: place.address ?? '' })}>
                             <strong>{place.name}</strong>
                             <p>{place.address}</p>
                         </li>
