@@ -48,10 +48,29 @@
     overflow-y: auto;
     scroll-snap-type: y mandatory; 
     gap: 12px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     padding-right: 8px;
+    scroll-padding-top: 20px;
+    scroll-padding-bottom: 20px;
     scroll-behavior: smooth; 
     
     background-color: transparent; 
+
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0,
+        #000 18px,
+        #000 calc(100% - 18px),
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to bottom,
+        transparent 0,
+        #000 18px,
+        #000 calc(100% - 18px),
+        transparent 100%
+    );
 }
 
 .recommendation-vertical-slider::-webkit-scrollbar {
