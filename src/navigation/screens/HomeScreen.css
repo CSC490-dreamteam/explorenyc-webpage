@@ -38,3 +38,39 @@
     padding-left: 10px;
     padding-right: 10px;
 }
+
+
+
+.recommendation-vertical-slider {
+    max-height: 375px; 
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory; 
+    gap: 12px;
+    padding-right: 8px;
+    scroll-behavior: smooth; 
+    
+    background-color: transparent; 
+}
+
+.recommendation-vertical-slider::-webkit-scrollbar {
+    width: 6px;
+}
+
+.recommendation-vertical-slider::-webkit-scrollbar-thumb {
+    background: var(--text-muted); 
+    border-radius: 10px;
+    opacity: 0.5;
+}
+
+.recommendation-vertical-slider::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.v-slider-item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    width: 100%;
+    border-radius: 12px;
+}

@@ -1,9 +1,9 @@
 import React from "react";
 import './TrendingCard.css'
 
-const TrendingCard = ({ image, title }) => {
+const TrendingCard = ({ image, title, onClick }) => {
     return (
-        <div className="trending_card">
+        <div className="trending_card" onClick={onClick} style={{ cursor: 'pointer' }}>
             <div className="trending_card_image_container">
                 <img src={image}/>
             </div>

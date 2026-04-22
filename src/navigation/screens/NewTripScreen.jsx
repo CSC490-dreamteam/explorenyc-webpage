@@ -1,67 +1,20 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
-import { defaultTripDraft, readTripDraft, writeTripDraft } from '../../utils/tripDraftStorage';
-import { createEmptyStop, getKnownStopAddress } from '../../utils/stopLocations';
 
-const formatBufferLabel = (minutes) => {
-    if (minutes >= 120) {
-        return '2 hours'
-    }
-    if (minutes >= 60) {
-        const remainder = minutes - 60
-        if (remainder === 0) {
-            return '1 hour'
-        }
-        return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
-    }
-    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
-}
-
-const splitLocationAddress = (value) => {
-    const trimmedValue = typeof value === 'string' ? value.trim() : ''
-    if (!trimmedValue) {
-        return { location: '', address: '' }
-    }
-
-    const separatorIndex = trimmedValue.indexOf(',')
-    if (separatorIndex === -1) {
-        return { location: trimmedValue, address: '' }
-    }
-
-    return {
-        location: trimmedValue.slice(0, separatorIndex).trim(),
-        address: trimmedValue.slice(separatorIndex + 1).trim(),
-    }
-}
-
-const joinLocationAddress = (location, address) => {
-    const trimmedLocation = typeof location === 'string' ? location.trim() : ''
-    const trimmedAddress = typeof address === 'string' ? address.trim() : ''
-
-    return [trimmedLocation, trimmedAddress].filter(Boolean).join(', ')
-}
 
 function NewTripScreen() {
-    const initialDraft = readTripDraft()
-    const [bufferMinutes, setBufferMinutes] = useState(initialDraft.bufferMinutes ?? defaultTripDraft.bufferMinutes)
+    const [bufferMinutes, setBufferMinutes] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
-    const [startLocation, setStartLocation] = useState(initialDraft.startLocation)
-    const [startAddress, setStartAddress] = useState(initialDraft.startAddress)
+    const [startLocation, setStartLocation] = useState('')
     const [errorState, setErrorState] = useState(null)
-    const [endLocation, setEndLocation] = useState(initialDraft.endLocation)
-    const [endAddress, setEndAddress] = useState(initialDraft.endAddress)
-    const [tripName, setTripName] = useState(initialDraft.tripName)
-    const [tripDate, setTripDate] = useState(initialDraft.date)
-    const [entryTime, setEntryTime] = useState(initialDraft.entryTime)
-    const [exitTime, setExitTime] = useState(initialDraft.exitTime)
-    const [transitTypes, setTransitTypes] = useState(initialDraft.transitTypes)
-    const [stops, setStops] = useState(initialDraft.stops)
+    const [endLocation, setEndLocation] = useState('')
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
     const baseMaxStops = 8
 
+    //PLACEHOLDER
     const handleGenerateTripSubmit = async () => {
         if (stops.length < 2) {
             setErrorState({
@@ -81,67 +34,69 @@ function NewTripScreen() {
             return
         }
 
-        const popup = window.open('about:blank', '_blank')
+        // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
+        const popup = window.open('about:blank', '_blank');
+        //later this will have everything we throw to the backend for submission
         const tripData = {
-            locations: stops.map((stop) => stop.location)
-        }
-
-        console.log(tripData)
+            locations: stops.map(stop => stop.location)
+        };
+        console.log(tripData);
 
         setErrorState(null)
         setIsLoading(true)
-        try {
+        try { //fetch request from backend
             const response = await fetch('https://explorenyc-backend-testing.up.railway.app/GenerateRoute', {
                 method: 'POST',
-                headers: {
+                headers: { 
                     'Content-Type': 'application/json',
-                    'X-API-Key': 'sauce1234'
+                    'X-API-Key': 'sauce1234' //YES HARDCODED THE API KEY LMAO i know to fix it later.
                 },
                 body: JSON.stringify(tripData)
-            })
+            });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok')
+                throw new Error('Network response was not ok');
             }
 
-            const responseData = await response.json()
+            const responseData = await response.json(); //get generated trip
 
             if (popup && !popup.closed) {
-                popup.location = responseData.url
+                popup.location = responseData.url;
                 if (popup.opener) {
-                    popup.opener = null
+                    popup.opener = null;
                 }
             } else {
-                window.location.assign(responseData.url)
+                window.location.assign(responseData.url);
             }
+
+
         } catch (error) {
-            console.error('Error submitting trip data:', error)
+            console.error('Error submitting trip data:', error);
             if (popup && !popup.closed) {
-                popup.close()
+                popup.close();
             }
         } finally {
             setIsLoading(false)
         }
-    }
+        
+    };
 
+
+
+    // React state variable known as stops that is an array full of JSON
+    const [stops, setStops] = useState([{
+        location: '', mandatory: false, flexible: false, timePreference: ''
+    }]);
+
+    //function that edits a stop by index, used when the user changes it in the ui
+    //under the hood it takes the existing stops array, , edits one index entry as needed, then reassigns the state variable to the new array
     const handleStopChange = (index, field, value) => {
-        const newStops = [...stops]
-        const nextStop = {
-            ...newStops[index],
-            [field]: value,
-        }
+        const newStops = [...stops];
+        newStops[index][field] = value;
+        setStops(newStops);
+    };
 
-        if (field === 'location') {
-            const knownAddress = getKnownStopAddress(value)
-            if (!nextStop.address.trim() || knownAddress) {
-                nextStop.address = knownAddress
-            }
-        }
-
-        newStops[index] = nextStop
-        setStops(newStops)
-    }
-
+    //adds stop to the stops array
     const trimmedStartLocation = startLocation.trim()
     const trimmedEndLocation = endLocation.trim()
     const maxStopsAllowed = trimmedStartLocation && !trimmedEndLocation ? 9 : baseMaxStops
@@ -156,33 +111,15 @@ function NewTripScreen() {
             return
         }
 
-        setStops([...stops, createEmptyStop()])
+        setStops([...stops, { location: '', mandatory: false, flexible: false, timePreference: '' }]);
         if (errorState?.reason === 'minStops') {
             setErrorState(null)
         }
-    }
+    };
 
     const removeStop = (indexToRemove) => {
-        setStops(stops.filter((_, index) => index !== indexToRemove))
-    }
-
-    useEffect(() => {
-        const nextDraft = {
-            tripName,
-            date: tripDate,
-            entryTime,
-            exitTime,
-            startLocation,
-            startAddress,
-            endLocation,
-            endAddress,
-            stops,
-            transitTypes,
-            bufferMinutes,
-        }
-
-        writeTripDraft(nextDraft)
-    }, [bufferMinutes, endAddress, endLocation, entryTime, exitTime, startAddress, startLocation, stops, transitTypes, tripDate, tripName])
+        setStops(stops.filter((_, index) => index !== indexToRemove));
+    };
 
     useEffect(() => {
         if (!errorState) {
@@ -216,22 +153,6 @@ function NewTripScreen() {
     const isAddStopError = errorState?.target === 'addStop'
     const isStartPointError = errorState?.target === 'startPoint'
 
-    const handleStartLocationChange = (nextValue) => {
-        const { location, address } = splitLocationAddress(nextValue)
-        const knownAddress = getKnownStopAddress(location)
-
-        setStartLocation(location)
-        setStartAddress(address || knownAddress)
-    }
-
-    const handleEndLocationChange = (nextValue) => {
-        const { location, address } = splitLocationAddress(nextValue)
-        const knownAddress = getKnownStopAddress(location)
-
-        setEndLocation(location)
-        setEndAddress(address || knownAddress)
-    }
-
     return (
         <div className='newTripPage'>
             {isLoading && (
@@ -251,14 +172,7 @@ function NewTripScreen() {
                 <h3>Trip Name</h3>
 
                 <div className="fieldGroup">
-                    <input
-                        id="trip-name"
-                        type="text"
-                        className='bigField'
-                        placeholder="e.g. Weekend Food Tour"
-                        value={tripName}
-                        onChange={(e) => setTripName(e.target.value)}
-                    />
+                    <input id="trip-name" type="text" className='bigField' placeholder="e.g. Weekend Food Tour" />
                 </div>
             </section>
 
@@ -268,37 +182,19 @@ function NewTripScreen() {
                 <div className="fieldGroup">
                     <label htmlFor="trip-date">Date</label>
                     <div className="inputWithIcon">
-                        <input
-                            id="trip-date"
-                            type="date"
-                            className="smallField"
-                            value={tripDate}
-                            onChange={(e) => setTripDate(e.target.value)}
-                        />
+                        <input id="trip-date" type="date" className="smallField" />
                     </div>
                 </div>
 
                 <div className="fieldRow twoCol">
                     <div className="fieldGroup">
                         <label htmlFor="entry-time">Entry Time</label>
-                        <input
-                            id="entry-time"
-                            type="time"
-                            className="smallField timeField"
-                            value={entryTime}
-                            onChange={(e) => setEntryTime(e.target.value)}
-                        />
+                        <input id="entry-time" type="time" className="smallField timeField" />
                     </div>
 
                     <div className="fieldGroup">
                         <label htmlFor="exit-time">Exit Time</label>
-                        <input
-                            id="exit-time"
-                            type="time"
-                            className="smallField timeField"
-                            value={exitTime}
-                            onChange={(e) => setExitTime(e.target.value)}
-                        />
+                        <input id="exit-time" type="time" className="smallField timeField" />
                     </div>
                 </div>
             </section>
@@ -311,19 +207,19 @@ function NewTripScreen() {
                         innerRef={startPointErrorRef}
                     >
                         <div className="fieldGroup">
-                            <label htmlFor="trip-start">Location</label>
+                            <label htmlFor="trip-start">Starting Location</label>
                             <div className="inputWithIcon">
                                 <input
                                     id="trip-start"
                                     type="text"
                                     className="smallField noZoomField"
-                                    placeholder="Enter location, address"
-                                    value={joinLocationAddress(startLocation, startAddress)}
-                                    onChange={(e) => {
-                                        const nextValue = e.target.value
-                                        handleStartLocationChange(nextValue)
-                                        if (nextValue.trim()) {
-                                            setErrorState(null)
+                                    placeholder="Enter starting point"
+                                value={startLocation}
+                                onChange={(e) => {
+                                    const nextValue = e.target.value
+                                    setStartLocation(nextValue)
+                                    if (nextValue.trim()) {
+                                        setErrorState(null)
                                         }
                                     }}
                                 />
@@ -332,30 +228,30 @@ function NewTripScreen() {
                     </ErrorWrapper>
                 ) : (
                     <div className="fieldGroup">
-                        <label htmlFor="trip-start">Location</label>
+                        <label htmlFor="trip-start">Starting Location</label>
                         <div className="inputWithIcon">
                             <input
                                 id="trip-start"
                                 type="text"
                                 className="smallField noZoomField"
-                                placeholder="Enter location, address"
-                                value={joinLocationAddress(startLocation, startAddress)}
-                                onChange={(e) => handleStartLocationChange(e.target.value)}
+                                placeholder="Enter starting point"
+                                value={startLocation}
+                                onChange={(e) => setStartLocation(e.target.value)}
                             />
                         </div>
                     </div>
                 )}
 
                 <div className="fieldGroup">
-                    <label htmlFor="trip-end">Location</label>
+                    <label htmlFor="trip-end">Ending Location</label>
                     <div className="inputWithIcon">
                         <input
                             id="trip-end"
                             type="text"
                             className="smallField noZoomField"
-                            placeholder="Enter location, address"
-                            value={joinLocationAddress(endLocation, endAddress)}
-                            onChange={(e) => handleEndLocationChange(e.target.value)}
+                            placeholder="Enter ending point"
+                            value={endLocation}
+                            onChange={(e) => setEndLocation(e.target.value)}
                         />
                     </div>
                 </div>
@@ -378,54 +274,28 @@ function NewTripScreen() {
                 </div>
 
                 <div className="stopsList">
-                    {stops.map((stop, index) => (
-                        <StopEntryBlock
-                            key={index}
-                            index={index}
-                            data={stop}
-                            stopCount={stops.length}
-                            onChange={(field, value) => handleStopChange(index, field, value)}
-                            onDelete={() => removeStop(index)}
-                        />
-                    ))}
+                    {
+                        stops.map((stop, index) => (
+                            <StopEntryBlock
+                                key={index}
+                                index={index}
+                                data={stop}
+                                stopCount={stops.length}
+                                onChange={(field, value) => handleStopChange(index, field, value)}
+                                onDelete={() => removeStop(index)}
+                            />
+                        ))
+                    }
                 </div>
             </section>
 
             <section className="newTripCard">
                 <h3>Transportation</h3>
                 <div className="checkboxGrid">
-                    <label className="checkboxItem">
-                        <input
-                            type="checkbox"
-                            checked={transitTypes.subway}
-                            onChange={(e) => setTransitTypes((current) => ({...current, subway: e.target.checked}))}
-                        />
-                        Subway
-                    </label>
-                    <label className="checkboxItem">
-                        <input
-                            type="checkbox"
-                            checked={transitTypes.car}
-                            onChange={(e) => setTransitTypes((current) => ({...current, car: e.target.checked}))}
-                        />
-                        Car
-                    </label>
-                    <label className="checkboxItem">
-                        <input
-                            type="checkbox"
-                            checked={transitTypes.walking}
-                            onChange={(e) => setTransitTypes((current) => ({...current, walking: e.target.checked}))}
-                        />
-                        Walking
-                    </label>
-                    <label className="checkboxItem">
-                        <input
-                            type="checkbox"
-                            checked={transitTypes.uber}
-                            onChange={(e) => setTransitTypes((current) => ({...current, uber: e.target.checked}))}
-                        />
-                        Uber
-                    </label>
+                    <label className="checkboxItem"><input type="checkbox" /> Subway</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Car</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Walking</label>
+                    <label className="checkboxItem"><input type="checkbox" /> Uber</label>
                 </div>
             </section>
             <section className="newTripCard">
@@ -476,19 +346,8 @@ function ErrorWrapper({message, children, innerRef, className = ''}) {
 }
 
 function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isCollapsed, setIsCollapsed] = useState(false)
-    const stopAddress = data.address?.trim() ?? ''
-    const stopSummary = [data.location.trim(), stopAddress].filter(Boolean).join(', ')
-    const stopFieldValue = joinLocationAddress(data.location, data.address)
-
-    const handleStopLocationFieldChange = (nextValue) => {
-        const { location, address } = splitLocationAddress(nextValue)
-        const knownAddress = getKnownStopAddress(location)
-
-        onChange('location', location)
-        onChange('address', address || knownAddress)
-    }
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
         <div className={`stopCard ${isCollapsed ? 'stopCardCollapsed' : ''}`}>
@@ -497,9 +356,7 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                     {`Stop ${index + 1}`}
 
                     {data.location.trim() && isCollapsed && (
-                        <span className="stopCardLocationLabel">
-                            {stopSummary}
-                        </span>
+                        <span className="stopCardLocationLabel">{data.location.trim()}</span>
                     )}
                 </h4>
                 <div className="stopCardActions">
@@ -516,7 +373,7 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                             onClick={onDelete}
                             aria-label={`Delete stop ${index + 1}`}
                         >
-                            X
+                            ❌
                         </button>
                     )}
                 </div>
@@ -530,20 +387,19 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                             id={`stop-location-${index}`}
                             type="text"
                             className="smallField noZoomField"
-                            value={stopFieldValue}
-                            onChange={(e) => handleStopLocationFieldChange(e.target.value)}
-                            placeholder="e.g. Central Park, New York, NY 10022"
+                            value={data.location}
+                            onChange={(e) => onChange('location', e.target.value)}
+                            placeholder="e.g. Central Park"
                         />
                     </div>
 
                     {isModalOpen && (
-                        <SearchModal
-                            onClose={() => setIsModalOpen(false)}
-                            onSelect={(selectedStop) => {
-                                onChange('location', selectedStop.location)
-                                onChange('address', selectedStop.address ?? getKnownStopAddress(selectedStop.location))
-                                setIsModalOpen(false)
-                            }}
+                        <SearchModal 
+                            onClose={() => setIsModalOpen(false)} 
+                            onSelect={(val) => {
+                                onChange('location', val); // Update the main form
+                                setIsModalOpen(false);      // Close modal
+                            }} 
                         />
                     )}
 
@@ -579,14 +435,14 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                 </>
             )}
             <div style={{width: '100%'}}>
-                <button
-                    type="button"
-                    className="stopCardToggle"
-                    style={{width:'100%'}}
-                    onClick={() => setIsCollapsed((current) => !current)}
-                >
-                    {isCollapsed ? 'v' : '^'}
-                </button>
+            <button
+                type="button"
+                className="stopCardToggle"
+                style={{width:'100%'}}
+                onClick={() => setIsCollapsed((current) => !current)}
+            >
+                {isCollapsed ? '⌄' : '^'}
+            </button>
             </div>
         </div>
 
@@ -594,3 +450,16 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
 }
 
 export default NewTripScreen;
+    const formatBufferLabel = (minutes) => {
+        if (minutes >= 120) {
+            return '2 hours'
+        }
+        if (minutes >= 60) {
+            const remainder = minutes - 60
+            if (remainder === 0) {
+                return '1 hour'
+            }
+            return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
+        }
+        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+    }
