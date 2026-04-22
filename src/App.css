@@ -61,3 +61,7 @@
   gap: 8px;
   margin-top: 8px;
 }
+
+.auth-action-row button {
+  color: var(--accent-icon);
+}
