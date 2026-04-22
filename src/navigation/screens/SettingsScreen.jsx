@@ -18,7 +18,7 @@ function SettingsScreen({ onLogout }) {
         <div className="settingsRoot">
             <h2> Settings </h2>
             <div className="settingsCardsContainer">
-                <div className="settingsCard profileCard">
+                {/*<div className="settingsCard profileCard">
                     <div className="icon userpicIcon"/>
                     <div>
                         <h2 className="profileCardName">John Doe</h2>
@@ -40,13 +40,10 @@ function SettingsScreen({ onLogout }) {
                     <div className="settingsOption">
                         Friends
                     </div>
-                </div>
+                </div>*/}
 
                 <div className="settingsCard categoriesCard">
                     <label className="categoryHeader"><b>Preferences</b></label>
-                    <div className="settingsOption">
-                        Notifications
-                    </div>
                     <div className="dividerLine"/>
                     <div className="settingsOption settingsOption--spread">
                         <span>Appearance</span>
@@ -78,6 +75,7 @@ function SettingsScreen({ onLogout }) {
 
                 <div className="settingsCard categoriesCard">
                     <label className="categoryHeader"><b>Support</b></label>
+                    <div className="dividerLine"/>
                     <div className="settingsOption">
                         Help & FAQ
                     </div>
