@@ -48,6 +48,13 @@ function formatDuration(minutes) {
     return `${h}h ${m > 0 ? m + 'm' : ''}`.trim();
 }
 
+//decides which legs 'dominates' for the google maps nav URL
+function getRepresentativeLeg(processedLegs) {
+    if (!processedLegs || processedLegs.length === 0) return null;
+    if (processedLegs.length === 1) return processedLegs[0];
+    return processedLegs[1];
+}
+
 function processLegs(legs){
     if (!legs) return [];
     const processedLegs = [];
@@ -86,14 +93,16 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     const detailBoxRef = useRef(null);
     const [gmapsButton, setGmapsButton] = useState(null);
 
-    function handleTransitClick(event, leg, originStop, destinationStop) {
+    function handleTransitClick(event, processedLegs, originStop, destinationStop) {
         if (!detailBoxRef.current) return;
+        const leg = getRepresentativeLeg(processedLegs);
+        if (!leg) return;
         // anchor to the transit-block element center and account for container scroll
         const containerRect = detailBoxRef.current.getBoundingClientRect();
         const targetRect = event.currentTarget.getBoundingClientRect();
         const x = (targetRect.left - containerRect.left) + (targetRect.width / 2) + detailBoxRef.current.scrollLeft;
         const y = (targetRect.top - containerRect.top) + detailBoxRef.current.scrollTop;
-        setGmapsButton({ x, y, leg,originStop, destinationStop });
+        setGmapsButton({ x, y, leg, originStop, destinationStop });
     }
 
     function handleDetailBoxClick(event) {
@@ -103,7 +112,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         if (event.target && event.target.closest && event.target.closest('.gmaps-open-btn')) {
             return;
         }
-        if (event.target && event.target.closest && event.target.closest('.transit-block')) {
+        if (event.target && event.target.closest && event.target.closest('.transit-legs')) {
             return;
         }
         setGmapsButton(null);
@@ -253,6 +262,9 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
 
                             {stops.map((stop, index) => {
                                 const place = normalizeStopToPlace(stop, index, trip?.trip_id);
+                                const processedLegs = index < stops.length - 1 && stop.Legs
+                                    ? processLegs(stop.Legs)
+                                    : [];
 
                                 return (
                                     <div key={stop?.id ?? `${trip?.trip_id}-${index}`}>
@@ -282,12 +294,15 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                             )}
                                         </button>
 
-                                        {index < stops.length - 1 && stop.Legs && stop.Legs.length > 0 && (
-                                            <div className="transit-legs">
-                                                {processLegs(stop.Legs).map((leg, legIndex) => {
+                                        {processedLegs.length > 0 && (
+                                            <div
+                                                className="transit-legs"
+                                                onClick={(e) => handleTransitClick(e, processedLegs, stop, stops[index + 1])}
+                                            >
+                                                {processedLegs.map((leg, legIndex) => {
                                                     const mode = TRANSPORT_MODES[leg.TransportType];
                                                     return (
-                                                        <div className='transit-block' key={legIndex} onClick={(e) => handleTransitClick(e, leg, stop, stops[index + 1])}>
+                                                        <div className='transit-block' key={legIndex}>
                                                             <div className={`transit-icon ${mode?.className}`} />
                                                             <div className="transit-info">
                                                                 <strong>
