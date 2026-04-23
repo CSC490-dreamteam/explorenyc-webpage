@@ -4,6 +4,7 @@ import SearchModal from './components/SearchModal';
 import Auth from '../../auth';
 import { calculateAllUserStats } from './utils/statCrunching';
 
+
 import walkingIcon from '../../assets/walking.svg';
 import subwayIcon from '../../assets/subway.svg';
 import carIcon from '../../assets/car.svg';
@@ -35,6 +36,7 @@ function NewTripScreen() {
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
+    const dateErrorRef = useRef(null)
     const entryTimeErrorRef = useRef(null)
     const exitTimeErrorRef = useRef(null)
     const transitTypesErrorRef = useRef(null)
@@ -56,6 +58,15 @@ function NewTripScreen() {
                 target: 'startPoint',
                 message: 'You must specify a starting point.',
                 reason: 'missingStart'
+            })
+            return
+        }
+
+        if (!date.trim()) {
+            setErrorState({
+                target: 'date',
+                message: 'You must specify a date.',
+                reason: 'missingDate'
             })
             return
         }
@@ -88,9 +99,6 @@ function NewTripScreen() {
             return;
         }
 
-        // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
-        const popup = window.open('about:blank', '_blank');
-
         //actual endpoint data
         const tripData = {
             tripName: tripName.trim() ? tripName.trim() : 'My NYC Trip',
@@ -116,40 +124,9 @@ function NewTripScreen() {
             ...(endLocation.trim() ? [endLocation.trim()] : [])
         ];
 
-        const oldTripData = {
-            locations: tempLocations
-        };
-
-
         setErrorState(null)
         setIsLoading(true)
         try {
-            //old endpoint that shows the maps link
-            const oldResponse = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateRoute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-Key': 'sauce1234'
-                },
-                body: JSON.stringify(oldTripData)
-            });
-
-            if (!oldResponse.ok) {
-                throw new Error('Old endpoint response was not ok');
-            }
-
-            const oldResponseData = await oldResponse.json();
-
-            if (popup && !popup.closed) {
-                popup.location = oldResponseData.url;
-                if (popup.opener) {
-                    popup.opener = null;
-                }
-            } else {
-                window.location.assign(oldResponseData.url);
-            }
-
-            //new real endpoint, does nothing rn
             const response = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateItinerary', {
                 method: 'POST',
                 headers: {
@@ -160,10 +137,48 @@ function NewTripScreen() {
             });
 
             if (!response.ok) {
-                console.error('New endpoint failed:', response.status);
+                console.error('Endpoint failed:', response.status);
             } else {
                 const responseData = await response.json();
-                console.log('New endpoint response:', responseData);
+                console.log('Endpoint response:', responseData);
+
+                // Remove tripName and date from responseData and rename Stops to stops
+                const { tripName: _unusedName, date: _unusedDate, Stops, ...rest } = responseData;
+                const stopsData = {
+                    stops: Stops,
+                    ...rest
+                };
+
+                // Store Itinerary
+                const itineraryData = {
+                    user_id: String(Auth.currentUserId),
+                    date: date.trim(),
+                    entryTime: entryTime.trim(),
+                    exitTime: exitTime.trim(),
+                    trip_name: tripName.trim() ? tripName.trim() : 'My NYC Trip',
+                    stops: stopsData
+                };
+
+                console.log('Sending to StoreItinerary:', itineraryData);
+
+                try {
+                    const storeResponse = await fetch('https://explorenyc-recommendation-service-production.up.railway.app/StoreItinerary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(itineraryData)
+                    });
+
+                    if (!storeResponse.ok) {
+                        console.error('StoreItinerary failed:', storeResponse.status);
+                    } else {
+                        const storeData = await storeResponse.json();
+                        console.log('StoreItinerary success:', storeData);
+                    }
+                } catch (storeError) {
+                    console.error('Error storing itinerary:', storeError);
+                }
             }
         } catch (error) {
             console.error('Error submitting trip data:', error);
@@ -274,6 +289,7 @@ function NewTripScreen() {
         const refMap = {
             addStop: addStopErrorRef,
             startPoint: startPointErrorRef,
+            date: dateErrorRef,
             entryTime: entryTimeErrorRef,
             exitTime: exitTimeErrorRef,
             transitTypes: transitTypesErrorRef
@@ -356,10 +372,29 @@ function NewTripScreen() {
 
                 <div className="fieldGroup">
                     <label htmlFor="trip-date">Date</label>
-                    <div className="inputWithIcon">
-                        <input id="trip-date" type="date" className="smallField" 
-                        value={date} onChange={(e) => setDate(e.target.value)}/>
-                    </div>
+                    {errorState?.target === 'date' ? (
+                        <ErrorWrapper
+                            message={errorState.message}
+                            innerRef={dateErrorRef}
+                            className="errorWrapper--field"
+                        >
+                            <div className="inputWithIcon">
+                                <input id="trip-date" type="date" className="smallField" 
+                                value={date} onChange={(e) => {
+                                    const nextValue = e.target.value
+                                    setDate(nextValue)
+                                    if (nextValue.trim()) {
+                                        setErrorState(null)
+                                    }
+                                }}/>
+                            </div>
+                        </ErrorWrapper>
+                    ) : (
+                        <div className="inputWithIcon">
+                            <input id="trip-date" type="date" className="smallField" 
+                            value={date} onChange={(e) => setDate(e.target.value)}/>
+                        </div>
+                    )}
                 </div>
 
                 <div className="fieldRow twoCol">
@@ -682,9 +717,9 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                         <input
                             id={`stop-duration-${index}`}
                             type="range"
-                            min="0"
-                            max="120"
-                            step="1"
+                            min="5"
+                            max="240"
+                            step="5"
                             value={data.duration}
                             onChange={(e) => onChange('duration', Number(e.target.value))}
                             className='slider'
@@ -711,17 +746,20 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
 }
 
 function formatBufferLabel(minutes) {
-    if (minutes >= 120) {
-        return '2 hours'
-    }
-    if (minutes >= 60) {
-        const remainder = minutes - 60
-        if (remainder === 0) {
-            return '1 hour'
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+
+    const hourText = h === 1 ? 'hour' : 'hours';
+    const minuteText = m === 1 ? 'minute' : 'minutes';
+
+    if (h > 0) {
+        if (m > 0) {
+            return `${h} ${hourText} ${m} ${minuteText}`;
         }
-        return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
+        return `${h} ${hourText}`;
     }
-    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+
+    return `${m} ${minuteText}`;
 }
 
 export default NewTripScreen;

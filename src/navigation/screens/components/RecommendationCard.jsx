@@ -39,8 +39,12 @@ function RecommendationCard({ place, loading, error, onClick }) {
         </div>
 
         <div className="card-category">
-          {place.category || place.place_type}
+          {(place.category || place.place_type)
+            ?.charAt(0).toUpperCase() +
+          (place.category || place.place_type)
+            ?.slice(1).toLowerCase()}
         </div>
+
 
         <div className="card-bottom">
           <div className="card-distance">
