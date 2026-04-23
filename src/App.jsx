@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import './App.css'
 import NavbarContainer from "./navigation/NavbarContainer.jsx";
 import Auth from "./auth";
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 
 function App() {
   const LOGIN_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/login';
   const SIGNUP_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/signup';
+  const GOOGLE_LOGIN_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/google-login';
   const [showNav, setShowNav] = useState(false);
+
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
   const [name, setName] = useState('');
@@ -162,6 +166,53 @@ function App() {
                 </button>
               </div>
             </form>
+
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  setIsSubmitting(true);
+                  try {
+                    const decoded = jwtDecode(credentialResponse.credential);
+                    const payload = {
+                      id_token: credentialResponse.credential,
+                      name: decoded.name,
+                      email: decoded.email
+                    };
+                    console.log('Sending to Google Login:', payload);
+                    
+                    const response = await fetch(GOOGLE_LOGIN_URL, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify(payload),
+                    });
+
+                    if (!response.ok) {
+                      throw new Error('Google Login Failed');
+                    }
+
+                    const data = await response.json();
+                    const userId = data?.user_id;
+
+                    if (userId === undefined || userId === null) {
+                      throw new Error('Missing user id');
+                    }
+
+                    Auth.setCurrentUserId(userId);
+                    setShowAuthModal(false);
+                    setShowNav(true);
+                  } catch (err) {
+                    setAuthError(err.message || 'Google login failed.');
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+                onError={() => {
+                  setAuthError('Google login failed.');
+                }}
+              />
+            </div>
           </div>
         </div>
       )}
