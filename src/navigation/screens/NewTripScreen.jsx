@@ -680,9 +680,9 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                         <input
                             id={`stop-duration-${index}`}
                             type="range"
-                            min="0"
-                            max="120"
-                            step="1"
+                            min="5"
+                            max="240"
+                            step="5"
                             value={data.duration}
                             onChange={(e) => onChange('duration', Number(e.target.value))}
                             className='slider'
@@ -709,17 +709,20 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
 }
 
 function formatBufferLabel(minutes) {
-    if (minutes >= 120) {
-        return '2 hours'
-    }
-    if (minutes >= 60) {
-        const remainder = minutes - 60
-        if (remainder === 0) {
-            return '1 hour'
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+
+    const hourText = h === 1 ? 'hour' : 'hours';
+    const minuteText = m === 1 ? 'minute' : 'minutes';
+
+    if (h > 0) {
+        if (m > 0) {
+            return `${h} ${hourText} ${m} ${minuteText}`;
         }
-        return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
+        return `${h} ${hourText}`;
     }
-    return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+
+    return `${m} ${minuteText}`;
 }
 
 export default NewTripScreen;
