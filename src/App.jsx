@@ -16,7 +16,7 @@ function App() {
   }
 
   return (
-    <>
+    <div style={{alignContent: 'center', height:'100vh'}}>
       <img src={"/logotemp.png"} width={"100%"}/>
       <h2>Your adventure in New York City starts here.</h2>
 
@@ -80,7 +80,7 @@ function App() {
           Login as test user
         </button>
       </div>
-    </>
+    </div>
   )
 }
 
