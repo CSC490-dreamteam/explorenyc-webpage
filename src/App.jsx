@@ -7,6 +7,8 @@ import { jwtDecode } from "jwt-decode";
 
 function App() {
   const GOOGLE_LOGIN_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/google-login';
+  const authButtonWidth = 360;
+  const googleButtonScale = 2;
   const [showNav, setShowNav] = useState(false);
   const [authError, setAuthError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,12 +19,18 @@ function App() {
 
   return (
     <>
-      <h2>Welcome to ExploreNYC!</h2>
-      <h3>Your adventure in New York City starts here.</h3>
+      <img src={"/logotemp.png"} width={"100%"}/>
+      <h2>Your adventure in New York City starts here.</h2>
 
       <div className="auth-buttons-vertical">
         <div className="google-login-row">
           <GoogleLogin
+            width={authButtonWidth / googleButtonScale}
+            size="large"
+            shape="pill"
+            text="continue_with"
+            logo_alignment="center"
+            containerProps={{ className: 'google-login-frame' }}
             onSuccess={async (credentialResponse) => {
               setAuthError('');
               setIsSubmitting(true);
@@ -68,7 +76,10 @@ function App() {
         </div>
         {isSubmitting && <p className="auth-status">Signing in with Google...</p>}
         {authError && <p className="auth-error" role="alert">{authError}</p>}
-        <button className="generateButton" onClick={() => { Auth.setCurrentUserId(1); setShowNav(true); }}>
+        <button
+          className="generateButton auth-test-button"
+          onClick={() => { Auth.setCurrentUserId(1); setShowNav(true); }}
+        >
           Login as test user
         </button>
       </div>

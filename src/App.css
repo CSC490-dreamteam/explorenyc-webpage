@@ -4,6 +4,8 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  align-content: center;
+  height: 100vh;
 }
 
 .auth-buttons-vertical {
@@ -17,11 +19,32 @@
 .google-login-row {
   display: flex;
   justify-content: center;
+  width: min(360px, 94vw);
+  margin: 0 auto;
+  min-height: 76px;
+  align-items: flex-start;
+}
+
+.google-login-frame {
+  width: 50%;
+  transform: scale(1.5);
+  transform-origin: top center;
+
+}
+
+.google-login-frame > div,
+.google-login-frame iframe {
+  width: 100% !important;
 }
 
 .auth-status,
 .auth-error {
   margin-top: 8px;
+}
+
+.auth-test-button {
+  width: min(360px, 94vw);
+  margin: 4px auto 0;
 }
 
 .auth-error {
