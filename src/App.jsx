@@ -7,8 +7,6 @@ import { jwtDecode } from "jwt-decode";
 
 function App() {
   const GOOGLE_LOGIN_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/google-login';
-  const authButtonWidth = 360;
-  const googleButtonScale = 2;
   const [showNav, setShowNav] = useState(false);
   const [authError, setAuthError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,9 +23,8 @@ function App() {
       <div className="auth-buttons-vertical">
         <div className="google-login-row">
           <GoogleLogin
-            width={authButtonWidth / googleButtonScale}
             size="large"
-            shape="pill"
+            shape="rectangular"
             text="continue_with"
             logo_alignment="center"
             containerProps={{ className: 'google-login-frame' }}
