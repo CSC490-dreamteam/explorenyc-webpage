@@ -7,6 +7,7 @@ import RecommendationCard from './components/RecommendationCard.jsx';
 import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
 import Toast from './components/Toast.jsx';
 import { addPlaceToPendingTrip } from './utils/tripDrafts.js';
+import Auth from '../../auth';
 
 const nyc_env_var = import.meta.env.VITE_NYC_API_KEY;
 
@@ -22,52 +23,81 @@ function HomeScreen() {
 
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
+    const [userStats, setUserStats] = useState({
+        totalWalkingMinutes: 0,
+        tripCount: 0,
+        uniqueStopsCount: 0
+    });
+
     useEffect(() => {
-    async function fetchTailoredRecommendations() {
-        setLoading(true);
-        try {
-            // Fetch user history (using ID 1 for now)
-            const historyRes = await fetch(
-                "https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=1"
-            );
-            const historyData = await historyRes.json();
-            
-            // Extract Location Titles from past trips
-            // historyData.trips contains an array of trips, each having a 'stops' array
-            const pastLocations = historyData.trips
-                ? historyData.trips.flatMap(trip => 
-                    trip.stops ? trip.stops.map(stop => stop.name || stop.location) : []
-                  )
-                : [];
+        async function fetchUserStats() {
+            try {
+                const userId = Auth?.currentUserId; 
+                const response = await fetch(
+                    `https://explorenyc-recommendation-service-production.up.railway.app/get-user-stats/${userId}`
+                );
 
-            // Create a unique list and join them into a search string
-            // Take the most recent 5-10 locations so the query isn't too long
-            const recentLocations = [...new Set(pastLocations)].slice(0, 8).join(", ");
-            
-            //Determine the query History based or Default
-            const searchQuery = recentLocations.length > 0 
-                ? `Places similar to ${recentLocations}` 
-                : "Top rated sights in New York City";
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user stats");
+                }
 
-            //Fetch from the recommendation engine
-            const recRes = await fetch(
-                `https://explorenyc-recommendation-service-production.up.railway.app/recommend-all-db?user_text=${encodeURIComponent(searchQuery)}&top_k=10`
-            );
-            
-            if (!recRes.ok) throw new Error("Recommendation fetch failed");
-            
-            const data = await recRes.json();
-            setPlaces(data);
-
-        } catch (err) {
-            console.error("Personalization Error:", err);
-            setError(err.message);
-            // Fallback to your original general fetch if the history fetch fails
-            fetchGeneralDiscover();
-        } finally {
-            setLoading(false);
+                const data = await response.json();
+                setUserStats(data);
+            } catch (err) {
+                console.error("Error fetching user stats:", err);
+            }
         }
-    }
+
+        fetchUserStats();
+        console.log("Fetched user stats:", userStats);
+    }, []); //runs once on mount
+
+    useEffect(() => {
+        async function fetchTailoredRecommendations() {
+            setLoading(true);
+            try {
+                // Fetch user history (using ID 1 for now)
+                const historyRes = await fetch(
+                    "https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=1"
+                );
+                const historyData = await historyRes.json();
+                
+                // Extract Location Titles from past trips
+                // historyData.trips contains an array of trips, each having a 'stops' array
+                const pastLocations = historyData.trips
+                    ? historyData.trips.flatMap(trip => 
+                        trip.stops ? trip.stops.map(stop => stop.name || stop.location) : []
+                    )
+                    : [];
+
+                // Create a unique list and join them into a search string
+                // Take the most recent 5-10 locations so the query isn't too long
+                const recentLocations = [...new Set(pastLocations)].slice(0, 8).join(", ");
+                
+                //Determine the query History based or Default
+                const searchQuery = recentLocations.length > 0 
+                    ? `Places similar to ${recentLocations}` 
+                    : "Top rated sights in New York City";
+
+                //Fetch from the recommendation engine
+                const recRes = await fetch(
+                    `https://explorenyc-recommendation-service-production.up.railway.app/recommend-all-db?user_text=${encodeURIComponent(searchQuery)}&top_k=10`
+                );
+                
+                if (!recRes.ok) throw new Error("Recommendation fetch failed");
+                
+                const data = await recRes.json();
+                setPlaces(data);
+
+            } catch (err) {
+                console.error("Personalization Error:", err);
+                setError(err.message);
+                // Fallback to your original general fetch if the history fetch fails
+                fetchGeneralDiscover();
+            } finally {
+                setLoading(false);
+            }
+        }
 
     async function fetchGeneralDiscover() {
         try {
@@ -196,9 +226,18 @@ function HomeScreen() {
                 </div>
 
                 <button className="btn-primary">
-                        <div className="statistic">0<br />Trips</div>
-                        <div className="statistic">0 <br />Places</div>
-                        <div className="statistic">0 <br />Steps</div>
+                    <div className="statistic">
+                        {userStats.tripCount} <br /> 
+                        Trips Taken
+                    </div>
+                    <div className="statistic">
+                        {userStats.totalWalkingMinutes} <br /> 
+                        Mins Walked
+                    </div>
+                    <div className="statistic">
+                        {userStats.uniqueStopsCount} <br /> 
+                        Places Seen
+                    </div>
                 </button>
 
             </header>
