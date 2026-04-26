@@ -19,25 +19,27 @@ function formatCost(cents) {
     return `$${(cents / 100).toFixed(2)}`
 }
 
-function formatArrivalTime(baseDateTime, minutesOffset) {
-    if (!baseDateTime || minutesOffset === undefined) return null;
-    const date = new Date(baseDateTime);
-    date.setMinutes(date.getMinutes() + minutesOffset);
-    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+function formatArrivalTime(minutesFromMidnight) {
+    if (minutesFromMidnight === undefined) return null;
+    const hours = Math.floor(minutesFromMidnight / 60);
+    const mins = minutesFromMidnight % 60;
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours % 12 || 12;
+    return `${hours12}:${mins.toString().padStart(2, '0')} ${period}`;
 }
 
-function formatTimeRange(baseDateTime, arrivalOffset, departureOffset) {
-    if (!baseDateTime || arrivalOffset === undefined) return null;
+function formatTimeRange(arrivalMinutes, departureMinutes) {
+    if (arrivalMinutes === undefined) return null;
     
-    const arrivalStr = formatArrivalTime(baseDateTime, arrivalOffset);
+    const arrivalStr = formatArrivalTime(arrivalMinutes);
     
     //if departure is the same as arrival, just show arrival
-    if (departureOffset === undefined || departureOffset === arrivalOffset) {
+    if (departureMinutes === undefined || departureMinutes === arrivalMinutes) {
         return arrivalStr;
     }
 
-    const departureStr = formatArrivalTime(baseDateTime, departureOffset);
-    return `${arrivalStr} - ${departureStr}`;
+    return `${arrivalStr} - ${formatArrivalTime(departureMinutes)}`;
 }
 
 function formatDuration(minutes) {
@@ -281,9 +283,9 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                             </div>
 
                                             {/* trip stop arrival time and duration  */}
-                                            {formatTimeRange(trip?.entry_datetime, stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes) && (
+                                            {formatTimeRange(stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes) && (
                                                 <span className="stop-arrival-time">
-                                                    {formatTimeRange(trip?.entry_datetime, stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes)}
+                                                    {formatTimeRange(stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes)}
                                                 </span>
                                             )}
 

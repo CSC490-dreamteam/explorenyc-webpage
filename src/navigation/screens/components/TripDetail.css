@@ -270,7 +270,8 @@
     flex-direction: column;
     align-items: center;
     gap: 1px;
-    margin: 16px 0;
+    margin: 16px auto;
+    width: fit-content;
 }
 
 /* Google Maps open button */
