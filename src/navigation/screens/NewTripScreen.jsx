@@ -213,18 +213,39 @@ function NewTripScreen() {
             //calc the stats
             const UserStats = calculateAllUserStats(trips);
 
-            //send the stats to the backend TODO
-
             console.log("Calculated user stats:", UserStats);
 
+            //make payload 
+            const payload = {
+                user_id: id,
+                total_walking_minutes: UserStats.totalWalkingMinutes,
+                trip_count: UserStats.tripCount,
+                unique_stops_count: UserStats.uniqueStopsCount
+            };
+
+            //contact endpoint
+            const upsertResponse = await fetch('https://explorenyc-recommendation-service-production.up.railway.app/upsert-user-stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!upsertResponse.ok) {
+                const errorDetail = await upsertResponse.json();
+                console.error('Upsert User Stats failed:', upsertResponse.status, errorDetail);
+                return null;
+            }
+
+            const result = await upsertResponse.json();
+            console.log('User stats successfully upserted:', result);
+            return result;
 
         } catch (err) {
             console.error("Error updating user stats:", err);
             return null;
         }
-
-        
-        
         
     }
 
