@@ -8,6 +8,7 @@ import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
 import Toast from './components/Toast.jsx';
 import { addPlaceToPendingTrip } from './utils/tripDrafts.js';
 import Auth from '../../auth';
+import { calculateAllUserStats } from "./utils/statCrunching.js";
 
 const nyc_env_var = import.meta.env.VITE_NYC_API_KEY;
 
