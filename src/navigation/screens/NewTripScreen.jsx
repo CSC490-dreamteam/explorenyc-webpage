@@ -328,7 +328,8 @@ function NewTripScreen() {
                 <div className="loadingOverlay" role="alert">
                     <div className="loadingCard">
                         <div style={{ fontSize: '2rem' }}>⚠️</div>
-                        <div className="loadingText">Itinerary generation failed. Please adjust your route and try again!</div>
+                        <div className="loadingText">Unable to create a route with the given information.</div>
+                        <div className="loadingText">Please change your trip details and try again.</div>
                         <button 
                             type="button" 
                             className="secondaryButton" 
