@@ -1,14 +1,27 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
+import { createEmptyStop, formatStopLocationLabel, getKnownStopAddress } from '../../utils/stopLocations';
+import { readTripDraft, writeTripDraft } from '../../utils/tripDraftStorage';
 
 
 function NewTripScreen() {
+    const [tripName, setTripName] = useState('')
+    const [tripDate, setTripDate] = useState('')
+    const [entryTime, setEntryTime] = useState('')
+    const [exitTime, setExitTime] = useState('')
     const [bufferMinutes, setBufferMinutes] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
     const [startLocation, setStartLocation] = useState('')
     const [errorState, setErrorState] = useState(null)
     const [endLocation, setEndLocation] = useState('')
+    const [transitTypes, setTransitTypes] = useState({
+        subway: false,
+        car: false,
+        walking: false,
+        uber: false,
+    })
+    const [hasLoadedDraft, setHasLoadedDraft] = useState(false)
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
@@ -84,9 +97,7 @@ function NewTripScreen() {
 
 
     // React state variable known as stops that is an array full of JSON
-    const [stops, setStops] = useState([{
-        location: '', mandatory: false, flexible: false, timePreference: ''
-    }]);
+    const [stops, setStops] = useState([createEmptyStop()]);
 
     //function that edits a stop by index, used when the user changes it in the ui
     //under the hood it takes the existing stops array, , edits one index entry as needed, then reassigns the state variable to the new array
@@ -111,7 +122,7 @@ function NewTripScreen() {
             return
         }
 
-        setStops([...stops, { location: '', mandatory: false, flexible: false, timePreference: '' }]);
+        setStops([...stops, createEmptyStop()]);
         if (errorState?.reason === 'minStops') {
             setErrorState(null)
         }
@@ -120,6 +131,52 @@ function NewTripScreen() {
     const removeStop = (indexToRemove) => {
         setStops(stops.filter((_, index) => index !== indexToRemove));
     };
+
+    useEffect(() => {
+        const draft = readTripDraft()
+
+        setTripName(draft.tripName)
+        setTripDate(draft.date)
+        setEntryTime(draft.entryTime)
+        setExitTime(draft.exitTime)
+        setStartLocation(draft.startLocation)
+        setEndLocation(draft.endLocation)
+        setStops(draft.stops.length > 0 ? draft.stops : [createEmptyStop()])
+        setTransitTypes(draft.transitTypes)
+        setBufferMinutes(draft.bufferMinutes)
+        setHasLoadedDraft(true)
+    }, [])
+
+    useEffect(() => {
+        if (!hasLoadedDraft) {
+            return
+        }
+
+        writeTripDraft({
+            tripName,
+            date: tripDate,
+            entryTime,
+            exitTime,
+            startLocation,
+            startAddress: getKnownStopAddress(startLocation),
+            endLocation,
+            endAddress: getKnownStopAddress(endLocation),
+            stops,
+            transitTypes,
+            bufferMinutes,
+        })
+    }, [
+        bufferMinutes,
+        endLocation,
+        entryTime,
+        exitTime,
+        hasLoadedDraft,
+        startLocation,
+        stops,
+        transitTypes,
+        tripDate,
+        tripName,
+    ])
 
     useEffect(() => {
         if (!errorState) {
@@ -172,7 +229,14 @@ function NewTripScreen() {
                 <h3>Trip Name</h3>
 
                 <div className="fieldGroup">
-                    <input id="trip-name" type="text" className='bigField' placeholder="e.g. Weekend Food Tour" />
+                    <input
+                        id="trip-name"
+                        type="text"
+                        className='bigField'
+                        placeholder="e.g. Weekend Food Tour"
+                        value={tripName}
+                        onChange={(e) => setTripName(e.target.value)}
+                    />
                 </div>
             </section>
 
@@ -182,19 +246,37 @@ function NewTripScreen() {
                 <div className="fieldGroup">
                     <label htmlFor="trip-date">Date</label>
                     <div className="inputWithIcon">
-                        <input id="trip-date" type="date" className="smallField" />
+                        <input
+                            id="trip-date"
+                            type="date"
+                            className="smallField"
+                            value={tripDate}
+                            onChange={(e) => setTripDate(e.target.value)}
+                        />
                     </div>
                 </div>
 
                 <div className="fieldRow twoCol">
                     <div className="fieldGroup">
                         <label htmlFor="entry-time">Entry Time</label>
-                        <input id="entry-time" type="time" className="smallField timeField" />
+                        <input
+                            id="entry-time"
+                            type="time"
+                            className="smallField timeField"
+                            value={entryTime}
+                            onChange={(e) => setEntryTime(e.target.value)}
+                        />
                     </div>
 
                     <div className="fieldGroup">
                         <label htmlFor="exit-time">Exit Time</label>
-                        <input id="exit-time" type="time" className="smallField timeField" />
+                        <input
+                            id="exit-time"
+                            type="time"
+                            className="smallField timeField"
+                            value={exitTime}
+                            onChange={(e) => setExitTime(e.target.value)}
+                        />
                     </div>
                 </div>
             </section>
@@ -292,10 +374,38 @@ function NewTripScreen() {
             <section className="newTripCard">
                 <h3>Transportation</h3>
                 <div className="checkboxGrid">
-                    <label className="checkboxItem"><input type="checkbox" /> Subway</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Car</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Walking</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Uber</label>
+                    <label className="checkboxItem">
+                        <input
+                            type="checkbox"
+                            checked={transitTypes.subway}
+                            onChange={(e) => setTransitTypes((current) => ({...current, subway: e.target.checked}))}
+                        />
+                        Subway
+                    </label>
+                    <label className="checkboxItem">
+                        <input
+                            type="checkbox"
+                            checked={transitTypes.car}
+                            onChange={(e) => setTransitTypes((current) => ({...current, car: e.target.checked}))}
+                        />
+                        Car
+                    </label>
+                    <label className="checkboxItem">
+                        <input
+                            type="checkbox"
+                            checked={transitTypes.walking}
+                            onChange={(e) => setTransitTypes((current) => ({...current, walking: e.target.checked}))}
+                        />
+                        Walking
+                    </label>
+                    <label className="checkboxItem">
+                        <input
+                            type="checkbox"
+                            checked={transitTypes.uber}
+                            onChange={(e) => setTransitTypes((current) => ({...current, uber: e.target.checked}))}
+                        />
+                        Uber
+                    </label>
                 </div>
             </section>
             <section className="newTripCard">
@@ -396,9 +506,13 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                     {isModalOpen && (
                         <SearchModal 
                             onClose={() => setIsModalOpen(false)} 
-                            onSelect={(val) => {
-                                onChange('location', val); // Update the main form
-                                setIsModalOpen(false);      // Close modal
+                            onSelect={(place) => {
+                                const location = typeof place?.name === 'string' ? place.name : ''
+                                const address = typeof place?.address === 'string' ? place.address : ''
+
+                                onChange('location', formatStopLocationLabel(location, address))
+                                onChange('address', address)
+                                setIsModalOpen(false)
                             }} 
                         />
                     )}

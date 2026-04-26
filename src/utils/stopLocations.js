@@ -27,7 +27,33 @@ function normalizeStopName(value) {
 }
 
 function getKnownStopAddress(location) {
-    return KNOWN_STOP_ADDRESSES[normalizeStopName(location)] ?? '';
+    const normalizedLocation = normalizeStopName(location)
+    const locationWithoutAddress = normalizeStopName(
+        typeof location === 'string' ? location.split(',')[0] : ''
+    )
+
+    return KNOWN_STOP_ADDRESSES[normalizedLocation]
+        ?? KNOWN_STOP_ADDRESSES[locationWithoutAddress]
+        ?? '';
+}
+
+function formatStopLocationLabel(location, address) {
+    const safeLocation = typeof location === 'string' ? location.trim() : ''
+    const safeAddress = typeof address === 'string' ? address.trim() : ''
+
+    if (!safeLocation) {
+        return safeAddress
+    }
+
+    if (!safeAddress) {
+        return safeLocation
+    }
+
+    if (safeLocation.toLowerCase().includes(safeAddress.toLowerCase())) {
+        return safeLocation
+    }
+
+    return `${safeLocation}, ${safeAddress}`
 }
 
 function fillKnownStopAddress(stop) {
@@ -55,5 +81,6 @@ function createEmptyStop() {
 export {
     createEmptyStop,
     fillKnownStopAddress,
+    formatStopLocationLabel,
     getKnownStopAddress,
 };

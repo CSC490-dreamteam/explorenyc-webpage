@@ -1,4 +1,9 @@
-import { createEmptyStop, fillKnownStopAddress, getKnownStopAddress } from './stopLocations';
+import {
+    createEmptyStop,
+    fillKnownStopAddress,
+    formatStopLocationLabel,
+    getKnownStopAddress,
+} from './stopLocations';
 
 const TRIP_DRAFT_STORAGE_KEY = 'explorenyc.tripDraft';
 
@@ -26,12 +31,17 @@ function sanitizeStops(stops) {
         return defaultTripDraft.stops;
     }
 
-    return stops.map((stop) => ({
-        ...fillKnownStopAddress(stop),
-        mandatory: Boolean(stop?.mandatory),
-        flexible: Boolean(stop?.flexible),
-        timePreference: typeof stop?.timePreference === 'string' ? stop.timePreference : '',
-    }));
+    return stops.map((stop) => {
+        const normalizedStop = fillKnownStopAddress(stop)
+
+        return {
+            ...normalizedStop,
+            location: formatStopLocationLabel(normalizedStop.location, normalizedStop.address),
+            mandatory: Boolean(stop?.mandatory),
+            flexible: Boolean(stop?.flexible),
+            timePreference: typeof stop?.timePreference === 'string' ? stop.timePreference : '',
+        }
+    });
 }
 
 function sanitizeTransitTypes(transitTypes) {
@@ -97,23 +107,33 @@ function writeTripDraft(draft) {
 }
 
 function createTripDraftFromAiPayload(payload) {
+    const startLocation = payload?.startLocation ?? ''
+    const startAddress = payload?.startAddress ?? getKnownStopAddress(startLocation)
+    const endLocation = payload?.endLocation ?? ''
+    const endAddress = payload?.endAddress ?? getKnownStopAddress(endLocation)
+
     return sanitizeTripDraft({
         tripName: payload?.tripName,
         date: payload?.date,
         entryTime: payload?.entryTime,
         exitTime: payload?.exitTime,
-        startLocation: payload?.startLocation,
-        startAddress: payload?.startAddress ?? getKnownStopAddress(payload?.startLocation ?? ''),
-        endLocation: payload?.endLocation,
-        endAddress: payload?.endAddress ?? getKnownStopAddress(payload?.endLocation ?? ''),
+        startLocation: formatStopLocationLabel(startLocation, startAddress),
+        startAddress,
+        endLocation: formatStopLocationLabel(endLocation, endAddress),
+        endAddress,
         stops: Array.isArray(payload?.stops)
-            ? payload.stops.map((stop) => ({
-                location: stop?.location ?? '',
-                address: stop?.address ?? getKnownStopAddress(stop?.location ?? ''),
-                mandatory: !Boolean(stop?.optional),
-                flexible: Boolean(stop?.optional),
-                timePreference: stop?.timePreference ?? '',
-            }))
+            ? payload.stops.map((stop) => {
+                const location = stop?.location ?? ''
+                const address = stop?.address ?? getKnownStopAddress(location)
+
+                return {
+                    location: formatStopLocationLabel(location, address),
+                    address,
+                    mandatory: !Boolean(stop?.optional),
+                    flexible: Boolean(stop?.optional),
+                    timePreference: stop?.timePreference ?? '',
+                }
+            })
             : defaultTripDraft.stops,
         transitTypes: {
             subway: Boolean(payload?.transitTypes?.subway),

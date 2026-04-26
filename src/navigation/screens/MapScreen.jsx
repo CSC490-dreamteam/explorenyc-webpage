@@ -1,7 +1,6 @@
 import '../../App.css'
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import 'mapbox-gl/dist/mapbox-gl.css'
-import polyline from '@mapbox/polyline';
 import Map, { Layer, Marker, Source } from 'react-map-gl/mapbox';
 import mapStyleJson from '../../assets/dark_manhattan.json';
 import PlaceDetailsModal from "./components/PlaceDetailsModal.jsx";
@@ -52,9 +51,39 @@ function decodePolyline(encodedPolyline) {
     }
 
     try {
-        return polyline
-            .decode(encodedPolyline)
-            .map(([latitude, longitude]) => [longitude, latitude]);
+        const coordinates = [];
+        let index = 0;
+        let latitude = 0;
+        let longitude = 0;
+
+        while (index < encodedPolyline.length) {
+            let result = 0;
+            let shift = 0;
+            let byte = 0;
+
+            do {
+                byte = encodedPolyline.charCodeAt(index++) - 63;
+                result |= (byte & 0x1f) << shift;
+                shift += 5;
+            } while (byte >= 0x20);
+
+            latitude += (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
+
+            result = 0;
+            shift = 0;
+
+            do {
+                byte = encodedPolyline.charCodeAt(index++) - 63;
+                result |= (byte & 0x1f) << shift;
+                shift += 5;
+            } while (byte >= 0x20);
+
+            longitude += (result & 1) !== 0 ? ~(result >> 1) : result >> 1;
+
+            coordinates.push([longitude / 1e5, latitude / 1e5]);
+        }
+
+        return coordinates;
     } catch (error) {
         console.warn('Failed to decode polyline:', error);
         return [];

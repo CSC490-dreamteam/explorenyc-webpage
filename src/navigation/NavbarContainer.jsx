@@ -8,6 +8,10 @@ import AIScreen from "../components/AIScreen.jsx";
 
 function NavbarContainer({ onLogout }) {
     const [currentScreen, setCurrentScreen] = useState('AIState')
+    const [aiInput, setAiInput] = useState('')
+    const [aiMessages, setAiMessages] = useState([])
+    const [aiLoading, setAiLoading] = useState(false)
+    const [aiFillError, setAiFillError] = useState('')
 
     const renderContent = () => {
         switch (currentScreen) {
@@ -15,7 +19,20 @@ function NavbarContainer({ onLogout }) {
             case 'MapState': return <NewTripScreen />
             case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
             case 'SettingsState': return <SettingScreen onLogout={onLogout} />
-            case 'AIState': return <AIScreen setCurrentScreen={setCurrentScreen} />
+            case 'AIState':
+                return (
+                    <AIScreen
+                        setCurrentScreen={setCurrentScreen}
+                        input={aiInput}
+                        setInput={setAiInput}
+                        messages={aiMessages}
+                        setMessages={setAiMessages}
+                        loading={aiLoading}
+                        setLoading={setAiLoading}
+                        fillError={aiFillError}
+                        setFillError={setAiFillError}
+                    />
+                )
             default: return <HomeScreen />
         }
     }

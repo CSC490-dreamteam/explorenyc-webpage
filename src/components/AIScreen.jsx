@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Groq from 'groq-sdk';
 import './AIScreen.css';
 import { createTripDraftFromAiPayload, writeTripDraft } from '../utils/tripDraftStorage';
@@ -49,12 +48,17 @@ function extractJsonBlock(content) {
     return null;
 }
 
-const AIScreen = ({ setCurrentScreen }) => {
-    const [input, setInput] = useState("");
-    const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [fillError, setFillError] = useState('');
-
+const AIScreen = ({
+    setCurrentScreen,
+    input,
+    setInput,
+    messages,
+    setMessages,
+    loading,
+    setLoading,
+    fillError,
+    setFillError,
+}) => {
     const systemPrompt = `You are a New York City travel assistant. Your goal is to find out the user's wishes for a trip to the city so you can fill out a plan form for them.
 
 You must collect enough information to produce this JSON shape. These are example values only. Replace every value with user-provided information and include other stops as needed.
@@ -63,16 +67,20 @@ You must collect enough information to produce this JSON shape. These are exampl
   "date": "2026-03-06",
   "entryTime": "09:00",
   "exitTime": "19:00",
-  "startLocation": "Times Square, New York",
-  "endLocation": "Central Park, New York",
+  "startLocation": "Times Square",
+  "startAddress": "Broadway and 7th Ave, New York, NY 10036",
+  "endLocation": "Central Park",
+  "endAddress": "New York, NY 10024",
   "stops": [
     {
       "location": "Katz's Delicatessen",
+      "address": "205 E Houston St, New York, NY 10002",
       "optional": false,
       "timePreference": "12:00"
     },
     {
       "location": "Brooklyn Bridge",
+      "address": "Brooklyn Bridge, New York, NY 10038",
       "optional": true,
       "timePreference": null
     }
@@ -89,8 +97,10 @@ Rules:
 - Keep the conversation natural and friendly while gathering the required fields.
 - If the user is vague, missing details, or asks for a broad idea, ask follow-up questions instead of guessing.
 - Do not reuse the example values unless the user explicitly chooses them.
-- Make sure you identify all relevant fields: trip name, date, entry time, exit time, start location, end location, all stops the user wants, whether each stop is optional, each stop's time preference if any, and transit types.
+- Make sure you identify all relevant fields: trip name, date, entry time, exit time, start location, start address, end location, end address, all stops the user wants, each stop address, whether each stop is optional, each stop's time preference if any, and transit types.
 - Transit types must be booleans inside "transitTypes" for walking, subway, and car.
+- Every stop in "stops" must include both "location" and "address".
+- "startLocation" and "endLocation" should be the place names only. "startAddress" and "endAddress" should be the full addresses.
 - Only when you have enough information, say that you have all the info you need and then append a valid JSON block at the end of the message.
 - The JSON block must be valid JSON, with double-quoted keys, no comments, and no trailing explanation after the block.
 - If the user keeps talking after that, continue the conversation and send an updated valid JSON block each time the information changes.`;
