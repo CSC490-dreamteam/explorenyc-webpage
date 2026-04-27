@@ -1,56 +1,28 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
-import { createEmptyStop, formatStopLocationLabel, getKnownStopAddress } from '../../utils/stopLocations';
-import { readTripDraft, writeTripDraft } from '../../utils/tripDraftStorage';
-
-
-function NewTripScreen() {
 import Auth from '../../auth';
 import { calculateAllUserStats } from './utils/statCrunching';
 
-
-import walkingIcon from '../../assets/walking.svg';
-import subwayIcon from '../../assets/subway.svg';
-import carIcon from '../../assets/car.svg';
-
-
 function NewTripScreen() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [errorState, setErrorState] = useState(null)
     const [routeErrorVisible, setRouteErrorVisible] = useState(false);
 
     //general trip vars
-    const [startLocation, setStartLocation] = useState('')
-    const [endLocation, setEndLocation] = useState('')
+
     const [transitPreferences, setTransitPreferences] = useState({
         walking: true,
         subway: true,
         car: true
     });
 
-    const transitIcons = {
-        walking: walkingIcon,
-        subway: subwayIcon,
-        car: carIcon
-    };
-
     const [tripName, setTripName] = useState('')
-    const [tripDate, setTripDate] = useState('')
+    const [date, setDate] = useState('')
     const [entryTime, setEntryTime] = useState('')
     const [exitTime, setExitTime] = useState('')
-    const [bufferMinutes, setBufferMinutes] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
     const [startLocation, setStartLocation] = useState('')
     const [errorState, setErrorState] = useState(null)
     const [endLocation, setEndLocation] = useState('')
-    const [transitTypes, setTransitTypes] = useState({
-        subway: false,
-        car: false,
-        walking: false,
-        uber: false,
-    })
-    const [hasLoadedDraft, setHasLoadedDraft] = useState(false)
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
@@ -135,13 +107,6 @@ function NewTripScreen() {
         };
         console.log(tripData);
 
-        
-        const tempLocations = [
-            startLocation.trim(),
-            ...stops.map(stop => stop.location.trim()).filter(loc => loc),
-            ...(endLocation.trim() ? [endLocation.trim()] : [])
-        ];
-
         setErrorState(null)
         setIsLoading(true)
         try {
@@ -208,9 +173,6 @@ function NewTripScreen() {
             }
         } catch (error) {
             console.error('Error submitting trip data:', error);
-            if (popup && !popup.closed) {
-                popup.close();
-            }
         } finally {
             setIsLoading(false)
         }
@@ -274,18 +236,18 @@ function NewTripScreen() {
         }
         
     }
-
+    // React state variable known as stops that is an array full of JSON
     const [stops, setStops] = useState(() => {
         const saved = localStorage.getItem('active_trip_draft');
         //If we have a saved draft, use it. If not, start with one empty stop. 
         return saved 
             ? JSON.parse(saved)
-            : [{ location: "", mandatory: false, duration: 30, timePreference: "" }];
+            : [{ location: '', optional: false, timePreference: '', duration: 30 }];
     });
 
-
-    // React state variable known as stops that is an array full of JSON
-    const [stops, setStops] = useState([createEmptyStop()]);
+    useEffect(() => {
+        localStorage.setItem('active_trip_draft', JSON.stringify(stops));
+    }, [stops]);
 
     //function that edits a stop by index, used when the user changes it in the ui
     //under the hood it takes the existing stops array, , edits one index entry as needed, then reassigns the state variable to the new array
@@ -318,7 +280,7 @@ function NewTripScreen() {
             return
         }
 
-        setStops([...stops, createEmptyStop()]);
+        setStops([...stops, { location: '', optional: false, timePreference: '', duration: 60 }]);
         if (errorState?.reason === 'minStops') {
             setErrorState(null)
         }
@@ -327,52 +289,6 @@ function NewTripScreen() {
     const removeStop = (indexToRemove) => {
         setStops(stops.filter((_, index) => index !== indexToRemove));
     };
-
-    useEffect(() => {
-        const draft = readTripDraft()
-
-        setTripName(draft.tripName)
-        setTripDate(draft.date)
-        setEntryTime(draft.entryTime)
-        setExitTime(draft.exitTime)
-        setStartLocation(draft.startLocation)
-        setEndLocation(draft.endLocation)
-        setStops(draft.stops.length > 0 ? draft.stops : [createEmptyStop()])
-        setTransitTypes(draft.transitTypes)
-        setBufferMinutes(draft.bufferMinutes)
-        setHasLoadedDraft(true)
-    }, [])
-
-    useEffect(() => {
-        if (!hasLoadedDraft) {
-            return
-        }
-
-        writeTripDraft({
-            tripName,
-            date: tripDate,
-            entryTime,
-            exitTime,
-            startLocation,
-            startAddress: getKnownStopAddress(startLocation),
-            endLocation,
-            endAddress: getKnownStopAddress(endLocation),
-            stops,
-            transitTypes,
-            bufferMinutes,
-        })
-    }, [
-        bufferMinutes,
-        endLocation,
-        entryTime,
-        exitTime,
-        hasLoadedDraft,
-        startLocation,
-        stops,
-        transitTypes,
-        tripDate,
-        tripName,
-    ])
 
     useEffect(() => {
         if (!errorState) {
@@ -484,7 +400,7 @@ function NewTripScreen() {
                 </div>
             </section>
 
-            <section className="newTripCard">
+            <section className="newTripCard" style={{minHeight:'227'}}>
                 <h3>Time Window</h3>
 
                 <div className="fieldGroup">
@@ -515,27 +431,77 @@ function NewTripScreen() {
                 </div>
 
                 <div className="fieldRow twoCol">
-                    <div className="fieldGroup">
-                        <label htmlFor="entry-time">Entry Time</label>
-                        <input
-                            id="entry-time"
-                            type="time"
-                            className="smallField timeField"
-                            value={entryTime}
-                            onChange={(e) => setEntryTime(e.target.value)}
-                        />
-                    </div>
+                    {isEntryTimeError ? (
+                        <ErrorWrapper
+                            message={errorState.message}
+                            innerRef={entryTimeErrorRef}
+                            className="errorWrapper--field errorWrapper--timeField"
+                        >
+                            <div className="fieldGroup">
+                                <label htmlFor="entry-time">Entry Time</label>
+                                <input
+                                    id="entry-time"
+                                    type="time"
+                                    className="smallField timeField"
+                                    value={entryTime}
+                                    onChange={(e) => {
+                                        const nextValue = e.target.value
+                                        setEntryTime(nextValue)
+                                        if (nextValue.trim()) {
+                                            setErrorState(null)
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </ErrorWrapper>
+                    ) : (
+                        <div className="fieldGroup">
+                            <label htmlFor="entry-time">Entry Time</label>
+                            <input
+                                id="entry-time"
+                                type="time"
+                                className="smallField timeField"
+                                value={entryTime}
+                                onChange={(e) => setEntryTime(e.target.value)}
+                            />
+                        </div>
+                    )}
 
-                    <div className="fieldGroup">
-                        <label htmlFor="exit-time">Exit Time</label>
-                        <input
-                            id="exit-time"
-                            type="time"
-                            className="smallField timeField"
-                            value={exitTime}
-                            onChange={(e) => setExitTime(e.target.value)}
-                        />
-                    </div>
+                    {isExitTimeError ? (
+                        <ErrorWrapper
+                            message={errorState.message}
+                            innerRef={exitTimeErrorRef}
+                            className="errorWrapper--field errorWrapper--timeField"
+                        >
+                            <div className="fieldGroup">
+                                <label htmlFor="exit-time">Exit Time</label>
+                                <input
+                                    id="exit-time"
+                                    type="time"
+                                    className="smallField timeField"
+                                    value={exitTime}
+                                    onChange={(e) => {
+                                        const nextValue = e.target.value
+                                        setExitTime(nextValue)
+                                        if (nextValue.trim()) {
+                                            setErrorState(null)
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </ErrorWrapper>
+                    ) : (
+                        <div className="fieldGroup">
+                            <label htmlFor="exit-time">Exit Time</label>
+                            <input
+                                id="exit-time"
+                                type="time"
+                                className="smallField timeField"
+                                value={exitTime}
+                                onChange={(e) => setExitTime(e.target.value)}
+                            />
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -672,25 +638,7 @@ function NewTripScreen() {
                 )}
             </section>
 
-           
-
-                <div className="fieldGroup">
-                    <label htmlFor="stop-buffer">Buffer Time Between Stops</label>
-                    <input
-                        id="stop-buffer"
-                        type="range"
-                        min="0"
-                        max="120"
-                        step="1"
-                        value={bufferMinutes}
-                        onChange={(e) => setBufferMinutes(Number(e.target.value))}
-                        className='slider'
-                    />
-                    <label className="sliderLabel">{formatBufferLabel(bufferMinutes)}</label>
-                </div>
-            </section>
-
-            <button type="button" className="generateButton" onClick={handleGenerateTripSubmit}>
+            <button type="button" className="generateButton" onClick={handleTripSubmit}>
                 Generate My Trip
             </button>
         </div>
@@ -763,38 +711,38 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                     {isModalOpen && (
                         <SearchModal 
                             onClose={() => setIsModalOpen(false)} 
-                            onSelect={(place) => {
-                                const location = typeof place?.name === 'string' ? place.name : ''
-                                const address = typeof place?.address === 'string' ? place.address : ''
-
-                                onChange('location', formatStopLocationLabel(location, address))
-                                onChange('address', address)
-                                setIsModalOpen(false)
+                            onSelect={(val) => {
+                                onChange('location', `${val.name}, ${val.address}`);
+                                setIsModalOpen(false);
                             }} 
                         />
                     )}
 
-                    <div className="checkboxGrid stopOptions">
+                    <div className="stopOptions">
                         <label className="checkboxItem">
                             <input
                                 type="checkbox"
-                                checked={data.mandatory}
-                                onChange={(e) => onChange('mandatory', e.target.checked)}
+                                checked={data.optional}
+                                onChange={(e) => onChange('optional', e.target.checked)}
                             />
-                            Mandatory
+                            Optional
                         </label>
-                        <label className="checkboxItem">
+                        <div className="stopOptionsTimeGroup">
+                            <label className="stopOptionsTimeLabel" htmlFor={`stop-time-${index}`}>
+                                Time Preference
+                            </label>
                             <input
-                                type="checkbox"
-                                checked={data.flexible}
-                                onChange={(e) => onChange('flexible', e.target.checked)}
+                                id={`stop-time-${index}`}
+                                type="time"
+                                className="smallField timeField stopOptionsTimeField"
+                                value={data.timePreference}
+                                onChange={(e) => onChange('timePreference', e.target.value)}
                             />
-                            Flexible
-                        </label>
+                        </div>
                     </div>
 
                     <div className="fieldGroup">
-                        <label htmlFor={`stop-time-${index}`}>Time Preference</label>
+                        <label htmlFor={`stop-duration-${index}`}>Duration of Stay</label>
                         <input
                             id={`stop-duration-${index}`}
                             type="range"
@@ -805,6 +753,7 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                             onChange={(e) => onChange('duration', Number(e.target.value))}
                             className='slider'
                         />
+                        <label className="sliderLabel">{formatBufferLabel(data.duration)}</label>
                     </div>
                 </>
             )}
