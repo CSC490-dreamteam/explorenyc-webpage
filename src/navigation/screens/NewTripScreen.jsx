@@ -2,6 +2,8 @@ import React, {useEffect, useRef, useState} from 'react';
 import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
 import Auth from '../../auth';
+import { calculateAllUserStats } from './utils/statCrunching';
+
 
 import walkingIcon from '../../assets/walking.svg';
 import subwayIcon from '../../assets/subway.svg';
@@ -187,10 +189,66 @@ function NewTripScreen() {
             setIsLoading(false)
         }
 
-    };
-    
+        updateUserStats();
 
-    // React state variable known as stops that is an array full of JSON
+    };
+
+    async function updateUserStats() {
+        console.log("Updating user stats...");
+        const id = Auth?.currentUserId ?? 1;
+
+        try {
+
+            //grab user's trips
+            const res = await fetch(
+                `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(id)}`
+            );
+
+            if (!res.ok) throw new Error("Failed to fetch trip data");
+
+       
+            const json = await res.json();
+            const trips = Array.isArray(json?.trips) ? json.trips : [];
+
+            //calc the stats
+            const UserStats = calculateAllUserStats(trips);
+
+            console.log("Calculated user stats:", UserStats);
+
+            //make payload 
+            const payload = {
+                user_id: id,
+                total_walking_minutes: UserStats.totalWalkingMinutes,
+                trip_count: UserStats.tripCount,
+                unique_stops_count: UserStats.uniqueStopsCount
+            };
+
+            //contact endpoint
+            const upsertResponse = await fetch('https://explorenyc-recommendation-service-production.up.railway.app/upsert-user-stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!upsertResponse.ok) {
+                const errorDetail = await upsertResponse.json();
+                console.error('Upsert User Stats failed:', upsertResponse.status, errorDetail);
+                return null;
+            }
+
+            const result = await upsertResponse.json();
+            console.log('User stats successfully upserted:', result);
+            return result;
+
+        } catch (err) {
+            console.error("Error updating user stats:", err);
+            return null;
+        }
+        
+    }
+
     const [stops, setStops] = useState(() => {
         const saved = localStorage.getItem('active_trip_draft');
         //If we have a saved draft, use it. If not, start with one empty stop. 
@@ -284,20 +342,20 @@ function NewTripScreen() {
 
     //check if there are any stops in local storage
     useEffect(() => {
-        // 1. Check for saved stops in storage
+        //check for saved stops in storage
         const savedStops = localStorage.getItem('pendingStops');
 
         if (savedStops) {
             const parsedStops = JSON.parse(savedStops);
 
             setStops(prevStops => {
-                // Filter out the initial empty stop if it exists
+                //filter out the initial empty stop if it exists
                 const activeStops = prevStops.filter(s => s.location !== "");
                 return [...activeStops, ...parsedStops];
             });
 
-            // 2. CRITICAL: Clear the storage so they don't get added 
-            // every time the user visits this screen
+            //clear the storage so they don't get added 
+            //every time the user visits this screen
             localStorage.removeItem('pendingStops');
         }
     }, []); // Runs once when the screen loads

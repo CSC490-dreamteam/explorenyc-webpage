@@ -35,11 +35,9 @@
 
 .statistic {
     float: left;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
-
-
 
 .recommendation-vertical-slider {
     max-height: 375px; 
