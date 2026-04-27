@@ -172,6 +172,48 @@
     z-index: 2;
 }
 
+.trip-stop-timedata {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+    opacity: 0.8; 
+    margin-top: 4px;
+}
+
+.trip-detail-stop-button {
+    position: relative;
+    padding-right: 70px;
+    text-align: left;
+    display: block;
+}
+
+.stop-main-info p {
+    margin: 4px 0 0 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.stop-arrival-time {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.75rem;
+    opacity: 0.6;
+    font-weight: 400;
+}
+
+.stop-duration-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background-color: rgba(128, 128, 128, 0.15);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
 .transit-block {
     position: relative;
     z-index: 1;
@@ -185,6 +227,7 @@
     border-radius: 10px;
     background: var(--surface-card-alt);
     border: 1px solid var(--border-default);
+    cursor: pointer;
 }
 
 .transit-icon {
@@ -227,5 +270,32 @@
     flex-direction: column;
     align-items: center;
     gap: 1px;
-    margin: 16px 0;
+    margin: 16px auto;
+    width: fit-content;
+}
+
+/* Google Maps open button */
+.gmaps-open-btn {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #34a853;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    z-index: 2000;
+}
+
+.gmaps-open-btn-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    /* white outline via layered drop-shadow for better visibility */
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 2px #fff);
 }

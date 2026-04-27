@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import './HistoryScreen.css';
 import '../../App.css'
 import TripDetail from "./components/TripDetail.jsx";
+import Auth from '../../auth';
+import { calculateAllUserStats } from "./utils/statCrunching.js";
 
 async function fetchTripStopsForUser(userId) {
+    const id = userId ?? Auth.currentUserId ?? 1;
     const res = await fetch(
-        `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(userId)}`
+        `https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=${encodeURIComponent(id)}`
     );
     return res.json();
 }
@@ -17,12 +20,43 @@ export default function History({ setCurrentScreen }) {
 
     async function refreshTrips() {
         try {
-            const json = await fetchTripStopsForUser(1);
+            const json = await fetchTripStopsForUser();
             setUserTrips(json);
             console.log("trip-stops response:", json);
+            const trips = Array.isArray(json?.trips) ? json.trips : [];
+
+            //calc the stats
+            const UserStats = calculateAllUserStats(trips);
+            const id = userId ?? Auth.currentUserId ?? 1;
+
+
+            //make payload 
+            const payload = {
+                user_id: id,
+                total_walking_minutes: UserStats.totalWalkingMinutes,
+                trip_count: UserStats.tripCount,
+                unique_stops_count: UserStats.uniqueStopsCount
+            };
+
+            //contact endpoint
+            const upsertResponse = await fetch('https://explorenyc-recommendation-service-production.up.railway.app/upsert-user-stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!upsertResponse.ok) {
+                const errorDetail = await upsertResponse.json();
+                console.error('Upsert User Stats failed:', upsertResponse.status, errorDetail);
+                return null;
+            }
+
         } catch (err) {
             console.error("Error fetching /trip-stops:", err);
         }
+
     }
 
     function formatTripDate(dateString) {
@@ -50,7 +84,7 @@ export default function History({ setCurrentScreen }) {
 
         async function loadTrips() {
             try {
-                const json = await fetchTripStopsForUser(1);
+                const json = await fetchTripStopsForUser();
                 if (!isActive) {
                     return;
                 }

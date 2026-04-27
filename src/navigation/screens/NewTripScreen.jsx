@@ -6,6 +6,35 @@ import { readTripDraft, writeTripDraft } from '../../utils/tripDraftStorage';
 
 
 function NewTripScreen() {
+import Auth from '../../auth';
+import { calculateAllUserStats } from './utils/statCrunching';
+
+
+import walkingIcon from '../../assets/walking.svg';
+import subwayIcon from '../../assets/subway.svg';
+import carIcon from '../../assets/car.svg';
+
+
+function NewTripScreen() {
+    const [isLoading, setIsLoading] = useState(false)
+    const [errorState, setErrorState] = useState(null)
+    const [routeErrorVisible, setRouteErrorVisible] = useState(false);
+
+    //general trip vars
+    const [startLocation, setStartLocation] = useState('')
+    const [endLocation, setEndLocation] = useState('')
+    const [transitPreferences, setTransitPreferences] = useState({
+        walking: true,
+        subway: true,
+        car: true
+    });
+
+    const transitIcons = {
+        walking: walkingIcon,
+        subway: subwayIcon,
+        car: carIcon
+    };
+
     const [tripName, setTripName] = useState('')
     const [tripDate, setTripDate] = useState('')
     const [entryTime, setEntryTime] = useState('')
@@ -25,10 +54,14 @@ function NewTripScreen() {
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
+    const dateErrorRef = useRef(null)
+    const entryTimeErrorRef = useRef(null)
+    const exitTimeErrorRef = useRef(null)
+    const transitTypesErrorRef = useRef(null)
     const baseMaxStops = 8
 
-    //PLACEHOLDER
-    const handleGenerateTripSubmit = async () => {
+    const handleTripSubmit = async () => {
+        //errors
         if (stops.length < 2) {
             setErrorState({
                 target: 'addStop',
@@ -47,18 +80,72 @@ function NewTripScreen() {
             return
         }
 
-        // iOS Safari blocks window.open unless it's called synchronously in a user gesture.
-        const popup = window.open('about:blank', '_blank');
-        //later this will have everything we throw to the backend for submission
+        if (!date.trim()) {
+            setErrorState({
+                target: 'date',
+                message: 'You must specify a date.',
+                reason: 'missingDate'
+            })
+            return
+        }
+
+        if (!entryTime.trim()) {
+            setErrorState({
+                target: 'entryTime',
+                message: 'You must specify an entry time.',
+                reason: 'missingEntryTime'
+            })
+            return
+        }
+
+        if (!exitTime.trim()) {
+            setErrorState({
+                target: 'exitTime',
+                message: 'You must specify an exit time.',
+                reason: 'missingExitTime'
+            })
+            return
+        }
+
+        const hasSelectedTransit = Object.values(transitPreferences).includes(true);
+        if (!hasSelectedTransit) {
+            setErrorState({
+                target: 'transitTypes',
+                message: 'Please select at least one transit type.',
+                reason: 'noTransitSelected'
+            });
+            return;
+        }
+
+        //actual endpoint data
         const tripData = {
-            locations: stops.map(stop => stop.location)
+            tripName: tripName.trim() ? tripName.trim() : 'My NYC Trip',
+            date: date,
+            entryTime: entryTime,
+            exitTime: exitTime,
+            startLocation: startLocation.trim(),
+            endLocation: endLocation.trim() ? endLocation.trim() : null,
+            transitTypes: transitPreferences,
+            stops: stops.map(stop => ({
+                location: stop.location,
+                mandatory: !stop.optional, //if a stop is not optional that its mandatory
+                timePreference: stop.timePreference ? stop.timePreference : null,
+                duration: stop.duration
+            }))
         };
         console.log(tripData);
 
+        
+        const tempLocations = [
+            startLocation.trim(),
+            ...stops.map(stop => stop.location.trim()).filter(loc => loc),
+            ...(endLocation.trim() ? [endLocation.trim()] : [])
+        ];
+
         setErrorState(null)
         setIsLoading(true)
-        try { //fetch request from backend
-            const response = await fetch('https://explorenyc-backend-testing.up.railway.app/GenerateRoute', {
+        try {
+            const response = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateItinerary', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -67,22 +154,58 @@ function NewTripScreen() {
                 body: JSON.stringify(tripData)
             });
 
+            //if an impossible rotue was asked to be made
+            if (response.status === 422) {
+                setRouteErrorVisible(true);
+                setIsLoading(false);
+                return;
+            }
+
+
             if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const responseData = await response.json(); //get generated trip
-
-            if (popup && !popup.closed) {
-                popup.location = responseData.url;
-                if (popup.opener) {
-                    popup.opener = null;
-                }
+                console.error('Endpoint failed:', response.status);
             } else {
-                window.location.assign(responseData.url);
+                const responseData = await response.json();
+                console.log('Endpoint response:', responseData);
+
+                // Remove tripName and date from responseData and rename Stops to stops
+                const { tripName: _unusedName, date: _unusedDate, Stops, ...rest } = responseData;
+                const stopsData = {
+                    stops: Stops,
+                    ...rest
+                };
+
+                // Store Itinerary
+                const itineraryData = {
+                    user_id: String(Auth.currentUserId),
+                    date: date.trim(),
+                    entryTime: entryTime.trim(),
+                    exitTime: exitTime.trim(),
+                    trip_name: tripName.trim() ? tripName.trim() : 'My NYC Trip',
+                    stops: stopsData
+                };
+
+                console.log('Sending to StoreItinerary:', itineraryData);
+
+                try {
+                    const storeResponse = await fetch('https://explorenyc-recommendation-service-production.up.railway.app/StoreItinerary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(itineraryData)
+                    });
+
+                    if (!storeResponse.ok) {
+                        console.error('StoreItinerary failed:', storeResponse.status);
+                    } else {
+                        const storeData = await storeResponse.json();
+                        console.log('StoreItinerary success:', storeData);
+                    }
+                } catch (storeError) {
+                    console.error('Error storing itinerary:', storeError);
+                }
             }
-
-
         } catch (error) {
             console.error('Error submitting trip data:', error);
             if (popup && !popup.closed) {
@@ -91,9 +214,74 @@ function NewTripScreen() {
         } finally {
             setIsLoading(false)
         }
-        
+
+        updateUserStats();
+
     };
 
+    async function updateUserStats() {
+        console.log("Updating user stats...");
+        const id = Auth?.currentUserId ?? 1;
+
+        try {
+
+            //grab user's trips
+            const res = await fetch(
+                `https://explorenyc-recommendation-testing.up.railway.app/trip-stops?user_id=${encodeURIComponent(id)}`
+            );
+
+            if (!res.ok) throw new Error("Failed to fetch trip data");
+
+       
+            const json = await res.json();
+            const trips = Array.isArray(json?.trips) ? json.trips : [];
+
+            //calc the stats
+            const UserStats = calculateAllUserStats(trips);
+
+            console.log("Calculated user stats:", UserStats);
+
+            //make payload 
+            const payload = {
+                user_id: id,
+                total_walking_minutes: UserStats.totalWalkingMinutes,
+                trip_count: UserStats.tripCount,
+                unique_stops_count: UserStats.uniqueStopsCount
+            };
+
+            //contact endpoint
+            const upsertResponse = await fetch('https://explorenyc-recommendation-service-production.up.railway.app/upsert-user-stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!upsertResponse.ok) {
+                const errorDetail = await upsertResponse.json();
+                console.error('Upsert User Stats failed:', upsertResponse.status, errorDetail);
+                return null;
+            }
+
+            const result = await upsertResponse.json();
+            console.log('User stats successfully upserted:', result);
+            return result;
+
+        } catch (err) {
+            console.error("Error updating user stats:", err);
+            return null;
+        }
+        
+    }
+
+    const [stops, setStops] = useState(() => {
+        const saved = localStorage.getItem('active_trip_draft');
+        //If we have a saved draft, use it. If not, start with one empty stop. 
+        return saved 
+            ? JSON.parse(saved)
+            : [{ location: "", mandatory: false, duration: 30, timePreference: "" }];
+    });
 
 
     // React state variable known as stops that is an array full of JSON
@@ -105,6 +293,14 @@ function NewTripScreen() {
         const newStops = [...stops];
         newStops[index][field] = value;
         setStops(newStops);
+    };
+
+    //handles changes to transit checkboxes
+    const handleTransitChange = (type) => {
+        setTransitPreferences(prev => ({
+            ...prev,
+            [type]: !prev[type]
+        }));
     };
 
     //adds stop to the stops array
@@ -185,7 +381,11 @@ function NewTripScreen() {
 
         const refMap = {
             addStop: addStopErrorRef,
-            startPoint: startPointErrorRef
+            startPoint: startPointErrorRef,
+            date: dateErrorRef,
+            entryTime: entryTimeErrorRef,
+            exitTime: exitTimeErrorRef,
+            transitTypes: transitTypesErrorRef
         }
 
         const targetRef = refMap[errorState.target]
@@ -209,9 +409,32 @@ function NewTripScreen() {
 
     const isAddStopError = errorState?.target === 'addStop'
     const isStartPointError = errorState?.target === 'startPoint'
+    const isEntryTimeError = errorState?.target === 'entryTime'
+    const isExitTimeError = errorState?.target === 'exitTime'
+
+    //check if there are any stops in local storage
+    useEffect(() => {
+        //check for saved stops in storage
+        const savedStops = localStorage.getItem('pendingStops');
+
+        if (savedStops) {
+            const parsedStops = JSON.parse(savedStops);
+
+            setStops(prevStops => {
+                //filter out the initial empty stop if it exists
+                const activeStops = prevStops.filter(s => s.location !== "");
+                return [...activeStops, ...parsedStops];
+            });
+
+            //clear the storage so they don't get added 
+            //every time the user visits this screen
+            localStorage.removeItem('pendingStops');
+        }
+    }, []); // Runs once when the screen loads
 
     return (
         <div className='newTripPage'>
+
             {isLoading && (
                 <div className="loadingOverlay" role="status" aria-live="polite">
                     <div className="loadingCard">
@@ -220,6 +443,27 @@ function NewTripScreen() {
                     </div>
                 </div>
             )}
+
+            {/* Route Error Popup */}
+            {routeErrorVisible && (
+                <div className="loadingOverlay" role="alert">
+                    <div className="loadingCard">
+                        <div style={{ fontSize: '2rem' }}>⚠️</div>
+                        <div className="loadingText">Unable to create a route with the given information.</div>
+                        <div className="loadingText">Please change your trip details and try again.</div>
+                        <button 
+                            type="button" 
+                            className="secondaryButton" 
+                            onClick={() => setRouteErrorVisible(false)}
+                            style={{ marginTop: '10px', width: '100%' }}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
+
+
             <div className="newTripHeader">
                 <h2>Plan New Trip</h2>
                 <p>Customize your NYC adventure</p>
@@ -245,15 +489,29 @@ function NewTripScreen() {
 
                 <div className="fieldGroup">
                     <label htmlFor="trip-date">Date</label>
-                    <div className="inputWithIcon">
-                        <input
-                            id="trip-date"
-                            type="date"
-                            className="smallField"
-                            value={tripDate}
-                            onChange={(e) => setTripDate(e.target.value)}
-                        />
-                    </div>
+                    {errorState?.target === 'date' ? (
+                        <ErrorWrapper
+                            message={errorState.message}
+                            innerRef={dateErrorRef}
+                            className="errorWrapper--field"
+                        >
+                            <div className="inputWithIcon">
+                                <input id="trip-date" type="date" className="smallField" 
+                                value={date} onChange={(e) => {
+                                    const nextValue = e.target.value
+                                    setDate(nextValue)
+                                    if (nextValue.trim()) {
+                                        setErrorState(null)
+                                    }
+                                }}/>
+                            </div>
+                        </ErrorWrapper>
+                    ) : (
+                        <div className="inputWithIcon">
+                            <input id="trip-date" type="date" className="smallField" 
+                            value={date} onChange={(e) => setDate(e.target.value)}/>
+                        </div>
+                    )}
                 </div>
 
                 <div className="fieldRow twoCol">
@@ -371,51 +629,50 @@ function NewTripScreen() {
                 </div>
             </section>
 
+            {/* Transit Types Selection Section */}
             <section className="newTripCard">
-                <h3>Transportation</h3>
-                <div className="checkboxGrid">
-                    <label className="checkboxItem">
-                        <input
-                            type="checkbox"
-                            checked={transitTypes.subway}
-                            onChange={(e) => setTransitTypes((current) => ({...current, subway: e.target.checked}))}
-                        />
-                        Subway
-                    </label>
-                    <label className="checkboxItem">
-                        <input
-                            type="checkbox"
-                            checked={transitTypes.car}
-                            onChange={(e) => setTransitTypes((current) => ({...current, car: e.target.checked}))}
-                        />
-                        Car
-                    </label>
-                    <label className="checkboxItem">
-                        <input
-                            type="checkbox"
-                            checked={transitTypes.walking}
-                            onChange={(e) => setTransitTypes((current) => ({...current, walking: e.target.checked}))}
-                        />
-                        Walking
-                    </label>
-                    <label className="checkboxItem">
-                        <input
-                            type="checkbox"
-                            checked={transitTypes.uber}
-                            onChange={(e) => setTransitTypes((current) => ({...current, uber: e.target.checked}))}
-                        />
-                        Uber
-                    </label>
-                </div>
+                <h3 className="transitTitle">Transit Types</h3>
+                {errorState?.target === 'transitTypes' ? (
+                    <ErrorWrapper
+                        message={errorState.message}
+                        innerRef={transitTypesErrorRef}
+                        className="errorWrapper--field"
+                    >
+                        <div className="transitGroup">
+                            {Object.keys(transitPreferences).map((type) => (
+                                <label key={type} className="transitCard">
+                                    <div className={`transitIcon transitIcon${type.charAt(0).toUpperCase() + type.slice(1)}`} />
+                                    <span className="transitLabel">{type}</span>
+                                    <input
+                                        type="checkbox"
+                                        className="transitCheckbox"
+                                        checked={transitPreferences[type]}
+                                        onChange={() => handleTransitChange(type)}
+                                    />
+                                </label>
+                            ))}
+                        </div>
+                    </ErrorWrapper>
+                ) : (
+                    <div className="transitGroup">
+                        {Object.keys(transitPreferences).map((type) => (
+                            <label key={type} className="transitCard">
+                                <div className={`transitIcon transitIcon${type.charAt(0).toUpperCase() + type.slice(1)}`} />
+
+                                <span className="transitLabel">{type}</span>
+                                <input
+                                    type="checkbox"
+                                    className="transitCheckbox"
+                                    checked={transitPreferences[type]}
+                                    onChange={() => handleTransitChange(type)}
+                                />
+                            </label>
+                        ))}
+                    </div>
+                )}
             </section>
-            <section className="newTripCard">
-                <h3 className="subsectionTitle">Preferences</h3>
-                <div className="checkboxList">
-                    <label className="checkboxItem"><input type="checkbox" /> Avoid rush hour (5-7 PM)</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Instagram-worthy spots</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Low-key, hidden gems</label>
-                    <label className="checkboxItem"><input type="checkbox" /> Off the beaten path</label>
-                </div>
+
+           
 
                 <div className="fieldGroup">
                     <label htmlFor="stop-buffer">Buffer Time Between Stops</label>
@@ -539,11 +796,14 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                     <div className="fieldGroup">
                         <label htmlFor={`stop-time-${index}`}>Time Preference</label>
                         <input
-                            id={`stop-time-${index}`}
-                            type="time"
-                            className="smallField timeField"
-                            value={data.timePreference}
-                            onChange={(e) => onChange('timePreference', e.target.value)}
+                            id={`stop-duration-${index}`}
+                            type="range"
+                            min="5"
+                            max="240"
+                            step="5"
+                            value={data.duration}
+                            onChange={(e) => onChange('duration', Number(e.target.value))}
+                            className='slider'
                         />
                     </div>
                 </>
@@ -563,17 +823,21 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
     );
 }
 
-export default NewTripScreen;
-    const formatBufferLabel = (minutes) => {
-        if (minutes >= 120) {
-            return '2 hours'
+function formatBufferLabel(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+
+    const hourText = h === 1 ? 'hour' : 'hours';
+    const minuteText = m === 1 ? 'minute' : 'minutes';
+
+    if (h > 0) {
+        if (m > 0) {
+            return `${h} ${hourText} ${m} ${minuteText}`;
         }
-        if (minutes >= 60) {
-            const remainder = minutes - 60
-            if (remainder === 0) {
-                return '1 hour'
-            }
-            return `1 hour ${remainder} ${remainder === 1 ? 'minute' : 'minutes'}`
-        }
-        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`
+        return `${h} ${hourText}`;
     }
+
+    return `${m} ${minuteText}`;
+}
+
+export default NewTripScreen;

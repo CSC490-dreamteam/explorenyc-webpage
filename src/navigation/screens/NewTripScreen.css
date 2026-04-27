@@ -397,6 +397,7 @@
 }
 
 .loadingText {
+    font-family: inherit;
     font-weight: 600;
     letter-spacing: 0.02em;
 }
@@ -410,6 +411,33 @@
     .cardTitleRow {
         flex-direction: column;
         align-items: stretch;
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+
+    .cardTitleRow h3 {
+        margin-bottom: 0;
+    }
+
+    .errorWrapper--inline {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 0;
+        border: 0;
+    }
+
+    .errorWrapper--inline .errorWrapperLabel {
+        position: static;
+        transform: none;
+        width: auto;
+        padding: 0;
+        margin: 4px 0;
+        background: transparent;
+        text-align: left;
+        line-height: 1.25;
     }
 
     .checkboxGrid {
@@ -454,4 +482,72 @@
     height: 24px;
     -webkit-mask-image: url(../../assets/map_search.svg);
     mask-image: url(../../assets/map_search.svg);
+}
+
+
+.transitGroup {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    gap: 10px;
+    margin-top: 8px;
+}
+
+
+.transitCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 5px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    background: var(--surface-card-amount, var(--surface-card-alt)); 
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+}
+
+.transitCard:active {
+    transform: scale(0.95);
+    background-color: var(--surface-input);
+}
+
+
+.transitIcon {
+    width: 32px;
+    height: 32px;
+    background-color: currentColor; 
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+}
+
+
+.transitLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    margin-top: 4px;
+    color: inherit
+}
+
+
+.transitCheckbox {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--accent-strong);
+}
+
+/* stacks icons on tiny phone?? */
+@media (max-width: 400px) {
+    .transitGroup {
+        grid-template-columns: 1fr;
+    }
 }

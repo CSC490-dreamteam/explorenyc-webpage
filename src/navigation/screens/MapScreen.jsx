@@ -2,7 +2,7 @@ import '../../App.css'
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import 'mapbox-gl/dist/mapbox-gl.css'
 import Map, { Layer, Marker, Source } from 'react-map-gl/mapbox';
-import mapStyleJson from '../../assets/dark_manhattan.json';
+import mapStyleJson from '../../assets/dark_nyc.json';
 import PlaceDetailsModal from "./components/PlaceDetailsModal.jsx";
 import { addPlaceToPendingTrip } from "./utils/tripDrafts.js";
 import { getStopMapMarker, normalizeStopToPlace } from "./utils/stopPlace.js";
@@ -129,9 +129,9 @@ function MapScreen({ embedded = false, stops = [] }) {
     const mapRef = useRef(null);
     const [selectedStop, setSelectedStop] = useState(null);
 
-    const MANHATTAN_BOUNDS = [
-        [-74.047285, 40.679548], // Southwest coordinates
-        [-73.907000, 40.882214]  // Northeast coordinates
+    const NYC_BOUNDS = [
+        [-74.255591, 40.496115],
+        [-73.700009, 40.915533]
     ];
 
     const stopPins = useMemo(
@@ -182,11 +182,11 @@ function MapScreen({ embedded = false, stops = [] }) {
                 ref={mapRef}
                 mapboxAccessToken={MAPBOX_TOKEN}
                 initialViewState={{
-                    longitude: -73.985,
-                    latitude: 40.748,
-                    zoom: 12.5,
+                    longitude: -73.9778,
+                    latitude: 40.7058,
+                    zoom: 9.6,
                 }}
-                maxBounds = {MANHATTAN_BOUNDS}
+                maxBounds = {NYC_BOUNDS}
                 minZoom = {1}
                 style={{width:'100%', height:'100%'}}
                 mapStyle={mapStyleJson}

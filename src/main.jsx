@@ -1,12 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import NavbarContainer from './navigation/NavbarContainer.jsx'
-
-
+import App from './App.jsx'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <NavbarContainer onLogout={() => {}} />
+    <GoogleOAuthProvider clientId="910335468410-lpr9ak5idckbd3r0arrglgg4jt1njgjn.apps.googleusercontent.com">
+      <App />
+    </GoogleOAuthProvider>
   </StrictMode>,
 )

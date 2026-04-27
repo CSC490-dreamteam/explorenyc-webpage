@@ -21,8 +21,8 @@ function SearchModal({ onClose, onSelect }) {
         try {
             //const response = await fetch(`https://explorenyc-recommendation-service.onrender.com/recommend?user_text=${encodeURIComponent(searchText)}&top_k=5`);
             //const response = await fetch(`http://127.0.0.1:8000/recommend-all?user_text=${encodeURIComponent(searchText)}&top_k=5`)
-            const response = await fetch(`https://explorenyc-recommendation-service.onrender.com/recommend-all-db?user_text=${encodeURIComponent(searchText)}&top_k=5
-`)
+            //const response = await fetch(`https://explorenyc-recommendation-service.onrender.com/recommend-all-db?user_text=${encodeURIComponent(searchText)}&top_k=5`)
+            const response = await fetch(`https://explorenyc-recommendation-service-production.up.railway.app/recommend-all-db?user_text=${encodeURIComponent(searchText)}&top_k=5`);
 
 
             const data = await response.json();
