@@ -13,6 +13,7 @@ import carIcon from '../../assets/car.svg';
 function NewTripScreen() {
     const [isLoading, setIsLoading] = useState(false)
     const [errorState, setErrorState] = useState(null)
+    const [routeErrorVisible, setRouteErrorVisible] = useState(false);
 
     //general trip vars
     const [startLocation, setStartLocation] = useState('')
@@ -135,6 +136,14 @@ function NewTripScreen() {
                 },
                 body: JSON.stringify(tripData)
             });
+
+            //if an impossible rotue was asked to be made
+            if (response.status === 422) {
+                setRouteErrorVisible(true);
+                setIsLoading(false);
+                return;
+            }
+
 
             if (!response.ok) {
                 console.error('Endpoint failed:', response.status);
@@ -362,6 +371,7 @@ function NewTripScreen() {
 
     return (
         <div className='newTripPage'>
+
             {isLoading && (
                 <div className="loadingOverlay" role="status" aria-live="polite">
                     <div className="loadingCard">
@@ -370,6 +380,27 @@ function NewTripScreen() {
                     </div>
                 </div>
             )}
+
+            {/* Route Error Popup */}
+            {routeErrorVisible && (
+                <div className="loadingOverlay" role="alert">
+                    <div className="loadingCard">
+                        <div style={{ fontSize: '2rem' }}>⚠️</div>
+                        <div className="loadingText">Unable to create a route with the given information.</div>
+                        <div className="loadingText">Please change your trip details and try again.</div>
+                        <button 
+                            type="button" 
+                            className="secondaryButton" 
+                            onClick={() => setRouteErrorVisible(false)}
+                            style={{ marginTop: '10px', width: '100%' }}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
+
+
             <div className="newTripHeader">
                 <h2>Plan New Trip</h2>
                 <p>Customize your NYC adventure</p>
