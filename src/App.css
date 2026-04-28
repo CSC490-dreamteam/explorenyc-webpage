@@ -44,19 +44,23 @@
 .google-login-row {
   display: flex;
   justify-content: center;
+  width: 100%;
   min-height: 76px;
   align-items: flex-start;
 }
 
 .google-login-frame {
-  width: 72%;
+  display: flex;
+  justify-content: center;
+  width: 100%;
   transform: scale(1.3);
   transform-origin: top center;
 }
 
 .google-login-frame > div,
 .google-login-frame iframe {
-  width: 100% !important;
+  margin: 0 auto;
+  max-width: 100%;
 }
 
 .auth-status,
