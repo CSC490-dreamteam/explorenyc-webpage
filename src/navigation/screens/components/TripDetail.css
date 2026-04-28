@@ -274,9 +274,8 @@
     width: fit-content;
 }
 
-/* Google Maps open button */
+
 .gmaps-open-btn {
-    position: absolute;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -289,7 +288,24 @@
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
-    z-index: 2000;
+    white-space: nowrap;
+}
+
+.applemaps-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #007AFF;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 0.95rem;
+    width: fit-content;
 }
 
 .gmaps-open-btn-icon {
@@ -298,4 +314,20 @@
     display: inline-block;
     /* white outline via layered drop-shadow for better visibility */
     filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 2px #fff);
+}
+
+.applemaps-open-btn-icon {
+    width: 17px;
+    height: 20px;
+    display: inline-block;
+    /* white outline via layered drop-shadow for better visibility */
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff); /*made it more subtle than google map's outline */
+
+}
+
+.trip-action-btn img.calendar-icon {
+    width: 22px;
+    height: 22px;
+    display: block;
+    filter: brightness(0) invert(1);
 }
