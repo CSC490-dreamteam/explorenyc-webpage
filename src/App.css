@@ -6,47 +6,6 @@
   text-align: center;
 }
 
-/* Auth modal styles (uses site CSS variables so dark mode works) */
-.auth-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  display: grid;
-  place-items: center;
-  z-index: 300;
-}
-
-.auth-modal {
-  width: min(420px, 92vw);
-  padding: 16px;
-  border-radius: 10px;
-  background: var(--surface-card);
-  box-shadow: var(--shadow-elevated);
-  color: inherit;
-}
-
-.auth-modal h3 {
-  margin-top: 0;
-}
-
-.auth-form .fieldGroup {
-  margin-bottom: 12px;
-}
-
-/* Ensure the modal inputs match the rest of the site */
-.auth-modal .bigField,
-.auth-modal .smallField {
-  width: 100%;
-  padding: 10px 12px;
-  box-sizing: border-box;
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  background: var(--surface-input);
-  color: inherit;
-  font-family: inherit;
-  font-size: 0.95rem;
-}
-
 .auth-buttons-vertical {
   display: flex;
   flex-direction: column;
@@ -55,13 +14,34 @@
   align-items: stretch;
 }
 
-.auth-action-row {
+.google-login-row {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  justify-content: center;
+  min-height: 76px;
+  align-items: flex-start;
+}
+
+.google-login-frame {
+  width: 72%;
+  transform: scale(1.3);
+  transform-origin: top center;
+}
+
+.google-login-frame > div,
+.google-login-frame iframe {
+  width: 100% !important;
+}
+
+.auth-status,
+.auth-error {
   margin-top: 8px;
 }
 
-.auth-action-row button {
-  color: var(--accent-icon);
+.auth-test-button {
+  width: min(360px, 94vw);
+  margin: 4px auto 0;
+}
+
+.auth-error {
+  color: #b42318;
 }
