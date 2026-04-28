@@ -5,8 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import PlaceDetailsModal from "./PlaceDetailsModal.jsx";
 import Toast from "./Toast.jsx";
 import { addPlaceToPendingTrip } from "../utils/tripDrafts.js";
-import { normalizeStopToPlace } from "../utils/stopPlace.js";
-import { getGoogleMapsNavLink } from "../utils/mapURLs.js"; //
+import { normalizeStopToPlace, formatArrivalTime, formatDuration, formatTimeRange } from "../utils/stopPlace.js";
+import { getGoogleMapsNavLink, getAppleMapsNavLink, getGoogleCalendarLink  } from "../utils/mapURLs.js"; 
+
+import calendarIcon from '../../../assets/calendar.svg';
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -17,37 +19,6 @@ const TRANSPORT_MODES = {
 function formatCost(cents) {
     if (!cents) return null
     return `$${(cents / 100).toFixed(2)}`
-}
-
-
-function formatArrivalTime(minutesFromMidnight) {
-    if (minutesFromMidnight === undefined) return null;
-    const hours = Math.floor(minutesFromMidnight / 60);
-    const mins = minutesFromMidnight % 60;
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const hours12 = hours % 12 || 12;
-    return `${hours12}:${mins.toString().padStart(2, '0')} ${period}`;
-}
-
-function formatTimeRange(arrivalMinutes, departureMinutes) {
-    if (arrivalMinutes === undefined) return null;
-    
-    const arrivalStr = formatArrivalTime(arrivalMinutes);
-    
-    //if departure is the same as arrival, just show arrival
-    if (departureMinutes === undefined || departureMinutes === arrivalMinutes) {
-        return arrivalStr;
-    }
-
-    return `${arrivalStr} - ${formatArrivalTime(departureMinutes)}`;
-}
-
-function formatDuration(minutes) {
-    if (minutes === 0 || !minutes) return null;
-    if (minutes < 60) return `${minutes} min`;
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return `${h}h ${m > 0 ? m + 'm' : ''}`.trim();
 }
 
 //decides which legs 'dominates' for the google maps nav URL
@@ -93,7 +64,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
     const detailBoxRef = useRef(null);
-    const [gmapsButton, setGmapsButton] = useState(null);
+    const [mapsButton, setMapsButton] = useState(null);
 
     function handleTransitClick(event, processedLegs, originStop, destinationStop) {
         if (!detailBoxRef.current) return;
@@ -104,26 +75,22 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         const targetRect = event.currentTarget.getBoundingClientRect();
         const x = (targetRect.left - containerRect.left) + (targetRect.width / 2) + detailBoxRef.current.scrollLeft;
         const y = (targetRect.top - containerRect.top) + detailBoxRef.current.scrollTop;
-        setGmapsButton({ x, y, leg, originStop, destinationStop });
+        setMapsButton({ x, y, leg, originStop, destinationStop });
     }
 
     function handleDetailBoxClick(event) {
         // prevent overlay from closing
         event.stopPropagation();
         // if clicked the gm button or a transit block, keep it
-        if (event.target && event.target.closest && event.target.closest('.gmaps-open-btn')) {
-            return;
-        }
-        if (event.target && event.target.closest && event.target.closest('.transit-legs')) {
-            return;
-        }
-        setGmapsButton(null);
+        if (event.target?.closest?.('.maps-popup')) return;
+        if (event.target?.closest?.('.transit-legs')) return;
+        setMapsButton(null);
     }
 
     function handleOpenInGoogleMaps() {
-        if (!gmapsButton) return;
+        if (!mapsButton) return;
 
-        const { originStop, destinationStop, leg } = gmapsButton;
+        const { originStop, destinationStop, leg } = mapsButton;
         const transitType = leg.TransportType; // 0=walking, 1=car, 2=subway
 
         const navLink = getGoogleMapsNavLink(originStop, destinationStop, transitType);
@@ -134,7 +101,20 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
             console.warn('Failed to generate Google Maps link');
         }
 
-        setGmapsButton(null);
+        setMapsButton(null);
+    }
+
+    
+    function handleOpenInAppleMaps() {
+        if (!mapsButton) return;
+
+        const { originStop, destinationStop, leg } = mapsButton;
+        const navLink = getAppleMapsNavLink(originStop, destinationStop, leg.TransportType);
+
+        if (navLink) window.open(navLink, '_blank', 'noopener,noreferrer');
+        else console.warn('Failed to generate Apple Maps link');
+
+        setMapsButton(null);
     }
 
     useEffect(() => {
@@ -348,6 +328,22 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                         >
                             Duplicate Trip
                         </button>
+
+                        
+                        <button
+                            className="trip-action-btn calendar-btn"
+                            type="button"
+                            onClick={() => {
+                                window.open(
+                                    getGoogleCalendarLink(trip.name, stops, trip.entry_datetime),
+                                    '_blank',
+                                    'noopener,noreferrer'
+                                );
+                            }}
+                        >
+                            <img src={calendarIcon} alt="Add to Google Calendar" className="calendar-icon" />
+                        </button>
+
                     </div>
 
                     {isDuplicateOpen && (
@@ -399,26 +395,41 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                         </div>
                     )}
 
-                    {gmapsButton && (
-                        <button
-                            type="button"
-                            className="gmaps-open-btn"
+                    {mapsButton && (
+                        <div
+                            className="maps-popup"
                             style={{
                                 position: "absolute",
-                                left: `${gmapsButton.x}px`,
-                                top: `${gmapsButton.y}px`,
+                                left: `${mapsButton.x}px`,
+                                top: `${mapsButton.y}px`,
+                                transform: "translate(-50%, -110%)",
                                 zIndex: 1200,
-                                transform: "translate(-50%, -140%)",
-                            }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleOpenInGoogleMaps();
+                                flexDirection: "column",
+                                display: "flex",
+                                gap: "8px",
+                                alignItems: "center"
                             }}
                         >
-                            <img src="/gmaps_icon.svg" alt="" className="gmaps-open-btn-icon" />
-                            <span>Open In Google Maps</span>
-                        </button>
+                            <button
+                                type="button"
+                                className="gmaps-open-btn"
+                                onClick={(e) => { e.stopPropagation(); handleOpenInGoogleMaps(); }}
+                            >
+                                <img src="/gmaps_icon.svg" alt="" className="gmaps-open-btn-icon" />
+                                <span>Open in Google Maps</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                className="applemaps-open-btn"
+                                onClick={(e) => { e.stopPropagation(); handleOpenInAppleMaps(); }}
+                            >
+                                <img src="/apple_logo_black.svg" alt="" className="applemaps-open-btn-icon" />
+                                <span>Open in Apple Maps</span>
+                            </button>
+                        </div>
                     )}
+
                 </div>
             </div>
 
