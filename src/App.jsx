@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div style={{alignContent: 'center', height:'100vh'}}>
-      <img src={"/logotemp.png"} width={"100%"}/>
+      <img src={"/logotemp.png"} width={"70%"}/>
       <h2>Your adventure in New York City starts here.</h2>
 
       <div className="auth-buttons-vertical">
@@ -75,9 +75,10 @@ function App() {
         {authError && <p className="auth-error" role="alert">{authError}</p>}
         <button
           className="generateButton auth-test-button"
+          style={{borderRadius: '4px'}}
           onClick={() => { Auth.setCurrentUserId(1); setShowNav(true); }}
         >
-          Login as test user
+          Log in as Guest
         </button>
       </div>
     </div>
