@@ -19,25 +19,27 @@ function formatCost(cents) {
     return `$${(cents / 100).toFixed(2)}`
 }
 
-function formatArrivalTime(baseDateTime, minutesOffset) {
-    if (!baseDateTime || minutesOffset === undefined) return null;
-    const date = new Date(baseDateTime);
-    date.setMinutes(date.getMinutes() + minutesOffset);
-    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+function formatArrivalTime(minutesFromMidnight) {
+    if (minutesFromMidnight === undefined) return null;
+    const hours = Math.floor(minutesFromMidnight / 60);
+    const mins = minutesFromMidnight % 60;
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours % 12 || 12;
+    return `${hours12}:${mins.toString().padStart(2, '0')} ${period}`;
 }
 
-function formatTimeRange(baseDateTime, arrivalOffset, departureOffset) {
-    if (!baseDateTime || arrivalOffset === undefined) return null;
+function formatTimeRange(arrivalMinutes, departureMinutes) {
+    if (arrivalMinutes === undefined) return null;
     
-    const arrivalStr = formatArrivalTime(baseDateTime, arrivalOffset);
+    const arrivalStr = formatArrivalTime(arrivalMinutes);
     
     //if departure is the same as arrival, just show arrival
-    if (departureOffset === undefined || departureOffset === arrivalOffset) {
+    if (departureMinutes === undefined || departureMinutes === arrivalMinutes) {
         return arrivalStr;
     }
 
-    const departureStr = formatArrivalTime(baseDateTime, departureOffset);
-    return `${arrivalStr} - ${departureStr}`;
+    return `${arrivalStr} - ${formatArrivalTime(departureMinutes)}`;
 }
 
 function formatDuration(minutes) {
@@ -46,6 +48,13 @@ function formatDuration(minutes) {
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return `${h}h ${m > 0 ? m + 'm' : ''}`.trim();
+}
+
+//decides which legs 'dominates' for the google maps nav URL
+function getRepresentativeLeg(processedLegs) {
+    if (!processedLegs || processedLegs.length === 0) return null;
+    if (processedLegs.length === 1) return processedLegs[0];
+    return processedLegs[1];
 }
 
 function processLegs(legs){
@@ -86,14 +95,16 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     const detailBoxRef = useRef(null);
     const [gmapsButton, setGmapsButton] = useState(null);
 
-    function handleTransitClick(event, leg, originStop, destinationStop) {
+    function handleTransitClick(event, processedLegs, originStop, destinationStop) {
         if (!detailBoxRef.current) return;
+        const leg = getRepresentativeLeg(processedLegs);
+        if (!leg) return;
         // anchor to the transit-block element center and account for container scroll
         const containerRect = detailBoxRef.current.getBoundingClientRect();
         const targetRect = event.currentTarget.getBoundingClientRect();
         const x = (targetRect.left - containerRect.left) + (targetRect.width / 2) + detailBoxRef.current.scrollLeft;
         const y = (targetRect.top - containerRect.top) + detailBoxRef.current.scrollTop;
-        setGmapsButton({ x, y, leg,originStop, destinationStop });
+        setGmapsButton({ x, y, leg, originStop, destinationStop });
     }
 
     function handleDetailBoxClick(event) {
@@ -103,7 +114,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         if (event.target && event.target.closest && event.target.closest('.gmaps-open-btn')) {
             return;
         }
-        if (event.target && event.target.closest && event.target.closest('.transit-block')) {
+        if (event.target && event.target.closest && event.target.closest('.transit-legs')) {
             return;
         }
         setGmapsButton(null);
@@ -174,7 +185,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
 
         try {
             const response = await fetch(
-                `https://explorenyc-recommendation-service.onrender.com/duplicate-trip?${params.toString()}`,
+                `https://explorenyc-recommendation-service-production.up.railway.app/duplicate-trip?${params.toString()}`,
                 { method: "POST" }
             );
 
@@ -253,6 +264,9 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
 
                             {stops.map((stop, index) => {
                                 const place = normalizeStopToPlace(stop, index, trip?.trip_id);
+                                const processedLegs = index < stops.length - 1 && stop.Legs
+                                    ? processLegs(stop.Legs)
+                                    : [];
 
                                 return (
                                     <div key={stop?.id ?? `${trip?.trip_id}-${index}`}>
@@ -269,9 +283,9 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                             </div>
 
                                             {/* trip stop arrival time and duration  */}
-                                            {formatTimeRange(trip?.entry_datetime, stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes) && (
+                                            {formatTimeRange(stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes) && (
                                                 <span className="stop-arrival-time">
-                                                    {formatTimeRange(trip?.entry_datetime, stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes)}
+                                                    {formatTimeRange(stop.ArrivalTimeInMinutes, stop.DepartureTimeInMinutes)}
                                                 </span>
                                             )}
 
@@ -282,12 +296,15 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                             )}
                                         </button>
 
-                                        {index < stops.length - 1 && stop.Legs && stop.Legs.length > 0 && (
-                                            <div className="transit-legs">
-                                                {processLegs(stop.Legs).map((leg, legIndex) => {
+                                        {processedLegs.length > 0 && (
+                                            <div
+                                                className="transit-legs"
+                                                onClick={(e) => handleTransitClick(e, processedLegs, stop, stops[index + 1])}
+                                            >
+                                                {processedLegs.map((leg, legIndex) => {
                                                     const mode = TRANSPORT_MODES[leg.TransportType];
                                                     return (
-                                                        <div className='transit-block' key={legIndex} onClick={(e) => handleTransitClick(e, leg, stop, stops[index + 1])}>
+                                                        <div className='transit-block' key={legIndex}>
                                                             <div className={`transit-icon ${mode?.className}`} />
                                                             <div className="transit-info">
                                                                 <strong>
