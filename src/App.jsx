@@ -16,8 +16,8 @@ function App() {
   }
 
   return (
-    <div style={{alignContent: 'center', height:'100vh'}}>
-      <img src={"/logotemp.png"} width={"70%"}/>
+    <div className="login-shell">
+      <img className="login-logo" src={"/logotemp.png"} alt="ExploreNYC" />
       <h2>Your adventure in New York City starts here.</h2>
 
       <div className="auth-buttons-vertical">
