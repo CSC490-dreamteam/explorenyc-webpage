@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Groq from 'groq-sdk';
 import './AIScreen.css';
 import { createTripDraftFromAiPayload, writeTripDraft } from '../utils/tripDraftStorage';
@@ -48,6 +49,37 @@ function extractJsonBlock(content) {
     return null;
 }
 
+function removeJsonBlock(content) {
+    if (typeof content !== 'string') {
+        return '';
+    }
+
+    const jsonBlock = extractJsonBlock(content);
+
+    if (!jsonBlock) {
+        return content;
+    }
+
+    const trimmedContent = content.trim();
+
+    if (trimmedContent === jsonBlock.trim()) {
+        return '';
+    }
+
+    return content.replace(jsonBlock, '').trim();
+}
+
+function normalizeAssistantMessage(content) {
+    const visibleContent = removeJsonBlock(content);
+    const hasJsonBlock = Boolean(extractJsonBlock(content));
+
+    if (!hasJsonBlock) {
+        return visibleContent;
+    }
+
+    return `Got all the information needed for your trip. You are now ready to click on the 'Fill Form and Open Trip tab'.`;
+}
+
 const AIScreen = ({
     setCurrentScreen,
     input,
@@ -59,6 +91,7 @@ const AIScreen = ({
     fillError,
     setFillError,
 }) => {
+    const [requestError, setRequestError] = useState('');
     const systemPrompt = `You are a New York City travel assistant. Your goal is to find out the user's wishes for a trip to the city so you can fill out a plan form for them.
 
 You must collect enough information to produce this JSON shape. These are example values only. Replace every value with user-provided information and include other stops as needed.
@@ -101,7 +134,7 @@ Rules:
 - Transit types must be booleans inside "transitTypes" for walking, subway, and car.
 - Every stop in "stops" must include both "location" and "address".
 - "startLocation" and "endLocation" should be the place names only. "startAddress" and "endAddress" should be the full addresses.
-- Only when you have enough information, say that you have all the info you need and then append a valid JSON block at the end of the message.
+- Only when you have enough information, say: Got all the information needed for your trip. You are now ready to click on the 'Fill Form and Open Trip tab'. Then append a valid JSON block at the end of the message.
 - The JSON block must be valid JSON, with double-quoted keys, no comments, and no trailing explanation after the block.
 - If the user keeps talking after that, continue the conversation and send an updated valid JSON block each time the information changes.`;
 
@@ -123,6 +156,23 @@ Rules:
     }
 
     const isReadyToFill = Boolean(parsedTripPayload);
+    const visibleMessages = messages.reduce((accumulator, message, index) => {
+        const visibleContent = message.role === 'assistant'
+            ? normalizeAssistantMessage(message.content)
+            : message.content;
+
+        if (!visibleContent) {
+            return accumulator;
+        }
+
+        accumulator.push({
+            ...message,
+            content: visibleContent,
+            key: `${message.role}-${index}`,
+        });
+
+        return accumulator;
+    }, []);
 
     const handleSend = async () => {
         if (!input.trim() || loading) {
@@ -132,22 +182,33 @@ Rules:
         const userMessage = { role: "user", content: input.trim() };
         const nextMessages = [...messages, userMessage];
         setFillError('');
+        setRequestError('');
         setMessages(nextMessages);
         setInput("");
         setLoading(true);
+
         try {
             const completion = await groq.chat.completions.create({
                 model: "llama-3.3-70b-versatile",
                 messages: [{ role: "system", content: systemPrompt }, ...nextMessages],
             });
             const assistantContent = completion?.choices?.[0]?.message?.content || "";
+
+            if (!assistantContent.trim()) {
+                throw new Error('The AI returned an empty response. Please try again.');
+            }
+
             setMessages((prev) => [...prev, { role: "assistant", content: assistantContent }]);
         } catch (error) {
             console.error("Error fetching Groq response:", error);
-            const errorMessage = error?.message || "Request failed. Check your API key and quota.";
-            setMessages((prev) => [...prev, { role: "assistant", content: errorMessage }]);
+            const errorMessage =
+                error instanceof Error && error.message
+                    ? error.message
+                    : "Request failed. Check your API key, quota, or network connection and try again.";
+            setRequestError(errorMessage);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleFillForm = () => {
@@ -164,18 +225,24 @@ Rules:
     return (
         <div className="ai-container">
             <div className="chat-history" aria-live="polite">
-                {messages.length === 0 ? (
+                {visibleMessages.length === 0 ? (
                     <div className="chat-placeholder">Ask the AI something...</div>
                 ) : (
-                    messages.map((message, index) => (
+                    visibleMessages.map((message) => (
                         <div
-                            key={`${message.role}-${index}`}
+                            key={message.key}
                             className={`chat-message chat-message--${message.role}`}
                         >
                             {message.content}
                         </div>
                     ))
                 )}
+                {loading ? (
+                    <div className="chat-message chat-message--assistant chat-message--loading" role="status" aria-live="polite">
+                        <span className="chat-spinner" aria-hidden="true" />
+                        <span>Thinking...</span>
+                    </div>
+                ) : null}
             </div>
             <div className="chat-actions">
                 <button
@@ -186,12 +253,18 @@ Rules:
                 >
                     Fill Form and Open Trip
                 </button>
+                {requestError ? <div className="chat-error" role="alert">{requestError}</div> : null}
                 {fillError ? <div className="chat-error">{fillError}</div> : null}
             </div>
             <div className="chat-input">
                 <input
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                        if (requestError) {
+                            setRequestError('');
+                        }
+                    }}
                     placeholder="Type your message..."
                 />
                 <button onClick={handleSend} disabled={loading}>

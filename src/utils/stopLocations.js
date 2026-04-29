@@ -72,9 +72,11 @@ function createEmptyStop() {
     return {
         location: '',
         address: '',
+        optional: false,
         mandatory: false,
         flexible: false,
         timePreference: '',
+        duration: 60,
     };
 }
 

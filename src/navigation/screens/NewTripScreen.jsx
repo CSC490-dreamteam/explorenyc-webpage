@@ -3,26 +3,28 @@ import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
 import Auth from '../../auth';
 import { calculateAllUserStats } from './utils/statCrunching';
+import { readTripDraft } from '../../utils/tripDraftStorage';
 
 function NewTripScreen() {
+    const tripDraft = readTripDraft();
     const [routeErrorVisible, setRouteErrorVisible] = useState(false);
 
     //general trip vars
 
     const [transitPreferences, setTransitPreferences] = useState({
-        walking: true,
-        subway: true,
-        car: true
+        walking: tripDraft.transitTypes.walking,
+        subway: tripDraft.transitTypes.subway,
+        car: tripDraft.transitTypes.car
     });
 
-    const [tripName, setTripName] = useState('')
-    const [date, setDate] = useState('')
-    const [entryTime, setEntryTime] = useState('')
-    const [exitTime, setExitTime] = useState('')
+    const [tripName, setTripName] = useState(tripDraft.tripName)
+    const [date, setDate] = useState(tripDraft.date)
+    const [entryTime, setEntryTime] = useState(tripDraft.entryTime)
+    const [exitTime, setExitTime] = useState(tripDraft.exitTime)
     const [isLoading, setIsLoading] = useState(false)
-    const [startLocation, setStartLocation] = useState('')
+    const [startLocation, setStartLocation] = useState(tripDraft.startLocation)
     const [errorState, setErrorState] = useState(null)
-    const [endLocation, setEndLocation] = useState('')
+    const [endLocation, setEndLocation] = useState(tripDraft.endLocation)
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
@@ -238,11 +240,19 @@ function NewTripScreen() {
     }
     // React state variable known as stops that is an array full of JSON
     const [stops, setStops] = useState(() => {
-        const saved = localStorage.getItem('active_trip_draft');
-        //If we have a saved draft, use it. If not, start with one empty stop. 
-        return saved 
-            ? JSON.parse(saved)
-            : [{ location: '', optional: false, timePreference: '', duration: 30 }];
+        if (Array.isArray(tripDraft.stops) && tripDraft.stops.length > 0) {
+            return tripDraft.stops.map((stop) => ({
+                location: stop.location ?? '',
+                address: stop.address ?? '',
+                optional: Boolean(stop.optional),
+                mandatory: Boolean(stop.mandatory),
+                flexible: Boolean(stop.flexible),
+                timePreference: stop.timePreference ?? '',
+                duration: Number.isFinite(stop.duration) ? Number(stop.duration) : 60,
+            }));
+        }
+
+        return [{ location: '', optional: false, timePreference: '', duration: 60 }];
     });
 
     useEffect(() => {

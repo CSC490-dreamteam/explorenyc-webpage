@@ -37,9 +37,13 @@ function sanitizeStops(stops) {
         return {
             ...normalizedStop,
             location: formatStopLocationLabel(normalizedStop.location, normalizedStop.address),
+            optional: typeof stop?.optional === 'boolean'
+                ? stop.optional
+                : !Boolean(stop?.mandatory),
             mandatory: Boolean(stop?.mandatory),
             flexible: Boolean(stop?.flexible),
             timePreference: typeof stop?.timePreference === 'string' ? stop.timePreference : '',
+            duration: Number.isFinite(stop?.duration) ? Number(stop.duration) : 60,
         }
     });
 }
@@ -125,13 +129,16 @@ function createTripDraftFromAiPayload(payload) {
             ? payload.stops.map((stop) => {
                 const location = stop?.location ?? ''
                 const address = stop?.address ?? getKnownStopAddress(location)
+                const isOptional = Boolean(stop?.optional)
 
                 return {
                     location: formatStopLocationLabel(location, address),
                     address,
-                    mandatory: !Boolean(stop?.optional),
-                    flexible: Boolean(stop?.optional),
+                    optional: isOptional,
+                    mandatory: !isOptional,
+                    flexible: isOptional,
                     timePreference: stop?.timePreference ?? '',
+                    duration: Number.isFinite(stop?.duration) ? Number(stop.duration) : 60,
                 }
             })
             : defaultTripDraft.stops,
