@@ -27,7 +27,7 @@ export default function History({ setCurrentScreen }) {
 
             //calc the stats
             const UserStats = calculateAllUserStats(trips);
-            const id = userId ?? Auth.currentUserId ?? 1;
+            const id = Auth.currentUserId ?? 1;
 
 
             //make payload 
@@ -72,12 +72,12 @@ export default function History({ setCurrentScreen }) {
         });
     }
 
-    function formatTripTags(tags) {
+    {/*function formatTripTags(tags) {
         if (Array.isArray(tags)) return tags.join(", ");
         if (tags && typeof tags === "object") return Object.values(tags).join(", ");
         if (typeof tags === "string") return tags;
         return "No tags";
-    }
+    }*/}
 
     useEffect(() => {
         let isActive = true;
@@ -145,7 +145,7 @@ export default function History({ setCurrentScreen }) {
                         <div className="trip-box-meta" aria-label="Trip details">
                             <span>🗓️ {formatTripDate(trip.entry_datetime)}</span>
                             <span>📍 {trip.stops?.length ?? 0} stops</span>
-                            <span>🏷️ {formatTripTags(trip.tags)}</span>
+                            {/*<span>🏷️ {formatTripTags(trip.tags)}</span>*/}
                         </div>
                     </div>
                     <button
