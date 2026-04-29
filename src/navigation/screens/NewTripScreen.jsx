@@ -3,37 +3,28 @@ import './NewTripScreen.css';
 import SearchModal from './components/SearchModal';
 import Auth from '../../auth';
 import { calculateAllUserStats } from './utils/statCrunching';
-
-
-import walkingIcon from '../../assets/walking.svg';
-import subwayIcon from '../../assets/subway.svg';
-import carIcon from '../../assets/car.svg';
-
+import { readTripDraft } from '../../utils/tripDraftStorage';
 
 function NewTripScreen() {
-    const [isLoading, setIsLoading] = useState(false)
-    const [errorState, setErrorState] = useState(null)
+    const tripDraft = readTripDraft();
     const [routeErrorVisible, setRouteErrorVisible] = useState(false);
 
     //general trip vars
-    const [startLocation, setStartLocation] = useState('')
-    const [endLocation, setEndLocation] = useState('')
+
     const [transitPreferences, setTransitPreferences] = useState({
-        walking: true,
-        subway: true,
-        car: true
+        walking: tripDraft.transitTypes.walking,
+        subway: tripDraft.transitTypes.subway,
+        car: tripDraft.transitTypes.car
     });
 
-    const transitIcons = {
-        walking: walkingIcon,
-        subway: subwayIcon,
-        car: carIcon
-    };
-
-    const [tripName, setTripName] = useState('')
-    const [date, setDate] = useState('')
-    const [entryTime, setEntryTime] = useState('')
-    const [exitTime, setExitTime] = useState('')
+    const [tripName, setTripName] = useState(tripDraft.tripName)
+    const [date, setDate] = useState(tripDraft.date)
+    const [entryTime, setEntryTime] = useState(tripDraft.entryTime)
+    const [exitTime, setExitTime] = useState(tripDraft.exitTime)
+    const [isLoading, setIsLoading] = useState(false)
+    const [startLocation, setStartLocation] = useState(tripDraft.startLocation)
+    const [errorState, setErrorState] = useState(null)
+    const [endLocation, setEndLocation] = useState(tripDraft.endLocation)
 
     const addStopErrorRef = useRef(null)
     const startPointErrorRef = useRef(null)
@@ -118,21 +109,14 @@ function NewTripScreen() {
         };
         console.log(tripData);
 
-        
-        const tempLocations = [
-            startLocation.trim(),
-            ...stops.map(stop => stop.location.trim()).filter(loc => loc),
-            ...(endLocation.trim() ? [endLocation.trim()] : [])
-        ];
-
         setErrorState(null)
         setIsLoading(true)
         try {
             const response = await fetch('https://explorenyc-backend-production.up.railway.app/GenerateItinerary', {
                 method: 'POST',
-                headers: {
+                headers: { 
                     'Content-Type': 'application/json',
-                    'X-API-Key': 'sauce1234'
+                    'X-API-Key': 'sauce1234' //YES HARDCODED THE API KEY LMAO i know to fix it later.
                 },
                 body: JSON.stringify(tripData)
             });
@@ -191,9 +175,6 @@ function NewTripScreen() {
             }
         } catch (error) {
             console.error('Error submitting trip data:', error);
-            if (popup && !popup.closed) {
-                popup.close();
-            }
         } finally {
             setIsLoading(false)
         }
@@ -257,21 +238,29 @@ function NewTripScreen() {
         }
         
     }
-
+    // React state variable known as stops that is an array full of JSON
     const [stops, setStops] = useState(() => {
-        const saved = localStorage.getItem('active_trip_draft');
-        //If we have a saved draft, use it. If not, start with one empty stop. 
-        return saved 
-            ? JSON.parse(saved)
-            : [{ location: "", mandatory: false, duration: 30, timePreference: "" }];
+        if (Array.isArray(tripDraft.stops) && tripDraft.stops.length > 0) {
+            return tripDraft.stops.map((stop) => ({
+                location: stop.location ?? '',
+                address: stop.address ?? '',
+                optional: Boolean(stop.optional),
+                mandatory: Boolean(stop.mandatory),
+                flexible: Boolean(stop.flexible),
+                timePreference: stop.timePreference ?? '',
+                duration: Number.isFinite(stop.duration) ? Number(stop.duration) : 60,
+            }));
+        }
+
+        return [{ location: '', optional: false, timePreference: '', duration: 60 }];
     });
 
     useEffect(() => {
         localStorage.setItem('active_trip_draft', JSON.stringify(stops));
-    }, [stops]); // This triggers when 'stops' is updated
+    }, [stops]);
 
     //function that edits a stop by index, used when the user changes it in the ui
-    //under the hood it takes the existing stops array, edits one index entry as needed, then reassigns the state variable to the new array
+    //under the hood it takes the existing stops array, , edits one index entry as needed, then reassigns the state variable to the new array
     const handleStopChange = (index, field, value) => {
         const newStops = [...stops];
         newStops[index][field] = value;
@@ -406,21 +395,23 @@ function NewTripScreen() {
                 <p>Customize your NYC adventure</p>
             </div>
 
-
-
             <section className="newTripCard">
                 <h3>Trip Name</h3>
 
                 <div className="fieldGroup">
-                    <input id="trip-name" type="text" className='bigField' placeholder="e.g. Weekend Food Tour" 
-                    value={tripName} onChange={(e) => setTripName(e.target.value)}
+                    <input
+                        id="trip-name"
+                        type="text"
+                        className='bigField'
+                        placeholder="e.g. Weekend Food Tour"
+                        value={tripName}
+                        onChange={(e) => setTripName(e.target.value)}
                     />
                 </div>
             </section>
 
             <section className="newTripCard" style={{minHeight:'227'}}>
                 <h3>Time Window</h3>
-
 
                 <div className="fieldGroup">
                     <label htmlFor="trip-date">Date</label>
@@ -657,10 +648,6 @@ function NewTripScreen() {
                 )}
             </section>
 
-           
-
-
-
             <button type="button" className="generateButton" onClick={handleTripSubmit}>
                 Generate My Trip
             </button>
@@ -735,8 +722,8 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                         <SearchModal 
                             onClose={() => setIsModalOpen(false)} 
                             onSelect={(val) => {
-                                onChange('location', `${val.name}, ${val.address}`); // Update the main form
-                                setIsModalOpen(false);      // Close modal
+                                onChange('location', `${val.name}, ${val.address}`);
+                                setIsModalOpen(false);
                             }} 
                         />
                     )}
@@ -790,8 +777,6 @@ function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
                 {isCollapsed ? '⌄' : '^'}
             </button>
             </div>
-
-
         </div>
 
     );

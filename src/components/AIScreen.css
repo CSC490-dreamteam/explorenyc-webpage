@@ -1,0 +1,122 @@
+.ai-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 16px calc(88px + env(safe-area-inset-bottom, 0px));
+    min-height: calc(100vh - 140px);
+    box-sizing: border-box;
+    max-width: 580px;
+    margin: 0 auto;
+}
+
+.chat-history {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    background: #f1f1f1;
+    border-radius: 10px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    box-sizing: border-box;
+}
+
+.chat-placeholder {
+    color: #666;
+}
+
+.chat-message {
+    max-width: 80%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    line-height: 1.35;
+}
+
+.chat-message--user {
+    align-self: flex-end;
+    background: #1d5cff;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message--assistant {
+    align-self: flex-start;
+    background: #fff;
+    color: #1b1b1b;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-message--loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #cdd5df;
+    border-top-color: #1d5cff;
+    border-radius: 50%;
+    animation: chat-spin 0.8s linear infinite;
+}
+
+.chat-input {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.chat-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chat-fill-button {
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #0d8f55;
+    color: #fff;
+    font-weight: 600;
+}
+
+.chat-fill-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.chat-error {
+    color: #b42318;
+    font-size: 0.9rem;
+}
+
+.chat-input input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.chat-input button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #1d5cff;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+@keyframes chat-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
