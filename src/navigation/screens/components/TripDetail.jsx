@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import PlaceDetailsModal from "./PlaceDetailsModal.jsx";
 import Toast from "./Toast.jsx";
 import { addPlaceToPendingTrip } from "../utils/tripDrafts.js";
-import { normalizeStopToPlace, formatArrivalTime, formatDuration, formatTimeRange } from "../utils/stopPlace.js";
+import { normalizeStopToPlace, formatDuration, formatTimeRange } from "../utils/stopPlace.js";
 import { getGoogleMapsNavLink, getAppleMapsNavLink, getGoogleCalendarLink  } from "../utils/mapURLs.js"; 
 
 import calendarIcon from '../../../assets/calendar.svg';
+import trashIcon from '../../../assets/trash.svg';
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -57,9 +58,12 @@ function processLegs(legs){
 function TripDetail({ trip, onClose, onTripsUpdated }) {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [duplicateDate, setDuplicateDate] = useState("");
     const [isDuplicating, setIsDuplicating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [duplicateError, setDuplicateError] = useState("");
+    const [deleteError, setDeleteError] = useState("");
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
@@ -119,9 +123,12 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
 
     useEffect(() => {
         setIsDuplicateOpen(false);
+        setIsDeleteConfirmOpen(false);
         setDuplicateDate("");
         setIsDuplicating(false);
+        setIsDeleting(false);
         setDuplicateError("");
+        setDeleteError("");
         setSelectedPlace(null);
     }, [trip?.trip_id]);
 
@@ -193,6 +200,63 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
             console.error("Failed to duplicate trip:", error);
         } finally {
             setIsDuplicating(false);
+        }
+    }
+
+    async function handleDeleteTrip() {
+        if (!trip?.trip_id) {
+            const message = "Unable to delete this trip because the trip ID is missing.";
+            setDeleteError(message);
+            console.error(message);
+            return;
+        }
+
+        setIsDeleting(true);
+        setDeleteError("");
+
+        let shouldSkipReset = false;
+
+        try {
+            const params = new URLSearchParams({
+                trip_id: String(trip.trip_id),
+            });
+
+            const response = await fetch(
+                `https://explorenyc-recommendation-service-production.up.railway.app/delete-trip?${params.toString()}`,
+                { method: "DELETE" }
+            );
+
+            if (response.status !== 200) {
+                const errorText = await response.text();
+                const message = errorText
+                    ? `Failed to delete trip (${response.status}): ${errorText}`
+                    : `Failed to delete trip (${response.status}).`;
+                setDeleteError(message);
+                console.error("Failed to delete trip:", {
+                    status: response.status,
+                    body: errorText,
+                });
+                return;
+            }
+
+            shouldSkipReset = true;
+            setIsDeleteConfirmOpen(false);
+
+            if (onClose) {
+                onClose();
+            }
+
+            if (onTripsUpdated) {
+                await onTripsUpdated("Trip deleted successfully.", "success");
+            }
+        } catch (error) {
+            const message = `Failed to delete trip: ${error instanceof Error ? error.message : "Unknown error."}`;
+            setDeleteError(message);
+            console.error("Failed to delete trip:", error);
+        } finally {
+            if (!shouldSkipReset) {
+                setIsDeleting(false);
+            }
         }
     }
 
@@ -326,7 +390,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                 setDuplicateError("");
                             }}
                         >
-                            Duplicate Trip
+                            Duplicate
                         </button>
 
                         
@@ -344,6 +408,18 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                             <img src={calendarIcon} alt="Add to Google Calendar" className="calendar-icon" />
                         </button>
 
+                        <button
+                            className="trip-delete-btn"
+                            type="button"
+                            onClick={() => {
+                                setIsDeleteConfirmOpen(true);
+                                setDeleteError("");
+                            }}
+                            aria-label="Delete trip"
+                        >
+                            <img src={trashIcon} alt="" className="trip-delete-icon" />
+                            <span className="trip-delete-label">Delete Trip</span>
+                        </button>
                     </div>
 
                     {isDuplicateOpen && (
@@ -455,6 +531,59 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                     onClose={() => setSelectedPlace(null)}
                     onAddToTrip={handleAddToTrip}
                 />
+            )}
+
+            {isDeleteConfirmOpen && (
+                <div
+                    className="trip-confirm-overlay"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="trip-delete-confirm-title"
+                    onClick={() => {
+                        if (!isDeleting) {
+                            setIsDeleteConfirmOpen(false);
+                            setDeleteError("");
+                        }
+                    }}
+                >
+                    <div
+                        className="trip-confirm-modal"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <h3 id="trip-delete-confirm-title">Delete trip</h3>
+                        <p className="trip-confirm-message">
+                            Are you sure you want to delete this trip?
+                        </p>
+
+                        {deleteError && (
+                            <p className="trip-confirm-error" role="alert">
+                                {deleteError}
+                            </p>
+                        )}
+
+                        <div className="trip-confirm-actions">
+                            <button
+                                className="trip-action-btn"
+                                type="button"
+                                onClick={handleDeleteTrip}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? "Deleting..." : "Yes"}
+                            </button>
+                            <button
+                                className="trip-action-btn trip-action-btn-secondary"
+                                type="button"
+                                onClick={() => {
+                                    setIsDeleteConfirmOpen(false);
+                                    setDeleteError("");
+                                }}
+                                disabled={isDeleting}
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {toastConfig.show && (

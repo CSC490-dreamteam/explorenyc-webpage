@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import './HistoryScreen.css';
 import '../../App.css'
 import TripDetail from "./components/TripDetail.jsx";
+import Toast from "./components/Toast.jsx";
 import Auth from '../../auth';
 import { calculateAllUserStats } from "./utils/statCrunching.js";
 
@@ -16,13 +17,19 @@ async function fetchTripStopsForUser(userId) {
 export default function History({ setCurrentScreen }) {
     const [userTrips, setUserTrips] = useState([]);
     const [selectedTrip, setSelectedTrip] = useState(null);
+    const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
     const trips = Array.isArray(userTrips?.trips) ? userTrips.trips : [];
 
-    async function refreshTrips() {
+    async function refreshTrips(successMessage, successType = "success") {
         try {
             const json = await fetchTripStopsForUser();
             setUserTrips(json);
             console.log("trip-stops response:", json);
+
+            if (successMessage) {
+                setToastConfig({ show: true, message: successMessage, type: successType });
+            }
+
             const trips = Array.isArray(json?.trips) ? json.trips : [];
 
             //calc the stats
@@ -163,6 +170,14 @@ export default function History({ setCurrentScreen }) {
                     trip={selectedTrip}
                     onTripsUpdated={refreshTrips}
                     onClose={() => setSelectedTrip(null)}
+                />
+            )}
+
+            {toastConfig.show && (
+                <Toast
+                    message={toastConfig.message}
+                    type={toastConfig.type}
+                    onClose={() => setToastConfig((current) => ({ ...current, show: false }))}
                 />
             )}
             </div>
