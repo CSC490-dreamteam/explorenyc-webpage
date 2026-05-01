@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import './HistoryScreen.css';
 import '../../App.css'
 import TripDetail from "./components/TripDetail.jsx";
+import Toast from "./components/Toast.jsx";
 import Auth from '../../auth';
 import { calculateAllUserStats } from "./utils/statCrunching.js";
 
@@ -16,18 +17,24 @@ async function fetchTripStopsForUser(userId) {
 export default function History({ setCurrentScreen }) {
     const [userTrips, setUserTrips] = useState([]);
     const [selectedTrip, setSelectedTrip] = useState(null);
+    const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
     const trips = Array.isArray(userTrips?.trips) ? userTrips.trips : [];
 
-    async function refreshTrips() {
+    async function refreshTrips(successMessage, successType = "success") {
         try {
             const json = await fetchTripStopsForUser();
             setUserTrips(json);
             console.log("trip-stops response:", json);
+
+            if (successMessage) {
+                setToastConfig({ show: true, message: successMessage, type: successType });
+            }
+
             const trips = Array.isArray(json?.trips) ? json.trips : [];
 
             //calc the stats
             const UserStats = calculateAllUserStats(trips);
-            const id = userId ?? Auth.currentUserId ?? 1;
+            const id = Auth.currentUserId ?? 1;
 
 
             //make payload 
@@ -72,12 +79,12 @@ export default function History({ setCurrentScreen }) {
         });
     }
 
-    function formatTripTags(tags) {
+    {/*function formatTripTags(tags) {
         if (Array.isArray(tags)) return tags.join(", ");
         if (tags && typeof tags === "object") return Object.values(tags).join(", ");
         if (typeof tags === "string") return tags;
         return "No tags";
-    }
+    }*/}
 
     useEffect(() => {
         let isActive = true;
@@ -145,7 +152,7 @@ export default function History({ setCurrentScreen }) {
                         <div className="trip-box-meta" aria-label="Trip details">
                             <span>🗓️ {formatTripDate(trip.entry_datetime)}</span>
                             <span>📍 {trip.stops?.length ?? 0} stops</span>
-                            <span>🏷️ {formatTripTags(trip.tags)}</span>
+                            {/*<span>🏷️ {formatTripTags(trip.tags)}</span>*/}
                         </div>
                     </div>
                     <button
@@ -163,6 +170,14 @@ export default function History({ setCurrentScreen }) {
                     trip={selectedTrip}
                     onTripsUpdated={refreshTrips}
                     onClose={() => setSelectedTrip(null)}
+                />
+            )}
+
+            {toastConfig.show && (
+                <Toast
+                    message={toastConfig.message}
+                    type={toastConfig.type}
+                    onClose={() => setToastConfig((current) => ({ ...current, show: false }))}
                 />
             )}
             </div>

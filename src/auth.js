@@ -5,5 +5,4 @@ const Auth = {
     console.log('Auth: currentUserId set to', id);
   }
 };
-//this will pull from db later
 export default Auth;

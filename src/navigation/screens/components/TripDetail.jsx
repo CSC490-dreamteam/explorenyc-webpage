@@ -5,8 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import PlaceDetailsModal from "./PlaceDetailsModal.jsx";
 import Toast from "./Toast.jsx";
 import { addPlaceToPendingTrip } from "../utils/tripDrafts.js";
-import { normalizeStopToPlace } from "../utils/stopPlace.js";
-import { getGoogleMapsNavLink } from "../utils/mapURLs.js"; //
+import { normalizeStopToPlace, formatDuration, formatTimeRange } from "../utils/stopPlace.js";
+import { getGoogleMapsNavLink, getAppleMapsNavLink, getGoogleCalendarLink  } from "../utils/mapURLs.js"; 
+
+import calendarIcon from '../../../assets/calendar.svg';
+import trashIcon from '../../../assets/trash.svg';
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -17,37 +20,6 @@ const TRANSPORT_MODES = {
 function formatCost(cents) {
     if (!cents) return null
     return `$${(cents / 100).toFixed(2)}`
-}
-
-
-function formatArrivalTime(minutesFromMidnight) {
-    if (minutesFromMidnight === undefined) return null;
-    const hours = Math.floor(minutesFromMidnight / 60);
-    const mins = minutesFromMidnight % 60;
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const hours12 = hours % 12 || 12;
-    return `${hours12}:${mins.toString().padStart(2, '0')} ${period}`;
-}
-
-function formatTimeRange(arrivalMinutes, departureMinutes) {
-    if (arrivalMinutes === undefined) return null;
-    
-    const arrivalStr = formatArrivalTime(arrivalMinutes);
-    
-    //if departure is the same as arrival, just show arrival
-    if (departureMinutes === undefined || departureMinutes === arrivalMinutes) {
-        return arrivalStr;
-    }
-
-    return `${arrivalStr} - ${formatArrivalTime(departureMinutes)}`;
-}
-
-function formatDuration(minutes) {
-    if (minutes === 0 || !minutes) return null;
-    if (minutes < 60) return `${minutes} min`;
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return `${h}h ${m > 0 ? m + 'm' : ''}`.trim();
 }
 
 //decides which legs 'dominates' for the google maps nav URL
@@ -86,14 +58,17 @@ function processLegs(legs){
 function TripDetail({ trip, onClose, onTripsUpdated }) {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [duplicateDate, setDuplicateDate] = useState("");
     const [isDuplicating, setIsDuplicating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [duplicateError, setDuplicateError] = useState("");
+    const [deleteError, setDeleteError] = useState("");
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
     const detailBoxRef = useRef(null);
-    const [gmapsButton, setGmapsButton] = useState(null);
+    const [mapsButton, setMapsButton] = useState(null);
 
     function handleTransitClick(event, processedLegs, originStop, destinationStop) {
         if (!detailBoxRef.current) return;
@@ -104,26 +79,22 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         const targetRect = event.currentTarget.getBoundingClientRect();
         const x = (targetRect.left - containerRect.left) + (targetRect.width / 2) + detailBoxRef.current.scrollLeft;
         const y = (targetRect.top - containerRect.top) + detailBoxRef.current.scrollTop;
-        setGmapsButton({ x, y, leg, originStop, destinationStop });
+        setMapsButton({ x, y, leg, originStop, destinationStop });
     }
 
     function handleDetailBoxClick(event) {
         // prevent overlay from closing
         event.stopPropagation();
         // if clicked the gm button or a transit block, keep it
-        if (event.target && event.target.closest && event.target.closest('.gmaps-open-btn')) {
-            return;
-        }
-        if (event.target && event.target.closest && event.target.closest('.transit-legs')) {
-            return;
-        }
-        setGmapsButton(null);
+        if (event.target?.closest?.('.maps-popup')) return;
+        if (event.target?.closest?.('.transit-legs')) return;
+        setMapsButton(null);
     }
 
     function handleOpenInGoogleMaps() {
-        if (!gmapsButton) return;
+        if (!mapsButton) return;
 
-        const { originStop, destinationStop, leg } = gmapsButton;
+        const { originStop, destinationStop, leg } = mapsButton;
         const transitType = leg.TransportType; // 0=walking, 1=car, 2=subway
 
         const navLink = getGoogleMapsNavLink(originStop, destinationStop, transitType);
@@ -134,14 +105,30 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
             console.warn('Failed to generate Google Maps link');
         }
 
-        setGmapsButton(null);
+        setMapsButton(null);
+    }
+
+    
+    function handleOpenInAppleMaps() {
+        if (!mapsButton) return;
+
+        const { originStop, destinationStop, leg } = mapsButton;
+        const navLink = getAppleMapsNavLink(originStop, destinationStop, leg.TransportType);
+
+        if (navLink) window.open(navLink, '_blank', 'noopener,noreferrer');
+        else console.warn('Failed to generate Apple Maps link');
+
+        setMapsButton(null);
     }
 
     useEffect(() => {
         setIsDuplicateOpen(false);
+        setIsDeleteConfirmOpen(false);
         setDuplicateDate("");
         setIsDuplicating(false);
+        setIsDeleting(false);
         setDuplicateError("");
+        setDeleteError("");
         setSelectedPlace(null);
     }, [trip?.trip_id]);
 
@@ -213,6 +200,63 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
             console.error("Failed to duplicate trip:", error);
         } finally {
             setIsDuplicating(false);
+        }
+    }
+
+    async function handleDeleteTrip() {
+        if (!trip?.trip_id) {
+            const message = "Unable to delete this trip because the trip ID is missing.";
+            setDeleteError(message);
+            console.error(message);
+            return;
+        }
+
+        setIsDeleting(true);
+        setDeleteError("");
+
+        let shouldSkipReset = false;
+
+        try {
+            const params = new URLSearchParams({
+                trip_id: String(trip.trip_id),
+            });
+
+            const response = await fetch(
+                `https://explorenyc-recommendation-service-production.up.railway.app/delete-trip?${params.toString()}`,
+                { method: "DELETE" }
+            );
+
+            if (response.status !== 200) {
+                const errorText = await response.text();
+                const message = errorText
+                    ? `Failed to delete trip (${response.status}): ${errorText}`
+                    : `Failed to delete trip (${response.status}).`;
+                setDeleteError(message);
+                console.error("Failed to delete trip:", {
+                    status: response.status,
+                    body: errorText,
+                });
+                return;
+            }
+
+            shouldSkipReset = true;
+            setIsDeleteConfirmOpen(false);
+
+            if (onClose) {
+                onClose();
+            }
+
+            if (onTripsUpdated) {
+                await onTripsUpdated("Trip deleted successfully.", "success");
+            }
+        } catch (error) {
+            const message = `Failed to delete trip: ${error instanceof Error ? error.message : "Unknown error."}`;
+            setDeleteError(message);
+            console.error("Failed to delete trip:", error);
+        } finally {
+            if (!shouldSkipReset) {
+                setIsDeleting(false);
+            }
         }
     }
 
@@ -346,7 +390,35 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                                 setDuplicateError("");
                             }}
                         >
-                            Duplicate Trip
+                            Duplicate
+                        </button>
+
+                        
+                        <button
+                            className="trip-action-btn calendar-btn"
+                            type="button"
+                            onClick={() => {
+                                window.open(
+                                    getGoogleCalendarLink(trip.name, stops, trip.entry_datetime),
+                                    '_blank',
+                                    'noopener,noreferrer'
+                                );
+                            }}
+                        >
+                            <img src={calendarIcon} alt="Add to Google Calendar" className="calendar-icon" />
+                        </button>
+
+                        <button
+                            className="trip-delete-btn"
+                            type="button"
+                            onClick={() => {
+                                setIsDeleteConfirmOpen(true);
+                                setDeleteError("");
+                            }}
+                            aria-label="Delete trip"
+                        >
+                            <img src={trashIcon} alt="" className="trip-delete-icon" />
+                            <span className="trip-delete-label">Delete Trip</span>
                         </button>
                     </div>
 
@@ -399,26 +471,41 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                         </div>
                     )}
 
-                    {gmapsButton && (
-                        <button
-                            type="button"
-                            className="gmaps-open-btn"
+                    {mapsButton && (
+                        <div
+                            className="maps-popup"
                             style={{
                                 position: "absolute",
-                                left: `${gmapsButton.x}px`,
-                                top: `${gmapsButton.y}px`,
+                                left: `${mapsButton.x}px`,
+                                top: `${mapsButton.y}px`,
+                                transform: "translate(-50%, -110%)",
                                 zIndex: 1200,
-                                transform: "translate(-50%, -140%)",
-                            }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleOpenInGoogleMaps();
+                                flexDirection: "column",
+                                display: "flex",
+                                gap: "8px",
+                                alignItems: "center"
                             }}
                         >
-                            <img src="/gmaps_icon.svg" alt="" className="gmaps-open-btn-icon" />
-                            <span>Open In Google Maps</span>
-                        </button>
+                            <button
+                                type="button"
+                                className="gmaps-open-btn"
+                                onClick={(e) => { e.stopPropagation(); handleOpenInGoogleMaps(); }}
+                            >
+                                <img src="/gmaps_icon.svg" alt="" className="gmaps-open-btn-icon" />
+                                <span>Open in Google Maps</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                className="applemaps-open-btn"
+                                onClick={(e) => { e.stopPropagation(); handleOpenInAppleMaps(); }}
+                            >
+                                <img src="/apple_logo_black.svg" alt="" className="applemaps-open-btn-icon" />
+                                <span>Open in Apple Maps</span>
+                            </button>
+                        </div>
                     )}
+
                 </div>
             </div>
 
@@ -444,6 +531,59 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                     onClose={() => setSelectedPlace(null)}
                     onAddToTrip={handleAddToTrip}
                 />
+            )}
+
+            {isDeleteConfirmOpen && (
+                <div
+                    className="trip-confirm-overlay"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="trip-delete-confirm-title"
+                    onClick={() => {
+                        if (!isDeleting) {
+                            setIsDeleteConfirmOpen(false);
+                            setDeleteError("");
+                        }
+                    }}
+                >
+                    <div
+                        className="trip-confirm-modal"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <h3 id="trip-delete-confirm-title">Delete trip</h3>
+                        <p className="trip-confirm-message">
+                            Are you sure you want to delete this trip?
+                        </p>
+
+                        {deleteError && (
+                            <p className="trip-confirm-error" role="alert">
+                                {deleteError}
+                            </p>
+                        )}
+
+                        <div className="trip-confirm-actions">
+                            <button
+                                className="trip-action-btn"
+                                type="button"
+                                onClick={handleDeleteTrip}
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? "Deleting..." : "Yes"}
+                            </button>
+                            <button
+                                className="trip-action-btn trip-action-btn-secondary"
+                                type="button"
+                                onClick={() => {
+                                    setIsDeleteConfirmOpen(false);
+                                    setDeleteError("");
+                                }}
+                                disabled={isDeleting}
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {toastConfig.show && (

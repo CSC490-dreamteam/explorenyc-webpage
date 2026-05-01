@@ -127,3 +127,34 @@ export function getStopMapMarker(stop, index) {
         name: getStopName(stop, index),
     };
 }
+
+
+export function formatArrivalTime(minutesFromMidnight) {
+    if (minutesFromMidnight === undefined) return null;
+    const hours = Math.floor(minutesFromMidnight / 60);
+    const mins = minutesFromMidnight % 60;
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours % 12 || 12;
+    return `${hours12}:${mins.toString().padStart(2, '0')} ${period}`;
+}
+
+export function formatTimeRange(arrivalMinutes, departureMinutes) {
+    if (arrivalMinutes === undefined) return null;
+    
+    const arrivalStr = formatArrivalTime(arrivalMinutes);
+    
+    //if departure is the same as arrival, just show arrival
+    if (departureMinutes === undefined || departureMinutes === arrivalMinutes) {
+        return arrivalStr;
+    }
+
+    return `${arrivalStr} - ${formatArrivalTime(departureMinutes)}`;
+}
+
+export function formatDuration(minutes) {
+    if (minutes === 0 || !minutes) return null;
+    if (minutes < 60) return `${minutes} min`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}h ${m > 0 ? m + 'm' : ''}`.trim();
+}

@@ -96,8 +96,90 @@
     font-size: 0.95rem;
 }
 
-.trip-action-btn-secondary {
-    opacity: 0.85;
+.trip-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #d92d20;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.trip-delete-icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    filter: brightness(0) invert(1);
+}
+
+.trip-delete-label {
+    display: inline;
+}
+
+.trip-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+}
+
+.trip-confirm-modal {
+    width: min(92vw, 420px);
+    padding: 24px;
+    border-radius: 16px;
+    background: var(--surface-card);
+    box-shadow: 0 25px 25px #191919;
+    box-sizing: border-box;
+}
+
+.trip-confirm-modal h3 {
+    margin: 0 0 8px;
+}
+
+.trip-confirm-message {
+    margin: 0;
+    color: var(--text-on-surface);
+}
+
+.trip-confirm-error {
+    margin: 12px 0 0;
+    color: #b42318;
+    font-size: 0.95rem;
+}
+
+.trip-confirm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+    justify-content: center;
+}
+
+@media (max-width: 640px) {
+    .trip-delete-btn {
+        justify-content: center;
+        min-width: 46px;
+        padding: 10px;
+    }
+
+    .trip-delete-label {
+        display: none;
+    }
+
+    .trip-delete-icon {
+        width: 20px;
+        height: 20px;
+    }
 }
 
 .trip-detail-stops {
@@ -274,9 +356,8 @@
     width: fit-content;
 }
 
-/* Google Maps open button */
+
 .gmaps-open-btn {
-    position: absolute;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -289,7 +370,24 @@
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
-    z-index: 2000;
+    white-space: nowrap;
+}
+
+.applemaps-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #007AFF;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 0.95rem;
+    width: fit-content;
 }
 
 .gmaps-open-btn-icon {
@@ -298,4 +396,20 @@
     display: inline-block;
     /* white outline via layered drop-shadow for better visibility */
     filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 2px #fff);
+}
+
+.applemaps-open-btn-icon {
+    width: 17px;
+    height: 20px;
+    display: inline-block;
+    /* white outline via layered drop-shadow for better visibility */
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff); /*made it more subtle than google map's outline */
+
+}
+
+.trip-action-btn img.calendar-icon {
+    width: 22px;
+    height: 22px;
+    display: block;
+    filter: brightness(0) invert(1);
 }
