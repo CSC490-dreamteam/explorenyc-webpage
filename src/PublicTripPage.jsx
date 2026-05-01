@@ -20,7 +20,7 @@ export default function PublicTripPage({ tripId }) {
         }
 
         const data = await response.json();
-        setTrip(data);
+        setTrip({ ...data, stops: data.stops?.stops ?? [] });
         setStatus('ready');
       } catch (error) {
         console.error("Failed to fetch trip:", error);
@@ -42,8 +42,8 @@ export default function PublicTripPage({ tripId }) {
   if (status === 'not-found') {
       return (
         <div style={{ padding: 40, textAlign: 'center' }}>
-          <h2>Trip not found</h2>
-          <p>This trip doesn't exist or isn't public.</p>
+          <h1>Trip Not Found</h1>
+          <h2>This trip doesn't exist or isn't public.</h2>
           <a href="/">← Back to ExploreNYC</a>
         </div>
       );
