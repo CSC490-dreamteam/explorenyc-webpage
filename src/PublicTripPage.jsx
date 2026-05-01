@@ -1,38 +1,53 @@
 import { useEffect, useState } from 'react';
 import TripDetail from './navigation/screens/components/TripDetail.jsx';
-import { getPublicTrip } from './demoTrips.js';
+
 
 export default function PublicTripPage({ tripId }) {
   const [trip, setTrip] = useState(null);
   const [status, setStatus] = useState('loading');
 
   useEffect(() => {
-    const found = getPublicTrip(tripId);
-    if (found) {
-      setTrip(found);
-      setStatus('ready');
-    } else {
-      setStatus('not-found');
-    }
+    const API_BASE_URL = 'https://explorenyc-recommendation-service-production.up.railway.app';
+
+    const fetchTrip = async () => {
+      setStatus('loading');
+      try {
+        const response = await fetch(`${API_BASE_URL}/public-trip?trip_id=${tripId}`);
+
+        if (!response.ok) {
+          setStatus('not-found');
+          return;
+        }
+
+        const data = await response.json();
+        setTrip(data);
+        setStatus('ready');
+      } catch (error) {
+        console.error("Failed to fetch trip:", error);
+        setStatus('not-found');
+      }
+    };
+
+    fetchTrip();
   }, [tripId]);
 
   if (status === 'loading') {
-    return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
-        <p>Loading trip…</p>
-      </div>
-    );
-  }
+      return (
+        <div style={{ padding: 40, textAlign: 'center' }}>
+          <p>Loading trip…</p>
+        </div>
+      );
+    }
 
   if (status === 'not-found') {
-    return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
-        <h2>Trip not found</h2>
-        <p>This trip doesn't exist or isn't public.</p>
-        <a href="/">← Back to ExploreNYC</a> {/* link to home page */}
-      </div>
-    );
-  }
+      return (
+        <div style={{ padding: 40, textAlign: 'center' }}>
+          <h2>Trip not found</h2>
+          <p>This trip doesn't exist or isn't public.</p>
+          <a href="/">← Back to ExploreNYC</a>
+        </div>
+      );
+    }
 
   //actually return the trip
   return (
