@@ -69,7 +69,7 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
     const detailBoxRef = useRef(null);
     const [mapsButton, setMapsButton] = useState(null);
-    const [isTripPublic, setIsTripPublic] = useState(""); //TODO get actual trip publicity from API and set it via useeffect()
+    const [isTripPublic, setIsTripPublic] = useState(Boolean(trip?.public));
     const [isShareOpen, setIsShareOpen] = useState(false);
     const [shareUrl, setShareUrl] = useState("");
 
@@ -154,6 +154,11 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
         setDeleteError("");
         setSelectedPlace(null);
     }, [trip?.trip_id]);
+
+    
+    useEffect(() => {
+        setIsTripPublic(Boolean(trip?.public));
+    }, [trip?.trip_id, trip?.public]);
 
     useEffect(() => {
         if (!isDuplicateOpen || !detailBoxRef.current) {
@@ -283,14 +288,48 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
         }
     }
 
-    //TODO add ability to make trip public/private via API
     async function changeTripPublicity(isPublic) {
         if (!trip?.trip_id) {
             triggerToast("Error: Trip ID not found.", "error");
             return;
         }
-        
+
+        const previousValue = isTripPublic;
+        setIsTripPublic(isPublic);
+
+        const params = new URLSearchParams({
+            trip_id: String(trip.trip_id),
+            public: String(isPublic),
+        });
+
+        try {
+            const response = await fetch(
+                `https://explorenyc-recommendation-service-production.up.railway.app/trip/set-visibility?${params.toString()}`,
+                { method: "POST" }
+            );
+
+            if (response.status !== 200) {
+                const errorText = await response.text();
+                console.error("Failed to update trip visibility:", {
+                    status: response.status,
+                    body: errorText,
+                });
+                setIsTripPublic(previousValue); //rollback value
+                triggerToast("Failed to update trip visibility.", "error");
+                return;
+            }
+
+            triggerToast(
+                isPublic ? "Trip is now public." : "Trip is now private.",
+                "success"
+            );
+        } catch (error) {
+            console.error("Failed to update trip visibility:", error);
+            setIsTripPublic(previousValue); //rollback value
+            triggerToast("Failed to update trip visibility.", "error");
+        }
     }
+
 
     function triggerToast(message, type) {
         setToastConfig({ show: true, message, type });
@@ -566,16 +605,27 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                             display: 'flex', 
                             alignItems: 'center', 
                             justifyContent: 'space-between', 
-                            padding: '10px 0' 
+                            padding: '10px 0',
+                            opacity: isReadOnly ? 0.5 : 1,
                         }}>
-                            <span style={{ fontSize: '0.95rem' }}>Make trip public</span>
+                            <span style={{ fontSize: '0.95rem' }}>
+                                {isReadOnly
+                                    ? (isTripPublic ? 'This trip is public' : 'This trip is private')
+                                    : 'Make trip public'}
+                            </span>
                             <input
                                 type="checkbox"
                                 checked={isTripPublic}
+                                disabled={isReadOnly}
                                 onChange={(e) => changeTripPublicity(e.target.checked)}
-                                style={{ cursor: 'pointer', width: '18px', height: '18px' }}
+                                style={{
+                                    cursor: isReadOnly ? 'not-allowed' : 'pointer',
+                                    width: '18px',
+                                    height: '18px',
+                                }}
                             />
                         </div>
+
                         
                         <div className="trip-duplicate-actions">
                             <button className="trip-action-btn" type="button" onClick={() => handleShareUrl()}>
