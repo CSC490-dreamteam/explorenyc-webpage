@@ -70,6 +70,10 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
     const detailBoxRef = useRef(null);
     const [mapsButton, setMapsButton] = useState(null);
 
+    const [isShareOpen, setIsShareOpen] = useState(false);
+    const [shareUrl, setShareUrl] = useState("");
+
+
     function handleTransitClick(event, processedLegs, originStop, destinationStop) {
         if (!detailBoxRef.current) return;
         const leg = getRepresentativeLeg(processedLegs);
@@ -119,6 +123,25 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
         else console.warn('Failed to generate Apple Maps link');
 
         setMapsButton(null);
+    }
+
+    async function handleShareUrl() {
+        const baseUrl = window.location.origin;
+        const tripId = trip?.trip_id;
+
+        if (!tripId) {
+            triggerToast("Error: Trip ID not found.", "error");
+            return;
+        }
+
+        const url = `${baseUrl}/trip/${tripId}`;
+
+        try {
+            await navigator.clipboard.writeText(url);
+            triggerToast("Link copied to clipboard!", "success");
+        } catch (err) {
+            triggerToast("Failed to copy link.", "error");
+        }
     }
 
     useEffect(() => {
@@ -258,6 +281,15 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                 setIsDeleting(false);
             }
         }
+    }
+
+    //TODO add ability to make trip public/private via API
+    async function changeTripPublicity(isPublic) {
+        if (!trip?.trip_id) {
+            triggerToast("Error: Trip ID not found.", "error");
+            return;
+        }
+        
     }
 
     function triggerToast(message, type) {
@@ -424,9 +456,18 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                         </button>
                     }
 
-                    </div>    
+                    <button
+                        className="trip-action-btn"
+                        type="button"
+                        onClick={() => setIsShareOpen(true)}
+                    >
+                        Share Trip
+                    </button>
                     
-                       
+
+                    </div>    
+
+
                     {isDuplicateOpen && (
                         <div className="trip-duplicate-panel">
                             <label className="trip-duplicate-label" htmlFor="duplicate-trip-date">
@@ -514,6 +555,40 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                 </div>
             </div>
 
+
+            {isShareOpen && (
+                <div className="trip-confirm-overlay" style={{ zIndex: 3000 }}>
+                    <div className="trip-confirm-modal">
+                        <h3 className="trip-duplicate-label">Share Trip</h3>
+                        
+                        {!isReadOnly &&
+                        <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between', 
+                            padding: '10px 0' 
+                        }}>
+                            <span style={{ fontSize: '0.95rem' }}>Make trip public</span>
+                            <input
+                                type="checkbox"
+                                checked={isTripPublic}
+                                onChange={(e) => changeTripPublicity(e.target.checked)}
+                                style={{ cursor: 'pointer', width: '18px', height: '18px' }}
+                            />
+                        </div>
+                        }
+                        <div className="trip-duplicate-actions">
+                            <button className="trip-action-btn" type="button" onClick={() => handleShareUrl()}>
+                                Copy Link
+                            </button>
+                            <button className="trip-action-btn trip-action-btn-secondary" type="button" onClick={() => setIsShareOpen(false)}>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {isMapOpen && (
                 <div className="trip-map-overlay" role="dialog" aria-modal="true">
                     <div className="trip-map-modal">
@@ -590,6 +665,7 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                     </div>
                 </div>
             )}
+
 
             {toastConfig.show && (
                 <Toast
