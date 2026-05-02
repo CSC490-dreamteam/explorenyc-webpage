@@ -55,7 +55,7 @@ function processLegs(legs){
     return processedLegs;
 }
 
-function TripDetail({ trip, onClose, onTripsUpdated }) {
+function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -382,6 +382,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                             Open Map
                         </button>
 
+                    {!isReadOnly && 
                         <button
                             className="trip-action-btn"
                             type="button"
@@ -392,7 +393,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                         >
                             Duplicate
                         </button>
-
+                    }
                         
                         <button
                             className="trip-action-btn calendar-btn"
@@ -408,6 +409,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                             <img src={calendarIcon} alt="Add to Google Calendar" className="calendar-icon" />
                         </button>
 
+                    {!isReadOnly &&
                         <button
                             className="trip-delete-btn"
                             type="button"
@@ -420,8 +422,11 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                             <img src={trashIcon} alt="" className="trip-delete-icon" />
                             <span className="trip-delete-label">Delete Trip</span>
                         </button>
-                    </div>
+                    }
 
+                    </div>    
+                    
+                       
                     {isDuplicateOpen && (
                         <div className="trip-duplicate-panel">
                             <label className="trip-duplicate-label" htmlFor="duplicate-trip-date">
@@ -470,7 +475,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                             </div>
                         </div>
                     )}
-
+                    
                     {mapsButton && (
                         <div
                             className="maps-popup"

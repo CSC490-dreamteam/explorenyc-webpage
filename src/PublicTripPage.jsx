@@ -55,6 +55,7 @@ export default function PublicTripPage({ tripId }) {
       trip={trip}
       onClose={() => { window.location.href = '/'; }} //links back to homepage
       onTripsUpdated={null}
+      isReadOnly={true} //trip is read-only since it's public
     />
   );
 }
