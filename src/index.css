@@ -58,6 +58,16 @@
   --page-bg-color: rgba(255, 255, 255, 0.5);
 }
 
+
+/* fixes invisible icons on new trip screen */
+:root[data-theme='light'] {
+    color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+    color-scheme: dark;
+}
+
 a {
   font-weight: 500;
   color: var(--link);
