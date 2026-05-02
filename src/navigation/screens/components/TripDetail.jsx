@@ -480,6 +480,15 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                             <img src={calendarIcon} alt="Add to Google Calendar" className="calendar-icon" />
                         </button>
 
+
+                    <button
+                        className="trip-action-btn"
+                        type="button"
+                        onClick={() => setIsShareOpen(true)}
+                    >
+                        Share Trip
+                    </button>
+
                     {!isReadOnly &&
                         <button
                             className="trip-delete-btn"
@@ -495,13 +504,7 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                         </button>
                     }
 
-                    <button
-                        className="trip-action-btn"
-                        type="button"
-                        onClick={() => setIsShareOpen(true)}
-                    >
-                        Share Trip
-                    </button>
+                    
                     
 
                     </div>    
@@ -635,7 +638,9 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                                 Close
                             </button>
                         </div>
+
                     </div>
+                    
                 </div>
             )}
 
