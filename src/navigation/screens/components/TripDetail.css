@@ -122,6 +122,19 @@
     display: inline;
 }
 
+.trip-share-modal {
+    padding: 24px;
+    border-radius: 16px;
+    background: var(--surface-card);
+    box-shadow: 0 25px 25px #191919;
+    box-sizing: border-box;
+}
+
+
+.trip-share-modal .trip-duplicate-actions {
+    justify-content: center;
+}
+
 .trip-confirm-overlay {
     position: fixed;
     inset: 0;

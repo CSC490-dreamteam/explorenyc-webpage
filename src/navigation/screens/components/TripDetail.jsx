@@ -69,7 +69,7 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
     const detailBoxRef = useRef(null);
     const [mapsButton, setMapsButton] = useState(null);
-
+    const [isTripPublic, setIsTripPublic] = useState(""); //TODO get actual trip publicity from API and set it via useeffect()
     const [isShareOpen, setIsShareOpen] = useState(false);
     const [shareUrl, setShareUrl] = useState("");
 
@@ -558,10 +558,10 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
 
             {isShareOpen && (
                 <div className="trip-confirm-overlay" style={{ zIndex: 3000 }}>
-                    <div className="trip-confirm-modal">
+                    <div className="trip-share-modal">
                         <h3 className="trip-duplicate-label">Share Trip</h3>
                         
-                        {!isReadOnly &&
+
                         <div style={{ 
                             display: 'flex', 
                             alignItems: 'center', 
@@ -576,7 +576,7 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                                 style={{ cursor: 'pointer', width: '18px', height: '18px' }}
                             />
                         </div>
-                        }
+                        
                         <div className="trip-duplicate-actions">
                             <button className="trip-action-btn" type="button" onClick={() => handleShareUrl()}>
                                 Copy Link
