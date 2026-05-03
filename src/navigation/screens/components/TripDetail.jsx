@@ -9,7 +9,10 @@ import { normalizeStopToPlace, formatDuration, formatTimeRange } from "../utils/
 import { getGoogleMapsNavLink, getAppleMapsNavLink, getGoogleCalendarLink  } from "../utils/mapURLs.js"; 
 
 import calendarIcon from '../../../assets/calendar.svg';
-import trashIcon from '../../../assets/trash.svg';
+import trashIcon from '../../../assets/trash2.svg'; //NOTE THE NAME
+import navIcon from '../../../assets/navigation.svg';
+import shareIcon from '../../../assets/share2.svg'; //NOTE THE NAME
+import dupeIcon from '../../../assets/duplicate.svg';
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -444,28 +447,29 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                         <p>No stops found for this trip.</p>
                     )}
 
+                    {/* map button */}
                     <div className="trip-action-row">
                         <button
-                            className="trip-action-btn"
+                            className="trip-action-btn calendar-btn"
                             type="button"
                             onClick={() => setIsMapOpen(true)}
                         >
-                            Open Map
+                            <img src={navIcon} alt="" className="calendar-icon" />
                         </button>
 
-                    {!isReadOnly && 
+                    
+
+                        {/* share button */}
                         <button
-                            className="trip-action-btn"
+                            className="trip-action-btn calendar-btn"
                             type="button"
-                            onClick={() => {
-                                setIsDuplicateOpen(true);
-                                setDuplicateError("");
-                            }}
+                            onClick={() => setIsShareOpen(true)}
                         >
-                            Duplicate
+                            <img src={shareIcon} alt="" className="calendar-icon" />
                         </button>
-                    }
-                        
+
+
+                        {/* calendar button */}
                         <button
                             className="trip-action-btn calendar-btn"
                             type="button"
@@ -480,14 +484,21 @@ function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
                             <img src={calendarIcon} alt="Add to Google Calendar" className="calendar-icon" />
                         </button>
 
+                        {/* duplicate button */}
+                        {!isReadOnly && 
+                            <button
+                                className="trip-action-btn"
+                                type="button"
+                                onClick={() => {
+                                    setIsDuplicateOpen(true);
+                                    setDuplicateError("");
+                                }}
+                            >
+                                <img src={dupeIcon} alt="" className="calendar-icon" />
+                            </button>
+                        }
 
-                    <button
-                        className="trip-action-btn"
-                        type="button"
-                        onClick={() => setIsShareOpen(true)}
-                    >
-                        Share Trip
-                    </button>
+                        
 
                     {!isReadOnly &&
                         <button
