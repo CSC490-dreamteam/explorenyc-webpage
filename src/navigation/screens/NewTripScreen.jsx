@@ -114,7 +114,7 @@ function NewTripScreen() {
         if (requiredMinutes > availableMinutes) {
             setErrorState({
                 target: 'timeWindow',
-                message: 'There is not enough time for all your stops.',
+                message: 'There is not enough time for all your given stops.',
                 reason: 'insufficientTime'
             })
             return
@@ -343,7 +343,7 @@ function NewTripScreen() {
             entryTime: entryTimeErrorRef,
             exitTime: exitTimeErrorRef,
             transitTypes: transitTypesErrorRef,
-            timeWindow: timeWindowErrorRef
+            timeWindow: entryTimeErrorRef
         }
 
         const targetRef = refMap[errorState.target]
