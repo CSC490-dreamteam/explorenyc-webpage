@@ -721,14 +721,6 @@ function StartEndPicker({ value, onChange, inputId, placeholder, allowNone }) {
     if (isCustom) {
         return (
             <div className="inputWithIcon">
-                <input
-                    id={inputId}
-                    type="text"
-                    className="smallField noZoomField"
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                />
                 <button
                     type="button"
                     className="secondaryButton"
@@ -737,8 +729,16 @@ function StartEndPicker({ value, onChange, inputId, placeholder, allowNone }) {
                         onChange(allowNone ? '' : 'Penn Station')
                     }}
                 >
-                    Back (change to svg)
+                    &lt;
                 </button>
+                <input
+                    id={inputId}
+                    type="text"
+                    className="smallField noZoomField"
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                />
             </div>
         )
     }
