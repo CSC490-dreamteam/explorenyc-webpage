@@ -59,9 +59,10 @@ function HomeScreen() {
         async function fetchTailoredRecommendations() {
             setLoading(true);
             try {
-                // Fetch user history (using ID 1 for now)
+                const userId = Auth?.currentUserId; 
+                // Fetch user history (using ID)
                 const historyRes = await fetch(
-                    "https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=1"
+                    `https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=${userId}`
                 );
                 const historyData = await historyRes.json();
                 
@@ -90,6 +91,12 @@ function HomeScreen() {
                 if (!recRes.ok) throw new Error("Recommendation fetch failed");
                 
                 const data = await recRes.json();
+
+                for (let i = data.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [data[i], data[j]] = [data[j], data[i]];
+                }
+
                 setPlaces(data);
 
             } catch (err) {
