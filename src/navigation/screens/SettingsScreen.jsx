@@ -77,7 +77,7 @@ function SettingsScreen({ onLogout }) {
                     <label className="categoryHeader"><b>Support</b></label>
                     <div className="dividerLine"/>
                     <div className="settingsOption">
-                        Help & FAQ
+                        <a href="https://github.com/CSC490-dreamteam" target=blank>We're open source!</a>
                     </div>
 
                 </div>
