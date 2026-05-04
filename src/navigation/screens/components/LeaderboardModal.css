@@ -1,0 +1,135 @@
+.leaderboard-modal {
+    background: var(--surface-card);
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 25px 25px #191919;
+    color: var(--text-on-surface);
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+.leaderboard-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px; 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.leaderboard-modal-header h3 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.leaderboard-modal-header .close-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-on-surface);
+    font-size: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.2s ease-in-out;
+    padding: 0;
+    line-height: 1;
+}
+
+.leaderboard-modal-header .close-btn:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.05);
+}
+
+.leaderboard-modal-body {
+    padding: 0px 24px 24px 24px; 
+}
+
+.leaderboard-tabs {
+    display: flex;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    background: var(--accent);
+    color: var(--accent-contrast, #fff);
+}
+
+.leaderboard-status {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.leaderboard-status.error {
+    color: #ff6b6b;
+}
+
+.leaderboard-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+}
+
+.leaderboard-row.first-place {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.3);
+}
+
+.rank-number {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    width: 32px;
+}
+
+.user-name {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.user-score {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1186d9;
+}
