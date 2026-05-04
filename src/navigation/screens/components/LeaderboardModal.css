@@ -14,7 +14,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 20px; 
+    padding: 14px 20px; /* Increased top and bottom padding for more breathing room */
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -29,8 +29,8 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-on-surface);
     font-size: 20px;
-    width: 60px;
-    height: 60px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -40,6 +40,7 @@
     transition: all 0.2s ease-in-out;
     padding: 0;
     line-height: 1;
+    margin-right: 2px; /* Pulls the button slightly inward from the corner */
 }
 
 .leaderboard-modal-header .close-btn:hover {
@@ -72,6 +73,11 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .tab-btn.active {
@@ -132,4 +138,28 @@
     font-weight: 700;
     font-size: 0.95rem;
     color: #1186d9;
+}
+
+.walking-icon,
+.places-icon,
+.trip-icon {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background-color: currentColor;
+}
+
+.walking-icon {
+    -webkit-mask: url('../../../assets/walking.svg') center / contain no-repeat;
+    mask: url('../../../assets/walking.svg') center / contain no-repeat;
+}
+
+.places-icon {
+    -webkit-mask: url('../../../assets/location.svg') center / contain no-repeat;
+    mask: url('../../../assets/location.svg') center / contain no-repeat;
+}
+
+.trip-icon {
+    -webkit-mask: url('../../../assets/trip.svg') center / contain no-repeat;
+    mask: url('../../../assets/trip.svg') center / contain no-repeat;
 }

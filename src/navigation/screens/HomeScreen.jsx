@@ -243,17 +243,17 @@ function HomeScreen() {
                     tabIndex="0"
                 >
                     <div className="stat-item">
-                        <span className="stat-icon">🧳</span>
+                        <span className="trip-icon"></span>
                         {userStats.tripCount} <br /> 
                         <span className="stat-label">Trips Taken</span>
                     </div>
                     <div className="stat-item">
-                        <span className="stat-icon">👟</span>
+                        <span className="walking-icon"></span>
                         {userStats.totalWalkingMinutes} <br /> 
                         <span className="stat-label">Mins Walked</span>
                     </div>
                     <div className="stat-item">
-                        <span className="stat-icon">📍</span>
+                        <span className="places-icon"></span>
                         {userStats.uniqueStopsCount} <br /> 
                         <span className="stat-label">Places Seen</span>
                     </div>

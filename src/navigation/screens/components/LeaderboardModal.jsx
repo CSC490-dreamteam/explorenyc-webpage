@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./LeaderboardModal.css";
+import walkingIcon from '../../../assets/walking.svg';
 
 function LeaderboardModal({ isOpen, onClose }) {
     const [leaderboards, setLeaderboards] = useState(null);
@@ -42,7 +43,7 @@ function LeaderboardModal({ isOpen, onClose }) {
         <div className="modal-overlay" onClick={handleOverlayClick}>
             <div className="modal-content leaderboard-modal">
                 <div className="leaderboard-modal-header">
-                    <h3>🏆 Leaderboards</h3>
+                    <h3>Leaderboards</h3>
                     <button className="close-btn" onClick={onClose}>&times;</button>
                 </div>
 
@@ -53,19 +54,19 @@ function LeaderboardModal({ isOpen, onClose }) {
                             className={`tab-btn ${activeTab === "walking" ? "active" : ""}`} 
                             onClick={() => setActiveTab("walking")}
                         >
-                            👟 Walking
+                            <span className="walking-icon"></span> Walking
                         </button>
                         <button 
                             className={`tab-btn ${activeTab === "places" ? "active" : ""}`} 
                             onClick={() => setActiveTab("places")}
                         >
-                            📍 Places
+                            <span className="places-icon"></span> Places
                         </button>
                         <button 
                             className={`tab-btn ${activeTab === "trips" ? "active" : ""}`} 
                             onClick={() => setActiveTab("trips")}
                         >
-                            🧳 Trips
+                            <span className="trip-icon"></span> Trips
                         </button>
                     </div>
 
