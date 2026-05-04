@@ -77,8 +77,10 @@ function SettingsScreen({ onLogout }) {
                     <label className="categoryHeader"><b>Support</b></label>
                     <div className="dividerLine"/>
                     <div className="settingsOption">
-                        <a href="https://github.com/CSC490-dreamteam" target="_blank" rel="noopener noreferrer">We're open source!</a>
+                        <a href="https://github.com/CSC490-dreamteam" target="_blank" rel="noopener noreferrer">We're open source!</a><br/>
+                        <p>To submit a bug report, feel free to make a new Issue on GitHub.</p>
                     </div>
+                    
 
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
