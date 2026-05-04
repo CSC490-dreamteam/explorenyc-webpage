@@ -16,8 +16,9 @@ function NewTripScreen() {
     const [routeErrorVisible, setRouteErrorVisible] = useState(false);
 
     //general trip vars
-    const [startLocation, setStartLocation] = useState('')
+    const [startLocation, setStartLocation] = useState('Penn Station')
     const [endLocation, setEndLocation] = useState('')
+
     const [transitPreferences, setTransitPreferences] = useState({
         walking: true,
         subway: true,
@@ -41,6 +42,7 @@ function NewTripScreen() {
     const entryTimeErrorRef = useRef(null)
     const exitTimeErrorRef = useRef(null)
     const transitTypesErrorRef = useRef(null)
+    const timeWindowErrorRef = useRef(null)
     const baseMaxStops = 8
 
     const handleTripSubmit = async () => {
@@ -98,6 +100,24 @@ function NewTripScreen() {
                 reason: 'noTransitSelected'
             });
             return;
+        }
+
+        //check that the time window can fit all mandatory stops
+        const [entryHours, entryMinutes] = entryTime.split(':').map(Number)
+        const [exitHours, exitMinutes] = exitTime.split(':').map(Number)
+        const availableMinutes = (exitHours * 60 + exitMinutes) - (entryHours * 60 + entryMinutes)
+
+        const requiredMinutes = stops
+            .filter(stop => !stop.optional)
+            .reduce((sum, stop) => sum + (stop.duration || 0), 0)
+
+        if (requiredMinutes > availableMinutes) {
+            setErrorState({
+                target: 'timeWindow',
+                message: 'There is not enough time for all your given stops.',
+                reason: 'insufficientTime'
+            })
+            return
         }
 
         //actual endpoint data
@@ -322,7 +342,8 @@ function NewTripScreen() {
             date: dateErrorRef,
             entryTime: entryTimeErrorRef,
             exitTime: exitTimeErrorRef,
-            transitTypes: transitTypesErrorRef
+            transitTypes: transitTypesErrorRef,
+            timeWindow: entryTimeErrorRef
         }
 
         const targetRef = refMap[errorState.target]
@@ -346,8 +367,8 @@ function NewTripScreen() {
 
     const isAddStopError = errorState?.target === 'addStop'
     const isStartPointError = errorState?.target === 'startPoint'
-    const isEntryTimeError = errorState?.target === 'entryTime'
-    const isExitTimeError = errorState?.target === 'exitTime'
+    const isEntryTimeError = errorState?.target === 'entryTime' || errorState?.target === 'timeWindow'
+    const isExitTimeError = errorState?.target === 'exitTime' || errorState?.target === 'timeWindow'
 
     //check if there are any stops in local storage
     useEffect(() => {
@@ -488,7 +509,7 @@ function NewTripScreen() {
 
                     {isExitTimeError ? (
                         <ErrorWrapper
-                            message={errorState.message}
+                            message={errorState?.target === 'timeWindow' ? '' : errorState.message}
                             innerRef={exitTimeErrorRef}
                             className="errorWrapper--field errorWrapper--timeField"
                         >
@@ -526,6 +547,7 @@ function NewTripScreen() {
 
             <section className="newTripCard">
                 <h3>Start & End Points</h3>
+
                 {isStartPointError ? (
                     <ErrorWrapper
                         message={errorState.message}
@@ -533,52 +555,42 @@ function NewTripScreen() {
                     >
                         <div className="fieldGroup">
                             <label htmlFor="trip-start">Starting Location</label>
-                            <div className="inputWithIcon">
-                                <input
-                                    id="trip-start"
-                                    type="text"
-                                    className="smallField noZoomField"
-                                    placeholder="Enter starting point"
+                            <StartEndPicker
                                 value={startLocation}
-                                onChange={(e) => {
-                                    const nextValue = e.target.value
-                                    setStartLocation(nextValue)
-                                    if (nextValue.trim()) {
+                                onChange={(val) => {
+                                    setStartLocation(val)
+                                    if (val.trim() && errorState?.reason === 'missingStart') {
                                         setErrorState(null)
-                                        }
-                                    }}
-                                />
-                            </div>
+                                    }
+                                }}
+                                inputId="trip-start"
+                                placeholder="Enter starting point"
+                                allowNone={false}
+                            />
                         </div>
                     </ErrorWrapper>
                 ) : (
                     <div className="fieldGroup">
                         <label htmlFor="trip-start">Starting Location</label>
-                        <div className="inputWithIcon">
-                            <input
-                                id="trip-start"
-                                type="text"
-                                className="smallField noZoomField"
-                                placeholder="Enter starting point"
-                                value={startLocation}
-                                onChange={(e) => setStartLocation(e.target.value)}
-                            />
-                        </div>
+                        <StartEndPicker
+                            value={startLocation}
+                            onChange={setStartLocation}
+                            inputId="trip-start"
+                            placeholder="Enter starting point"
+                            allowNone={false}
+                        />
                     </div>
                 )}
 
                 <div className="fieldGroup">
                     <label htmlFor="trip-end">Ending Location</label>
-                    <div className="inputWithIcon">
-                        <input
-                            id="trip-end"
-                            type="text"
-                            className="smallField noZoomField"
-                            placeholder="Enter ending point"
-                            value={endLocation}
-                            onChange={(e) => setEndLocation(e.target.value)}
-                        />
-                    </div>
+                    <StartEndPicker
+                        value={endLocation}
+                        onChange={setEndLocation}
+                        inputId="trip-end"
+                        placeholder="Enter ending point"
+                        allowNone={true}
+                    />
                 </div>
             </section>
 
@@ -677,11 +689,81 @@ function ErrorWrapper({message, children, innerRef, className = ''}) {
             aria-live="assertive"
             tabIndex={-1}
         >
-            <span className="errorWrapperLabel">{message}</span>
+           {message && <span className="errorWrapperLabel">{message}</span>}
             {children}
         </div>
     )
 }
+
+function StartEndPicker({ value, onChange, inputId, placeholder, allowNone }) {
+    const presets = ['Penn Station', 'Grand Central Terminal']
+
+    //if the current value isn't a preset and isn't empty, the user is in custom mode
+    const [isCustom, setIsCustom] = useState(
+        value !== '' && !presets.includes(value)
+    )
+
+    const handleSelectChange = (e) => {
+        const selected = e.target.value
+
+        if (selected === 'other') {
+            setIsCustom(true)
+            onChange('')
+        } else if (selected === 'none') {
+            setIsCustom(false)
+            onChange('')
+        } else {
+            setIsCustom(false)
+            onChange(selected)
+        }
+    }
+
+    if (isCustom) {
+        return (
+            <div className="inputWithIcon">
+                <button
+                    type="button"
+                    className="secondaryButton"
+                    onClick={() => {
+                        setIsCustom(false)
+                        onChange(allowNone ? '' : 'Penn Station')
+                    }}
+                >
+                    &lt;
+                </button>
+                <input
+                    id={inputId}
+                    type="text"
+                    className="smallField noZoomField"
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                />
+            </div>
+        )
+    }
+
+    const currentSelection = value === '' ? 'none' : value
+
+    return (
+        <div className="selectWrapper">
+            <select
+                id={inputId}
+                className="smallField noZoomField"
+                value={currentSelection}
+                onChange={handleSelectChange}
+            >
+                {allowNone && <option value="none">None</option>}
+                {presets.map(preset => (
+                    <option key={preset} value={preset}>{preset}</option>
+                ))}
+                <option value="other" style={{ color: '#a3a3a3' }} >Other...</option>
+            </select>
+        </div>
+    )
+}
+
+
 
 function StopEntryBlock({data, onChange, index, onDelete, stopCount}) {
     const [isModalOpen, setIsModalOpen] = useState(false);
