@@ -10,7 +10,7 @@ import subwayIcon from '../../assets/subway.svg';
 import carIcon from '../../assets/car.svg';
 
 
-function NewTripScreen() {
+function NewTripScreen({ setCurrentScreen, onTripCreated }) {
     const [isLoading, setIsLoading] = useState(false)
     const [errorState, setErrorState] = useState(null)
     const [routeErrorVisible, setRouteErrorVisible] = useState(false);
@@ -204,6 +204,19 @@ function NewTripScreen() {
                     } else {
                         const storeData = await storeResponse.json();
                         console.log('StoreItinerary success:', storeData);
+
+                        const createdTripId =
+                            storeData?.trip_id ??
+                            storeData?.trip?.trip_id ??
+                            storeData?.id ??
+                            null;
+
+                        onTripCreated?.({
+                            tripId: createdTripId,
+                            tripName: itineraryData.trip_name,
+                            tripDate: itineraryData.date
+                        });
+                        setCurrentScreen?.('HistoryState');
                     }
                 } catch (storeError) {
                     console.error('Error storing itinerary:', storeError);

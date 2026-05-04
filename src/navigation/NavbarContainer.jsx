@@ -7,12 +7,26 @@ import HistoryScreen from "./screens/HistoryScreen.jsx";
 
 function NavbarContainer({ onLogout }) {
     const [currentScreen, setCurrentScreen] = useState('HomeState')
+    const [pendingTripFocus, setPendingTripFocus] = useState(null)
 
     const renderContent = () => {
         switch (currentScreen) {
             case 'HomeState': return <HomeScreen />
-            case 'MapState': return <NewTripScreen />
-            case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
+            case 'MapState':
+                return (
+                    <NewTripScreen
+                        setCurrentScreen={setCurrentScreen}
+                        onTripCreated={setPendingTripFocus}
+                    />
+                )
+            case 'HistoryState':
+                return (
+                    <HistoryScreen
+                        setCurrentScreen={setCurrentScreen}
+                        pendingTripFocus={pendingTripFocus}
+                        onTripFocusHandled={() => setPendingTripFocus(null)}
+                    />
+                )
             case 'SettingsState': return <SettingScreen onLogout={onLogout} />
             default: return <HomeScreen />
         }
