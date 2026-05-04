@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import RecommendationCard from './components/RecommendationCard.jsx';
 import PlaceDetailsModal from './components/PlaceDetailsModal.jsx';
 import Toast from './components/Toast.jsx';
+import LeaderboardModal from './components/LeaderboardModal.jsx';
 import { addPlaceToPendingTrip } from './utils/tripDrafts.js';
 import Auth from '../../auth';
 import { calculateAllUserStats } from "./utils/statCrunching.js";
@@ -21,6 +22,7 @@ function HomeScreen() {
     const [randomTrending, setRandomTrending] = useState([]);
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [toastConfig, setToastConfig] = useState({ show: false, message: '', type: '' });
+    const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
@@ -57,9 +59,10 @@ function HomeScreen() {
         async function fetchTailoredRecommendations() {
             setLoading(true);
             try {
-                // Fetch user history (using ID 1 for now)
+                const userId = Auth?.currentUserId; 
+                // Fetch user history (using ID)
                 const historyRes = await fetch(
-                    "https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=1"
+                    `https://explorenyc-recommendation-service-production.up.railway.app/trip-stops?user_id=${userId}`
                 );
                 const historyData = await historyRes.json();
                 
@@ -88,6 +91,12 @@ function HomeScreen() {
                 if (!recRes.ok) throw new Error("Recommendation fetch failed");
                 
                 const data = await recRes.json();
+
+                for (let i = data.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [data[i], data[j]] = [data[j], data[i]];
+                }
+
                 setPlaces(data);
 
             } catch (err) {
@@ -226,20 +235,29 @@ function HomeScreen() {
                 <p>Discover new destinations</p>
                 </div>
 
-                <button className="btn-primary">
-                    <div className="statistic">
+                <div 
+                    className="stats-card" 
+                    onClick={() => setIsLeaderboardOpen(true)}
+                    role="button"
+                    aria-label="View leaderboards"
+                    tabIndex="0"
+                >
+                    <div className="stat-item">
+                        <span className="trip-icon"></span>
                         {userStats.tripCount} <br /> 
-                        Trips Taken
+                        <span className="stat-label">Trips Taken</span>
                     </div>
-                    <div className="statistic">
+                    <div className="stat-item">
+                        <span className="walking-icon"></span>
                         {userStats.totalWalkingMinutes} <br /> 
-                        Mins Walked
+                        <span className="stat-label">Mins Walked</span>
                     </div>
-                    <div className="statistic">
+                    <div className="stat-item">
+                        <span className="places-icon"></span>
                         {userStats.uniqueStopsCount} <br /> 
-                        Places Seen
+                        <span className="stat-label">Places Seen</span>
                     </div>
-                </button>
+                </div>
 
             </header>
             
@@ -346,6 +364,11 @@ function HomeScreen() {
                     onClose={() => setToastConfig({ ...toastConfig, show: false })} 
                 />
             )}
+
+            <LeaderboardModal 
+                isOpen={isLeaderboardOpen} 
+                onClose={() => setIsLeaderboardOpen(false)} 
+            />
 
 
         </div>

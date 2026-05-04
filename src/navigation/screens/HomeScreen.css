@@ -159,3 +159,59 @@
 .dropdown-item:hover {
     background-color: rgba(255, 255, 255, 0.05);
 }
+
+.stats-card {
+    box-sizing: border-box; /* Added to keep padding within the 320px boundary */
+    margin-top: 15px;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--surface-card);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    box-shadow: var(--shadow-elevated);
+    color: var(--text-on-surface);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.stat-item {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the icon and text horizontally */
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.stat-icon {
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    background-color: currentColor;
+    margin-bottom: 2px;
+    /* Adjust URL to /walking.svg or ../assets/walking.svg depending on location */
+    -webkit-mask: url('/public/location.svg') center / contain no-repeat;
+    mask: url('/public/location.svg') center / contain no-repeat;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-on-surface);
+}
+
+.stat-label {
+    font-size: 0.70rem;
+    color: var(--text-muted);
+    
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
