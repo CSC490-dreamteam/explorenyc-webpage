@@ -24,7 +24,7 @@
     flex-direction: column;
 }
 .settingsOption{
-    display: flex;
+    /*display: flex;*/
     padding: 10px;
     align-items: center;
     color: var(--text-primary);
