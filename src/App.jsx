@@ -22,8 +22,7 @@ function App() {
   }
 
 
-  const LOGIN_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/login';
-  const SIGNUP_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/signup';
+ 
   const GOOGLE_LOGIN_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/google-login';
   const [showNav, setShowNav] = useState(false);
   const [authError, setAuthError] = useState('');
