@@ -78,8 +78,8 @@ function SettingsScreen({ onLogout }) {
                     <div className="dividerLine"/>
                     <div className="settingsOption">
                         <a href="https://github.com/CSC490-dreamteam" target="_blank" rel="noopener noreferrer">We're open source!</a>
-                        <p>To submit a bug report, feel free to make a new Issue on GitHub.</p>
                     </div>
+                    <p>To submit a bug report, feel free to make a new Issue on GitHub.</p>
 
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
