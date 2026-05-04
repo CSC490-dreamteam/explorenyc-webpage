@@ -4,12 +4,30 @@ import NavbarContainer from "./navigation/NavbarContainer.jsx";
 import Auth from "./auth";
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
+import PublicTripPage from "./PublicTripPage.jsx";  
+
+//returns the url for a public trip
+function getPublicTripIdFromUrl() {
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  if (parts[0] === 'trip' && parts[1]) return parts[1];
+  return null;
+}
+
 
 function App() {
+
+  const publicTripId = getPublicTripIdFromUrl();
+  if (publicTripId) {
+    return <PublicTripPage tripId={publicTripId} />;
+  }
+
+
+ 
   const GOOGLE_LOGIN_URL = 'https://explorenyc-recommendation-service-production.up.railway.app/google-login';
   const [showNav, setShowNav] = useState(false);
   const [authError, setAuthError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
 
   if (showNav) {
     return <NavbarContainer onLogout={() => setShowNav(false)} />;

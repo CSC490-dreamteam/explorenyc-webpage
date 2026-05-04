@@ -9,7 +9,10 @@ import { normalizeStopToPlace, formatDuration, formatTimeRange } from "../utils/
 import { getGoogleMapsNavLink, getAppleMapsNavLink, getGoogleCalendarLink  } from "../utils/mapURLs.js"; 
 
 import calendarIcon from '../../../assets/calendar.svg';
-import trashIcon from '../../../assets/trash.svg';
+import trashIcon from '../../../assets/trash2.svg'; //NOTE THE NAME
+import navIcon from '../../../assets/navigation.svg';
+import shareIcon from '../../../assets/share2.svg'; //NOTE THE NAME
+import dupeIcon from '../../../assets/duplicate.svg';
 
 const TRANSPORT_MODES = {
     0: { label: 'Walking', className: 'transitIconWalking'  },
@@ -55,7 +58,7 @@ function processLegs(legs){
     return processedLegs;
 }
 
-function TripDetail({ trip, onClose, onTripsUpdated }) {
+function TripDetail({ trip, onClose, onTripsUpdated, isReadOnly }) {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [isDuplicateOpen, setIsDuplicateOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -69,6 +72,10 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
     const stops = Array.isArray(trip?.stops) ? trip.stops : [];
     const detailBoxRef = useRef(null);
     const [mapsButton, setMapsButton] = useState(null);
+    const [isTripPublic, setIsTripPublic] = useState(Boolean(trip?.public));
+    const [isShareOpen, setIsShareOpen] = useState(false);
+    const [shareUrl, setShareUrl] = useState("");
+
 
     function handleTransitClick(event, processedLegs, originStop, destinationStop) {
         if (!detailBoxRef.current) return;
@@ -121,6 +128,25 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         setMapsButton(null);
     }
 
+    async function handleShareUrl() {
+        const baseUrl = window.location.origin;
+        const tripId = trip?.trip_id;
+
+        if (!tripId) {
+            triggerToast("Error: Trip ID not found.", "error");
+            return;
+        }
+
+        const url = `${baseUrl}/trip/${tripId}`;
+
+        try {
+            await navigator.clipboard.writeText(url);
+            triggerToast("Link copied to clipboard!", "success");
+        } catch (err) {
+            triggerToast("Failed to copy link.", "error");
+        }
+    }
+
     useEffect(() => {
         setIsDuplicateOpen(false);
         setIsDeleteConfirmOpen(false);
@@ -131,6 +157,11 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         setDeleteError("");
         setSelectedPlace(null);
     }, [trip?.trip_id]);
+
+    
+    useEffect(() => {
+        setIsTripPublic(Boolean(trip?.public));
+    }, [trip?.trip_id, trip?.public]);
 
     useEffect(() => {
         if (!isDuplicateOpen || !detailBoxRef.current) {
@@ -260,6 +291,49 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
         }
     }
 
+    async function changeTripPublicity(isPublic) {
+        if (!trip?.trip_id) {
+            triggerToast("Error: Trip ID not found.", "error");
+            return;
+        }
+
+        const previousValue = isTripPublic;
+        setIsTripPublic(isPublic);
+
+        const params = new URLSearchParams({
+            trip_id: String(trip.trip_id),
+            public: String(isPublic),
+        });
+
+        try {
+            const response = await fetch(
+                `https://explorenyc-recommendation-service-production.up.railway.app/trip/set-visibility?${params.toString()}`,
+                { method: "POST" }
+            );
+
+            if (response.status !== 200) {
+                const errorText = await response.text();
+                console.error("Failed to update trip visibility:", {
+                    status: response.status,
+                    body: errorText,
+                });
+                setIsTripPublic(previousValue); //rollback value
+                triggerToast("Failed to update trip visibility.", "error");
+                return;
+            }
+
+            triggerToast(
+                isPublic ? "Trip is now public." : "Trip is now private.",
+                "success"
+            );
+        } catch (error) {
+            console.error("Failed to update trip visibility:", error);
+            setIsTripPublic(previousValue); //rollback value
+            triggerToast("Failed to update trip visibility.", "error");
+        }
+    }
+
+
     function triggerToast(message, type) {
         setToastConfig({ show: true, message, type });
     }
@@ -373,27 +447,29 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                         <p>No stops found for this trip.</p>
                     )}
 
+                    {/* map button */}
                     <div className="trip-action-row">
                         <button
-                            className="trip-action-btn"
+                            className="trip-action-btn calendar-btn"
                             type="button"
                             onClick={() => setIsMapOpen(true)}
                         >
-                            Open Map
+                            <img src={navIcon} alt="" className="calendar-icon" />
                         </button>
 
+                    
+
+                        {/* share button */}
                         <button
-                            className="trip-action-btn"
+                            className="trip-action-btn calendar-btn"
                             type="button"
-                            onClick={() => {
-                                setIsDuplicateOpen(true);
-                                setDuplicateError("");
-                            }}
+                            onClick={() => setIsShareOpen(true)}
                         >
-                            Duplicate
+                            <img src={shareIcon} alt="" className="calendar-icon" />
                         </button>
 
-                        
+
+                        {/* calendar button */}
                         <button
                             className="trip-action-btn calendar-btn"
                             type="button"
@@ -408,6 +484,23 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                             <img src={calendarIcon} alt="Add to Google Calendar" className="calendar-icon" />
                         </button>
 
+                        {/* duplicate button */}
+                        {!isReadOnly && 
+                            <button
+                                className="trip-action-btn"
+                                type="button"
+                                onClick={() => {
+                                    setIsDuplicateOpen(true);
+                                    setDuplicateError("");
+                                }}
+                            >
+                                <img src={dupeIcon} alt="" className="calendar-icon" />
+                            </button>
+                        }
+
+                        
+
+                    {!isReadOnly &&
                         <button
                             className="trip-delete-btn"
                             type="button"
@@ -420,7 +513,13 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                             <img src={trashIcon} alt="" className="trip-delete-icon" />
                             <span className="trip-delete-label">Delete Trip</span>
                         </button>
-                    </div>
+                    }
+
+                    
+                    
+
+                    </div>    
+
 
                     {isDuplicateOpen && (
                         <div className="trip-duplicate-panel">
@@ -470,7 +569,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                             </div>
                         </div>
                     )}
-
+                    
                     {mapsButton && (
                         <div
                             className="maps-popup"
@@ -508,6 +607,53 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
 
                 </div>
             </div>
+
+
+            {isShareOpen && (
+                <div className="trip-confirm-overlay" style={{ zIndex: 3000 }}>
+                    <div className="trip-share-modal">
+                        <h3 className="trip-duplicate-label">Share Trip</h3>
+                        
+
+                        <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between', 
+                            padding: '10px 0',
+                            opacity: isReadOnly ? 0.5 : 1,
+                        }}>
+                            <span style={{ fontSize: '0.95rem' }}>
+                                {isReadOnly
+                                    ? (isTripPublic ? 'This trip is public' : 'This trip is private')
+                                    : 'Make trip public'}
+                            </span>
+                            <input
+                                type="checkbox"
+                                checked={isTripPublic}
+                                disabled={isReadOnly}
+                                onChange={(e) => changeTripPublicity(e.target.checked)}
+                                style={{
+                                    cursor: isReadOnly ? 'not-allowed' : 'pointer',
+                                    width: '18px',
+                                    height: '18px',
+                                }}
+                            />
+                        </div>
+
+                        
+                        <div className="trip-duplicate-actions">
+                            <button className="trip-action-btn" type="button" onClick={() => handleShareUrl()}>
+                                Copy Link
+                            </button>
+                            <button className="trip-action-btn trip-action-btn-secondary" type="button" onClick={() => setIsShareOpen(false)}>
+                                Close
+                            </button>
+                        </div>
+
+                    </div>
+                    
+                </div>
+            )}
 
             {isMapOpen && (
                 <div className="trip-map-overlay" role="dialog" aria-modal="true">
@@ -585,6 +731,7 @@ function TripDetail({ trip, onClose, onTripsUpdated }) {
                     </div>
                 </div>
             )}
+
 
             {toastConfig.show && (
                 <Toast
