@@ -128,7 +128,7 @@ function getRouteFeatures(stops) {
     });
 }
 
-function MapScreen({ embedded = false, stops = [], mode = 'trip' }) {
+function MapScreen({ embedded = false, stops = [], mode = 'trip', onClose }) {
     const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
     const mapRef = useRef(null);
     const [selectedStop, setSelectedStop] = useState(null);
@@ -228,6 +228,16 @@ function MapScreen({ embedded = false, stops = [], mode = 'trip' }) {
         <div
             className={embedded ? 'map-screen map-screen--embedded' : 'map-screen map-screen--full'}
         >
+            {isLearnMode && !embedded && typeof onClose === 'function' && (
+                <button
+                    type="button"
+                    className="learn-map-close"
+                    aria-label="Close map"
+                    onClick={onClose}
+                >
+                    &times;
+                </button>
+            )}
             <Map
                 ref={mapRef}
                 mapboxAccessToken={MAPBOX_TOKEN}

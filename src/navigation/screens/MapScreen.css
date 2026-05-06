@@ -16,12 +16,13 @@
 }
 
 .learn-map-popup {
-    position: absolute;
+    position: fixed;
     left: 16px;
     right: 16px;
-    bottom: 76px;
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
     margin: 0 auto;
     max-width: 420px;
+    max-height: min(38vh, 280px);
     background: var(--surface-card);
     color: var(--text-on-surface);
     border-radius: 14px;
@@ -29,12 +30,12 @@
     border: 1px solid var(--border-default);
     z-index: 5;
     text-align: left;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
+.learn-map-close,
 .learn-map-popup__close {
-    position: absolute;
-    top: 12px;
-    right: 12px;
     width: 32px;
     height: 32px;
     border-radius: 999px;
@@ -47,6 +48,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.learn-map-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 6;
+}
+
+.learn-map-popup__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
 }
 
 .learn-map-popup__body {

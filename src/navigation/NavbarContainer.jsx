@@ -13,7 +13,7 @@ function NavbarContainer({ onLogout }) {
         switch (currentScreen) {
             case 'HomeState': return <HomeScreen setCurrentScreen={setCurrentScreen} />
             case 'MapState': return <NewTripScreen />
-            case 'LearnMapState': return <MapScreen mode="learn" />
+            case 'LearnMapState': return <MapScreen mode="learn" onClose={() => setCurrentScreen('HomeState')} />
             case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
             case 'SettingsState': return <SettingScreen onLogout={onLogout} />
             default: return <HomeScreen setCurrentScreen={setCurrentScreen} />
