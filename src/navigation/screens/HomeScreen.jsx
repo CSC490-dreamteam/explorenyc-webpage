@@ -13,7 +13,7 @@ import { calculateAllUserStats } from "./utils/statCrunching.js";
 
 const nyc_env_var = import.meta.env.VITE_NYC_API_KEY;
 
-function HomeScreen() {
+function HomeScreen({ setCurrentScreen }) {
     
 
     const [places, setPlaces] = useState([]); //Stores the list of recommended places returned from the API
@@ -366,6 +366,12 @@ function HomeScreen() {
                 />
             )}
 
+            <button
+                className="learnButton"
+                onClick={() => setCurrentScreen?.('LearnMapState')}
+            >
+                Learn More About NYC
+            </button>
             <LeaderboardModal 
                 isOpen={isLeaderboardOpen} 
                 onClose={() => setIsLeaderboardOpen(false)} 
