@@ -366,17 +366,17 @@ function HomeScreen({ setCurrentScreen }) {
                 />
             )}
 
+            <LeaderboardModal 
+                isOpen={isLeaderboardOpen} 
+                onClose={() => setIsLeaderboardOpen(false)} 
+            />
+
             <button
                 className="learnButton"
                 onClick={() => setCurrentScreen?.('LearnMapState')}
             >
                 Learn More About NYC
             </button>
-            <LeaderboardModal 
-                isOpen={isLeaderboardOpen} 
-                onClose={() => setIsLeaderboardOpen(false)} 
-            />
-
 
         </div>
     )

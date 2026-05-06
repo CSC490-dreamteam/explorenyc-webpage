@@ -16,7 +16,7 @@
 }
 
 .learn-map-popup {
-    position: fixed;
+    position: absolute;
     left: 16px;
     right: 16px;
     bottom: calc(84px + env(safe-area-inset-bottom, 0px));

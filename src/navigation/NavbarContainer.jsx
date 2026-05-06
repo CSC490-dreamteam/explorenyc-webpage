@@ -12,7 +12,9 @@ function NavbarContainer({ onLogout }) {
 
     const renderContent = () => {
         switch (currentScreen) {
-            case 'HomeState': return <HomeScreen />
+            case 'HomeState': return <HomeScreen setCurrentScreen={setCurrentScreen} />
+            case 'LearnMapState':
+                return <MapScreen mode="learn" onClose={() => setCurrentScreen('HomeState')} />
             case 'MapState':
                 return (
                     <NewTripScreen
@@ -20,7 +22,6 @@ function NavbarContainer({ onLogout }) {
                         onTripCreated={setPendingTripFocus}
                     />
                 )
-            case 'LearnMapState': return <MapScreen mode="learn" onClose={() => setCurrentScreen('HomeState')} />
             case 'HistoryState':
                 return (
                     <HistoryScreen
