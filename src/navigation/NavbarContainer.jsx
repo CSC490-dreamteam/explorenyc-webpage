@@ -4,17 +4,19 @@ import NewTripScreen from './screens/NewTripScreen.jsx'
 import SettingScreen from './screens/SettingsScreen.jsx'
 import {useState} from "react";
 import HistoryScreen from "./screens/HistoryScreen.jsx";
+import MapScreen from "./screens/MapScreen.jsx";
 
 function NavbarContainer({ onLogout }) {
     const [currentScreen, setCurrentScreen] = useState('HomeState')
 
     const renderContent = () => {
         switch (currentScreen) {
-            case 'HomeState': return <HomeScreen />
+            case 'HomeState': return <HomeScreen setCurrentScreen={setCurrentScreen} />
             case 'MapState': return <NewTripScreen />
+            case 'LearnMapState': return <MapScreen mode="learn" />
             case 'HistoryState': return <HistoryScreen setCurrentScreen={setCurrentScreen} />
             case 'SettingsState': return <SettingScreen onLogout={onLogout} />
-            default: return <HomeScreen />
+            default: return <HomeScreen setCurrentScreen={setCurrentScreen} />
         }
     }
 

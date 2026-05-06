@@ -159,3 +159,9 @@
 .dropdown-item:hover {
     background-color: rgba(255, 255, 255, 0.05);
 }
+
+.learnButton {
+    margin-top: 20px;
+    background: var(--accent);
+    color: var(--accent-contrast);
+}

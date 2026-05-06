@@ -1,0 +1,72 @@
+.map-screen {
+    position: relative;
+    overflow: hidden;
+}
+
+.map-screen--full {
+    width: 100%;
+    height: calc(100vh - 120px);
+    min-height: 520px;
+    padding-bottom: 60px;
+}
+
+.map-screen--embedded {
+    width: 100%;
+    height: 100%;
+}
+
+.learn-map-popup {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 76px;
+    margin: 0 auto;
+    max-width: 420px;
+    background: var(--surface-card);
+    color: var(--text-on-surface);
+    border-radius: 14px;
+    box-shadow: var(--shadow-elevated);
+    border: 1px solid var(--border-default);
+    z-index: 5;
+    text-align: left;
+}
+
+.learn-map-popup__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.learn-map-popup__body {
+    padding: 20px 20px 18px;
+}
+
+.learn-map-popup__body h3 {
+    margin: 0 40px 8px 0;
+    font-size: 1.35rem;
+    color: var(--text-on-surface);
+}
+
+.learn-map-popup__subtitle {
+    margin: 0 0 8px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.learn-map-popup__body p {
+    margin: 0;
+    line-height: 1.5;
+}
