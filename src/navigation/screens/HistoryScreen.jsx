@@ -14,7 +14,23 @@ async function fetchTripStopsForUser(userId) {
     return res.json();
 }
 
-export default function History({ setCurrentScreen }) {
+function findTripToFocus(trips, pendingTripFocus) {
+    if (!pendingTripFocus || !Array.isArray(trips) || trips.length === 0) {
+        return null;
+    }
+
+    const pendingTripId = pendingTripFocus.tripId != null
+        ? String(pendingTripFocus.tripId)
+        : null;
+
+    if (pendingTripId) {
+        return trips.find((trip) => String(trip?.trip_id) === pendingTripId) ?? null;
+    }
+
+    return null;
+}
+
+export default function History({ setCurrentScreen, pendingTripFocus, onTripFocusHandled }) {
     const [userTrips, setUserTrips] = useState([]);
     const [selectedTrip, setSelectedTrip] = useState(null);
     const [toastConfig, setToastConfig] = useState({ show: false, message: "", type: "" });
@@ -113,6 +129,17 @@ export default function History({ setCurrentScreen }) {
             isActive = false;
         };
     }, []);
+
+    useEffect(() => {
+        const tripToFocus = findTripToFocus(trips, pendingTripFocus);
+
+        if (!tripToFocus) {
+            return;
+        }
+
+        setSelectedTrip(tripToFocus);
+        onTripFocusHandled?.();
+    }, [onTripFocusHandled, pendingTripFocus, trips]);
 
 
 
