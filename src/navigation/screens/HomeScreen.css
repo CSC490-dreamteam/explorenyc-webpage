@@ -164,6 +164,8 @@
     margin-top: 20px;
     background: var(--accent);
     color: var(--accent-contrast);
+}
+
 .stats-card {
     box-sizing: border-box; /* Added to keep padding within the 320px boundary */
     margin-top: 15px;
