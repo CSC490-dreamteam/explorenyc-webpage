@@ -129,68 +129,87 @@ function HomeScreen({ setCurrentScreen }) {
     // }, []);
 
 
-    // Fetch NYC Calendar API for Trending Spots 
+// Fetch NYC Calendar API for Trending Spots 
     useEffect(() => {
-    async function fetchNYCEvents() {
-        try {
-            const response = await fetch("https://api.nyc.gov/calendar/discover", {
-                headers: {
-                    "Ocp-Apim-Subscription-Key": nyc_env_var,
-                    "Cache-Control": "no-cache"
-                }
-            });
+        async function fetchNYCEvents() {
+            try {
+                const response = await fetch("https://api.nyc.gov/calendar/discover", {
+                    headers: {
+                        "Ocp-Apim-Subscription-Key": nyc_env_var,
+                        "Cache-Control": "no-cache"
+                    }
+                });
 
-            if (!response.ok) throw new Error("Failed to fetch NYC Events");
+                if (!response.ok) throw new Error("Failed to fetch NYC Events");
 
-            const json = await response.json();
-            
-            // Access the .items array from the response
-            const events = json.items || [];
-
-            const BORO_MAP = {
-                "Mn": "Manhattan",
-                "Bk": "Brooklyn",
-                "Qn": "Queens",
-                "Bx": "Bronx",
-                "Si": "Staten Island"
-            };
-
-            const formattedEvents = events.map(event => {
-            //extract the code first
-            const boroCode = event.boroughs && event.boroughs.length > 0 ? event.boroughs[0] : "";
-
-            return {
-                id: event.id,
-                name: event.name,
-                place_type: "Event",
-                eventDate: event.datePart,
-                eventTime: event.timePart,
-                tags: event.categories ? event.categories.split(',') : [],
-                category: event.categories ? event.categories.split(',')[1] : "Activity",
-                description: event.desc ? event.desc.replace(/<[^>]*>/g, '').substring(0, 120) + "..." : "No description available.",
-                address: event.address || event.location || "New York, NY",
+                const json = await response.json();
                 
-                // use boroCode to find the full name
-                boro: BORO_MAP[boroCode] || boroCode || "New York City", 
-                
-                latitude: event.geometry?.[0]?.lat,
-                longitude: event.geometry?.[0]?.lng,
-                img: event.imageUrl || "/images/trending/default-nyc.jpeg" 
-            };
-        });
+                // Access the .items array from the response
+                const events = json.items || [];
 
-            // Shuffle and pick 3
-            const shuffled = [...formattedEvents].sort(() => Math.random() - 0.5);
-            setRandomTrending(shuffled.slice(0, 5));
+                const BORO_MAP = {
+                    "Mn": "Manhattan",
+                    "Bk": "Brooklyn",
+                    "Qn": "Queens",
+                    "Bx": "Bronx",
+                    "Si": "Staten Island"
+                };
 
-        } catch (err) {
-            console.error("NYC API Error:", err);
-            setError("Could not load trending events.");
+                // Filter out non-fixed addresses before mapping
+                const formattedEvents = events
+                    .filter(event => {
+                        const address = event.address ? event.address.toLowerCase() : "";
+
+                        // 1. If address is missing, filter it out
+                        if (!address) return false;
+
+                        // 2. Ignore general, non-specific locations
+                        if (address.includes("citywide") || address.includes("various") || address.includes("multiple")) {
+                            return false;
+                        }
+
+                        // 3. Ensure the address contains a number OR a street designator (St, Ave, Rd, etc.)
+                        const hasNumber = /\d/.test(address);
+                        const hasStreetDesignator = /(st|street|ave|avenue|rd|road|blvd|dr|lane|pl)\b/.test(address);
+
+                        return hasNumber || hasStreetDesignator;
+                    })
+                    .map(event => {
+                        // Extract the code first
+                        const boroCode = event.boroughs && event.boroughs.length > 0 ? event.boroughs[0] : "";
+
+                        return {
+                            id: event.id,
+                            name: event.name,
+                            place_type: "Event",
+                            eventDate: event.datePart,
+                            eventTime: event.timePart,
+                            tags: event.categories ? event.categories.split(',') : [],
+                            category: event.categories ? event.categories.split(',')[1] : "Activity",
+                            description: event.desc ? event.desc.replace(/<[^>]*>/g, '').substring(0, 120) + "..." : "No description available.",
+                            address: event.address || "New York, NY", 
+                            
+                            // Use boroCode to find the full name
+                            boro: BORO_MAP[boroCode] || boroCode || "New York City", 
+                            
+                            latitude: event.geometry?.[0]?.lat,
+                            longitude: event.geometry?.[0]?.lng,
+                            img: event.imageUrl || "/images/trending/default-nyc.jpeg" 
+                        };
+                    });
+
+                // Shuffle and pick 5
+                const shuffled = [...formattedEvents].sort(() => Math.random() - 0.5);
+                setRandomTrending(shuffled.slice(0, 5));
+
+            } catch (err) {
+                console.error("NYC API Error:", err);
+                setError("Could not load trending events.");
+            }
         }
-    }
 
-    fetchNYCEvents();
-}, []);
+        fetchNYCEvents();
+    }, []);
 
     const triggerToast = (message, type) => {
         setToastConfig({ show: true, message, type });
